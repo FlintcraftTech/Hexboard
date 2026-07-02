@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>HexBoard</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --bg:#13131a;
+  --panel-bg:#0d0d12;
+  --row-a:#2a2a38;  --row-a-bd:#484858;
+  --row-b:#1e1e2a;  --row-b-bd:#32323f;
+  --txt:#e2e2f2;    --dim:#6d6d82;
+  --on:#3a6fff;     --glow:rgba(58,111,255,.35);
+  --sp:#16182a;     --sp-bd:#2c3358;  --sp-txt:#79a0ff;
+  --spc:#06311d;    --spc-bd:#0a6d44; --spc-txt:#38d286;
+  --pun:#252530;    --pun-bd:#404055; --pun-txt:#c7c7e7;
+  --sym:#1b1d28;    --sym-bd:#2c2f44; --sym-txt:#a0a6d3;
+  --rar:#191b28;    --rar-bd:#292c40; --rar-txt:#8f95bf;
+  --emj:#1b1c2a;    --emj-bd:#30324a;
+  --out-bg:#09090e; --out-bd:#1f2030;
+  --pop-bg:#11121c; --pop-bd:#2a2d42;
+}
+
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;touch-action:none;}
+#app{width:100%;height:100%;display:flex;flex-direction:column;}
+
+/* Output */
+#out-area{flex:none;display:flex;flex-direction:column;justify-content:flex-end;padding:10px 16px 4px;}
+#out-lbl{font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin-bottom:4px;}
+#out-txt{min-height:48px;max-height:96px;overflow-y:auto;word-break:break-all;white-space:pre-wrap;
+  line-height:1.55;font-size:15px;color:var(--txt);background:var(--out-bg);
+  border:1px solid var(--out-bd);border-radius:8px;padding:9px 12px;}
+
+/* Nav */
+#nav{flex:none;display:flex;flex-direction:column;align-items:center;gap:3px;padding:3px 0 2px;}
+#dot-row{display:flex;gap:6px;align-items:center;}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--row-b-bd);transition:all .22s;}
+.dot.on{width:16px;border-radius:2.5px;background:var(--on);}
+.dot.hf{width:8px;border-radius:2px;opacity:.42;background:var(--on);}
+#pan-lbl{font-size:8px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);}
+
+/* Board shell */
+#shell{flex:1;min-height:0;position:relative;overflow:hidden;}
+#clip{position:absolute;left:0;right:0;bottom:0;overflow:hidden;background:var(--panel-bg);}
+
+/* Vertical track — letters on top, emoji below */
+#vtrack{position:absolute;left:0;top:0;width:100%;will-change:transform;transition:transform .28s cubic-bezier(.2,.8,.2,1);}
+.vpage{position:relative;width:100%;overflow:hidden;background:var(--panel-bg);}
+
+/* Horizontal tracks */
+#ltrack,#etrack{position:absolute;left:0;top:0;will-change:transform;transition:transform .28s cubic-bezier(.2,.8,.2,1);}
+
+/* Keys — outer div = full touch target (transparent), inner .face = visible circle */
+.key{position:absolute;display:flex;align-items:center;justify-content:center;border-radius:50%;
+  background:transparent;border:none;
+  user-select:none;-webkit-tap-highlight-color:transparent;touch-action:none;}
+.face{
+  display:flex;align-items:center;justify-content:center;
+  border-radius:50%;border:1.5px solid var(--row-a-bd);
+  position:relative;
+  transition:transform .07s,box-shadow .07s,background .07s,border-color .07s;
+  pointer-events:none;
+}
+.key-lbl{pointer-events:none;line-height:1;font-weight:600;color:var(--txt);}
+
+/* Face colours by row */
+.key.ra .face{background:var(--row-a);border-color:var(--row-a-bd);}
+.key.rb .face{background:var(--row-b);border-color:var(--row-b-bd);}
+.key.sp .face{background:var(--sp);border-color:var(--sp-bd);}
+.key.sp .key-lbl{color:var(--sp-txt);}
+.key.spc .face{background:var(--spc);border-color:var(--spc-bd);}
+.key.spc .key-lbl{color:var(--spc-txt);font-weight:500;}
+.key.pun .face{background:var(--pun);border-color:var(--pun-bd);}
+.key.pun .key-lbl{color:var(--pun-txt);}
+.key.sym .face{background:var(--sym);border-color:var(--sym-bd);}
+.key.sym .key-lbl{color:var(--sym-txt);font-weight:500;}
+.key.rar .face{background:var(--rar);border-color:var(--rar-bd);}
+.key.rar .key-lbl{color:var(--rar-txt);font-weight:500;}
+.key.emj .face{background:var(--emj);border-color:var(--emj-bd);}
+
+/* Pressed: scale and colour the face */
+.key.pressed .face{transform:scale(.88)!important;background:var(--on)!important;
+  border-color:var(--on)!important;box-shadow:0 0 14px var(--glow);}
+.key.shift-on .face{background:var(--on)!important;border-color:var(--on)!important;}
+.key.shift-on .key-lbl{color:#fff;}
+.key.caps-on .face{background:var(--on)!important;border-color:var(--on)!important;
+  box-shadow:0 0 0 2px rgba(255,255,255,.3) inset;}
+.key.caps-on .key-lbl{color:#fff;}
+
+/* Long-press popup — GHOST FIX: default display:none, only flex when not hidden */
+#popup{position:absolute;z-index:90;pointer-events:none;
+  background:var(--pop-bg);border:1px solid var(--pop-bd);border-radius:18px;
+  padding:6px;gap:6px;box-shadow:0 10px 28px rgba(0,0,0,.42);touch-action:none;
+  display:none;}
+#popup:not([hidden]){display:flex;}
+.alt{min-width:42px;height:42px;border-radius:50%;background:var(--row-a);
+  border:1.5px solid var(--row-a-bd);display:flex;align-items:center;justify-content:center;
+  color:var(--txt);font-weight:500;
+  transition:transform .07s,background .07s,border-color .07s,box-shadow .07s;}
+.alt.sel{background:var(--on);border-color:var(--on);
+  box-shadow:0 0 14px var(--glow);transform:scale(.94);}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="out-area">
+    <div id="out-lbl">output</div>
+    <div id="out-txt"></div>
+  </div>
+  <div id="nav">
+    <div id="dot-row"></div>
+    <div id="pan-lbl">QWERTY</div>
+  </div>
+  <div id="shell">
+    <div id="clip">
+      <div id="vtrack">
+        <div class="vpage" id="lpage"><div id="ltrack"></div></div>
+        <div class="vpage" id="epage"><div id="etrack"></div></div>
+      </div>
+      <div id="popup" hidden></div>
+    </div>
+  </div>
+</div>
+<script>
+'use strict';
+// ╔══════════════════════════════════════════════════════════════════════╗
+// ║  CANONICAL KEY MANIFEST — INVIOLABLE RULES                         ║
+// ║                                                                     ║
+// ║  1. NO KEY MAY BE LOST. Every output character must appear in this  ║
+// ║     manifest. Before shipping any build, run audit_keys.js and      ║
+// ║     confirm the output set matches exactly.                         ║
+// ║                                                                     ║
+// ║  2. NO UNRESOLVED DUPLICATES. Each output character should appear   ║
+// ║     on exactly one panel. Cross-panel duplicates must be resolved   ║
+// ║     before shipping — either remove one instance and fill the       ║
+// ║     vacated slot with something new, or explicitly justify why both  ║
+// ║     are needed (e.g. a convenience copy that is clearly labelled).  ║
+// ║                                                                     ║
+// ║  3. NO SILENT CHANGES. Any key move, addition, or removal must be   ║
+// ║     reflected in this manifest and noted in the commit comment.     ║
+// ║                                                                     ║
+// ║  4. EMPTY SLOTS ARE OPPORTUNITIES, NOT ACCEPTABLE GAPS. If a        ║
+// ║     duplicate is removed, the freed slot must be filled with a      ║
+// ║     character that has no other home, agreed with the user first.   ║
+// ╠══════════════════════════════════════════════════════════════════════╣
+// ║  PANEL 0 — RARE                                                     ║
+// ║  row0: ~ ` | < > ¬ ∞ √ ∑ π          (cols 0-9; { } [ ] \ → SYMBOLS)║
+// ║  row1: « » ° € £ ¥ © ® § ¶          (cols 0-9, 10 keys)            ║
+// ║  row2: ™ … – — × ÷ ± ≠ ≤ ≥          (cols 1-10, +1 offset, 10 keys)║
+// ╠══════════════════════════════════════════════════════════════════════╣
+// ║  PANEL 1 — QWERTY                                                   ║
+// ║  row0: Q W E R T Y U I O P          (cols 0-9, ins)                ║
+// ║  row1: A S D F G H J K L ⌫          (cols 0-9, ⌫=bs)               ║
+// ║  row2: ⇤ Z X C V B N M ⇥ ↵         (⇤=cl col0, ZXCVBNM cols1-7,   ║
+// ║                                      ⇥=cr col8, ↵=en col9)         ║
+// ║  row3: ⇧ ? , ! ␣ ' ␣ " . -         (cols 0-9)                     ║
+// ╠══════════════════════════════════════════════════════════════════════╣
+// ║  PANEL 2 — SYMBOLS                                                  ║
+// ║  row0: [  ·  @  ·  #  ·  $  1  2  3                                ║
+// ║  row1: \  *  ·  (  ·  )  ·  4  5  6                                ║
+// ║  row2: %  /  ^  {  &  ·  _  7  8  9                                ║
+// ║  row3: ·  ]  ·  }  ·  :  ;  0  =  +                                ║
+// ║  Freed slots filled with [ ] { } \ (moved here from RARE)           ║
+// ║  Removed from SYMBOLS (now only on QWERTY row3): ? ! ' " -          ║
+// ╠══════════════════════════════════════════════════════════════════════╣
+// ║  LONG-PRESS MAP (letters)                                           ║
+// ║  a→àáâäãåæ  c→ç  d→ð  e→èéêëē  i→ìíîïī  n→ñ                      ║
+// ║  o→òóôöõøœ  s→ßš  u→ùúûüū  y→ýÿ  z→ž                             ║
+// ║  LONG-PRESS MAP (punctuation)                                       ║
+// ║  ,→;…  .→…:  ?→¿  !→¡  -→–—  '→''`  "→""«»                       ║
+// ╚══════════════════════════════════════════════════════════════════════╝
+
+// ── CONSTANTS ──────────────────────────────────────────────────────────
+const LPN = ['RARE','· · ·','QWERTY','· · ·','SYMBOLS'];
+const EPN = ['EMOJI','· · ·','EMOJI','· · ·','EMOJI'];
+const L_HOME = 2, E_HOME = 2;
+const PANEL_COLS = 10, EMOJI_ROWS = 5;
+const EDGE = 6, OUT_RATIO = 0.20, NAV_H = 28;
+const VGAP = 3; // px: visual inset per side (fake breathing room, touch target unchanged)
+const DRAG_TH = 10, SWIPE_TH = 40, TAP_TOL = 8;
+const LP_MS = 320;
+const BS_DELAY = 320, BS_START = 110, BS_MIN = 28, BS_ACCEL = 7;
+
+// ── DOM ────────────────────────────────────────────────────────────────
+const D = {
+  out:    document.getElementById('out-txt'),
+  dotRow: document.getElementById('dot-row'),
+  panLbl: document.getElementById('pan-lbl'),
+  clip:   document.getElementById('clip'),
+  vtrack: document.getElementById('vtrack'),
+  lpage:  document.getElementById('lpage'),
+  epage:  document.getElementById('epage'),
+  ltrack: document.getElementById('ltrack'),
+  etrack: document.getElementById('etrack'),
+  popup:  document.getElementById('popup'),
+};
+
+// ── STATE ──────────────────────────────────────────────────────────────
+const S = {
+  lPanel:2, ePanel:2, emoji:false,
+  shift:false, caps:false,
+  chars:[], cur:0,
+  bh:320,
+  geo:{r:22,hs:1,vs:1,stride:1},
+  lSnaps:[], eSnaps:[],
+};
+
+const G = {
+  pid:null,sx:0,sy:0,dx:0,dy:0,
+  drag:false,dir:null,board:'letters',
+  key:null,suppress:false,
+};
+
+const BS = {el:null,hold:null,rep:null,n:0};
+let lastShift=0;
+const LP = {timer:null,open:false,src:null,opts:[],sel:-1};
+
+// ── KEY DEFINITIONS ────────────────────────────────────────────────────
+const LK = [
+  // cursor left — row 2 col 0 (⇤ = leftwards arrow to bar)
+  {row:2,col:0,lbl:'⇤',out:'',act:'cl',kind:'sp'},
+
+  // Row 0 — QWERTY
+  ...'QWERTYUIOP'.split('').map((l,i)=>({row:0,col:i,lbl:l,out:l.toLowerCase(),act:'ins'})),
+  // Row 1 — ASDFGHJKL + backspace
+  ...'ASDFGHJKL'.split('').map((l,i)=>({row:1,col:i,lbl:l,out:l.toLowerCase(),act:'ins'})),
+  {row:1,col:9,lbl:'⌫',out:'',act:'bs',kind:'sp',large:true},
+  // Row 2 — ZXCVBNM + cursor right + enter
+  ...'ZXCVBNM'.split('').map((l,i)=>({row:2,col:i+1,lbl:l,out:l.toLowerCase(),act:'ins'})),
+  {row:2,col:8,lbl:'⇥',out:'',act:'cr',kind:'sp'},
+  {row:2,col:9,lbl:'↵',out:'\n',act:'en',kind:'sp',large:true},
+  // Row 3 — full zag row (odd cols): shift, common punctuation, spaces, punctuation
+  {row:3,col:0,lbl:'⇧',out:'',act:'sh',kind:'sp',large:true,id:'shk'},
+  {row:3,col:1,lbl:'?',out:'?',kind:'pun'},
+  {row:3,col:2,lbl:',',out:',',kind:'pun'},
+  {row:3,col:3,lbl:'!',out:'!',kind:'pun'},
+  {row:3,col:4,lbl:'␣',out:' ',kind:'spc'},
+  {row:3,col:5,lbl:"'",out:"'",kind:'pun'},
+  {row:3,col:6,lbl:'␣',out:' ',kind:'spc'},
+  {row:3,col:7,lbl:'"',out:'"',kind:'pun'},
+  {row:3,col:8,lbl:'.',out:'.',kind:'pun'},
+  {row:3,col:9,lbl:'-',out:'-',kind:'pun'},
+];
+
+// Symbols panel — key-by-key placement.
+// Left block cols 0-6: punctuation. Right block cols 7-9: numpad + math.
+// Even cols = zig (higher), odd cols = zag (lower in hex offset).
+// [ ] { } \ moved here from RARE (closer access). ? ! ' " - removed (on QWERTY row3).
+const SK=[
+  // ── Row 0 (even cols = zigs) ──
+  {row:0,col:0,lbl:'[', out:'[', kind:'sym'},
+  {row:0,col:2,lbl:'@', out:'@', kind:'sym'},
+  {row:0,col:4,lbl:'#', out:'#', kind:'sym'},
+  {row:0,col:6,lbl:'$', out:'$', kind:'sym'},
+  {row:0,col:7,lbl:'1', out:'1', kind:'sym'},
+  {row:0,col:8,lbl:'2', out:'2', kind:'sym'},
+  {row:0,col:9,lbl:'3', out:'3', kind:'sym'},
+  // ── Row 1 (odd cols = zags) ──
+  {row:1,col:0,lbl:'\\',out:'\\',kind:'sym'},
+  {row:1,col:1,lbl:'*', out:'*', kind:'sym'},
+  {row:1,col:3,lbl:'(', out:'(', kind:'sym'},
+  {row:1,col:5,lbl:')', out:')', kind:'sym'},
+  {row:1,col:7,lbl:'4', out:'4', kind:'sym'},
+  {row:1,col:8,lbl:'5', out:'5', kind:'sym'},
+  {row:1,col:9,lbl:'6', out:'6', kind:'sym'},
+  // ── Row 2 ──
+  {row:2,col:0,lbl:'%', out:'%', kind:'sym'},
+  {row:2,col:1,lbl:'/', out:'/', kind:'sym'},
+  {row:2,col:2,lbl:'^', out:'^', kind:'sym'},
+  {row:2,col:3,lbl:'{', out:'{', kind:'sym'},
+  {row:2,col:4,lbl:'&', out:'&', kind:'sym'},
+  {row:2,col:6,lbl:'_', out:'_', kind:'sym'},
+  {row:2,col:7,lbl:'7', out:'7', kind:'sym'},
+  {row:2,col:8,lbl:'8', out:'8', kind:'sym'},
+  {row:2,col:9,lbl:'9', out:'9', kind:'sym'},
+  // ── Row 3 — zag row ──
+  {row:3,col:1,lbl:']', out:']', kind:'sym'},
+  {row:3,col:3,lbl:'}', out:'}', kind:'sym'},
+  {row:3,col:5,lbl:':', out:':', kind:'sym'},
+  {row:3,col:6,lbl:';', out:';', kind:'sym'},
+  {row:3,col:7,lbl:'0', out:'0', kind:'sym'},
+  {row:3,col:8,lbl:'=', out:'=', kind:'sym'},
+  {row:3,col:9,lbl:'+', out:'+', kind:'sym'},
+];
+
+const RAR_ROWS=[
+  ['~','`','|','<','>','¬','∞','√','∑','π'],  // cols 0-9; { } [ ] \ moved to SYMBOLS
+  ['«','»','°','€','£','¥','©','®','§','¶'],    // cols 0-9
+  ['™','…','–','—','×','÷','±','≠','≤','≥'],   // cols 1-10 (offset +1; col 10 visible on half-snap)
+];
+// Row 2 shifts right by 1 col to align with QWERTY middle
+const RK=RAR_ROWS.flatMap((row,r)=>row.map((l,c)=>({
+  row:r,
+  col:r===2?c+1:c,
+  lbl:l,out:l,act:'ins',kind:'rar'
+})));
+
+// Long-press accent map
+const LP_MAP={
+  a:['à','á','â','ä','ã','å','æ'],c:['ç'],d:['ð'],
+  e:['è','é','ê','ë','ē'],i:['ì','í','î','ï','ī'],
+  n:['ñ'],o:['ò','ó','ô','ö','õ','ø','œ'],
+  s:['ß','š'],u:['ù','ú','û','ü','ū'],y:['ý','ÿ'],z:['ž'],
+  ',': [';','…'],'.':['…',':'],
+  '?':['¿'],'!':['¡'],'-':['–','—'],
+  "'":['\u2018','\u2019','`'],'"':['\u201C','\u201D','«','»'],
+};
+
+// ── EMOJI LIST ─────────────────────────────────────────────────────────
+// 5 panels × 10 cols × 5 rows = 250 slots. Groups kept intact.
+// Centre panels (home) hold the most common faces & gestures.
+const ALL_EMOJI=[
+  // ── CENTRE panel (most common faces & gestures) ──
+  '😀','😂','🥰','😎','🤔','😭','🔥','❤️','👍','🎉',
+  '✨','🙏','😅','🤣','😊','😢','😤','🥺','😍','🤩',
+  '💯','🫶','😏','🙄','😬','🤯','🫠','💀','👀','🌟',
+  '😁','😆','🥲','☺️','😋','😛','😜','🤪','😇','🥳',
+  '🤗','🤭','🫢','🫣','🤫','🫡','🤐','🥱','😴','😈',
+  // ── RIGHT panel 1 — gestures + animals ──
+  '👋','🤚','✋','🤙','💪','👌','✌️','🤞','👏','🫂',
+  '🐶','🐱','🐸','🦊','🐼','🐨','🦁','🐮','🐷','🐵',
+  '🍕','🍔','🌮','🍣','🍦','🎂','🍪','🍩','🍫','🍭',
+  '🌈','☀️','🌙','❄️','⚡','🌊','🌸','🌹','🌻','🍀',
+  '🚀','✈️','🚂','🚗','⛵','🏆','🥇','🎯','🎲','🧩',
+  // ── RIGHT panel 2 — objects + travel + activities ──
+  '💎','💍','👑','🎵','🎸','🎹','📱','💻','📷','🎥',
+  '🌍','🌎','🌏','🏔️','🏖️','🏙️','🏠','🏰','🗼','⛩️',
+  '🐧','🐦','🦋','🐝','🐞','🌷','🌺','🍉','🍌','🍎',
+  '🪄','🔮','💡','🔦','🔑','🔒','💌','📦','🎮','🕹️',
+  '🎭','🎪','🃏','♟️','🎈','🎁','🎄','🎃','🎨','🖼️',
+  // ── RIGHT panel 3 — weather + more nature + misc ──
+  '🌪️','⛈️','🌧️','⛅','🌫️','🌬️','🏕️','🌋','🛸','🎠',
+  '🦈','🐬','🐳','🦭','🦦','🦥','🦔','🦕','🦖','🐲',
+  '🌵','🌴','🌲','🎋','🎍','🍄','🌾','🌿','🪴','🪨',
+  '🍇','🍓','🍒','🍑','🥭','🍍','🥝','🥥','🍋','🍊',
+  '🧁','🥐','🍞','🧇','🥞','🧆','🥙','🥗','🍲','☕',
+  // ── LEFT panel 1 (reversed) — hearts + emotions ──
+  '💔','❣️','💕','💞','💓','💗','💖','💘','💝','💟',
+  '🧡','💛','💚','💙','💜','🖤','🤍','🤎','☮️','✝️',
+  '🤢','🤮','🤧','🥵','🥶','😵','🤠','🥸','👿','💩',
+  '🤡','👹','👺','👻','👽','👾','🤖','😺','😸','😹',
+  '🦾','🖕','🤟','🤘','👈','👉','👆','👇','☝️','👎',
+  // ── LEFT panel 2 (reversed) — activities + flags ──
+  '✊','👊','🤛','🤜','🤲','🙌','👐','✍️','💅','🤳',
+  '🐭','🐹','🐰','🐻','🐯','🐔','🦆','🦅','🦉','🦇',
+  '🐛','🪱','🐌','🐜','🦟','🍃','🍁','🍂','🌿','🥑',
+  '⚽','🏀','🏈','⚾','🎾','🏐','🏉','🎱','🏓','🏸',
+  '🥊','🥋','🤸','🏋️','🤼','🤺','🏇','⛷️','🏂','🏄',
+];
+
+// ── GEOMETRY ───────────────────────────────────────────────────────────
+function solveR(W){
+  let r=22;
+  for(let i=0;i<20;i++){
+    const g=Math.max(1.5,r*.09), vs=2*r+g, hs=vs*(Math.sqrt(3)/2);
+    const cw=9*hs+2*r;
+    r*=(W-EDGE*2)/cw;
+  }
+  return Math.max(12,Math.min(34,r));
+}
+
+function par(c){return((c%2)+2)%2;}
+function pt(row,col){
+  const{r,hs,vs}=S.geo;
+  return{x:r+col*hs, y:r+row*vs+(par(col)?vs*.5:0)};
+}
+function rk(row){return row%2?'rb':'ra';}
+
+// ── GRAPHEME SPLITTING ─────────────────────────────────────────────────
+function toG(s){
+  if(typeof Intl!=='undefined'&&Intl.Segmenter){
+    return Array.from(new Intl.Segmenter(undefined,{granularity:'grapheme'}).segment(s),p=>p.segment);
+  }
+  return [...s];
+}
+function fromG(a){return a.join('');}
+
+// ── TEXT ───────────────────────────────────────────────────────────────
+function renderTxt(){
+  const before=fromG(S.chars.slice(0,S.cur));
+  const after=fromG(S.chars.slice(S.cur));
+  D.out.textContent=S.cur===S.chars.length?before:`${before}|${after}`;
+}
+
+function insertTxt(s){
+  const g=toG(s);
+  S.chars=[...S.chars.slice(0,S.cur),...g,...S.chars.slice(S.cur)];
+  S.cur+=g.length;
+  renderTxt();
+}
+
+function bsOnce(){
+  if(S.cur===0)return;
+  S.chars=[...S.chars.slice(0,S.cur-1),...S.chars.slice(S.cur)];
+  S.cur--;
+  renderTxt();
+}
+
+// ── SHIFT / CAPS ───────────────────────────────────────────────────────
+function syncShift(){
+  const sk=document.getElementById('shk');
+  if(!sk)return;
+  sk.classList.toggle('shift-on',S.shift&&!S.caps);
+  sk.classList.toggle('caps-on',S.caps);
+}
+
+function updateLabels(){
+  D.ltrack.querySelectorAll('.key').forEach(el=>{
+    const b=el.dataset.base||'';
+    const lbl=el.querySelector('.key-lbl');
+    if(!lbl)return;
+    if(el.dataset.act==='ins'&&/^[a-z]$/i.test(b)){
+      lbl.textContent=(S.shift||S.caps)?b.toUpperCase():b.toLowerCase();
+    }
+  });
+}
+
+function doShift(){
+  const now=Date.now();
+  if(S.shift&&!S.caps&&now-lastShift<320){
+    S.caps=true;S.shift=true;
+  } else if(S.caps){
+    S.caps=false;S.shift=false;
+  } else {
+    S.shift=!S.shift;
+  }
+  lastShift=now;
+  syncShift();updateLabels();
+}
+
+// ── KEY CREATION ───────────────────────────────────────────────────────
+function makeKey(def,x,y){
+  const r=S.geo.r;
+  const vr=r-VGAP; // visible radius — inner face is smaller than touch target
+  const el=document.createElement('div');
+  const rc=rk(def.row);
+  el.className=['key',rc,def.kind||''].filter(Boolean).join(' ');
+  // Outer div = full touch target, transparent, no border
+  el.style.cssText=`width:${r*2}px;height:${r*2}px;left:${x-r}px;top:${y-r}px;`;
+  if(def.id)el.id=def.id;
+  el.dataset.act=def.act||'ins';
+  el.dataset.out=def.out??def.lbl;
+  el.dataset.base=def.out??def.lbl;
+  // Inner face = visible circle
+  const face=document.createElement('div');
+  face.className='face';
+  face.style.cssText=`width:${vr*2}px;height:${vr*2}px;`;
+  const s=document.createElement('span');
+  s.className='key-lbl';
+  // Text sized relative to visible radius: large keys fill 78%, normal fill 90%
+  // Capitals are handled by uppercase glyph — same fontSize, naturally larger appearance
+  const txtSize=def.large?vr*0.78:vr*0.90;
+  s.style.fontSize=`${txtSize}px`;
+  s.style.fontWeight=def.large?'700':'600';
+  s.textContent=def.lbl;
+  face.appendChild(s);
+  el.appendChild(face);
+  return el;
+}
+
+// ── BUILD LAYOUT ───────────────────────────────────────────────────────
+function build(){
+  const W=window.innerWidth, H=window.innerHeight;
+  S.geo.r=solveR(W);
+  const{r}=S.geo;
+  const g=Math.max(1.5,r*.09);
+  S.geo.vs=2*r+g;
+  S.geo.hs=S.geo.vs*(Math.sqrt(3)/2);
+  S.geo.stride=PANEL_COLS*S.geo.hs;
+  const{hs,vs,stride}=S.geo;
+
+  // Board height: rows 0-3. Row 3 is a full zag row (all cols populated).
+  // Deepest point: odd col on row 3 → y = r + 3*vs + vs*0.5
+  // Max bottom edge = r + 3*vs + vs*0.5 + r = 2r + 3.5vs
+  const bh=Math.ceil(2*r+3.5*vs+EDGE);
+  S.bh=bh;
+
+  const outH=Math.floor(H*OUT_RATIO);
+  D.out.parentElement.style.height=outH+'px';
+  D.clip.style.height=bh+'px';
+  D.lpage.style.height=bh+'px';
+  D.epage.style.height=bh+'px';
+  D.vtrack.style.height=(bh*2)+'px';
+
+  buildLetters(W);
+  buildEmoji(W);
+  snapL(false);
+  snapE(false);
+  snapV(false);
+  renderTxt();
+  renderDots();
+}
+
+function buildLetters(W){
+  D.ltrack.innerHTML='';
+  const{r,hs,vs,stride}=S.geo;
+
+  const all=[
+    ...RK.map(d=>({...d,panel:0})),
+    ...LK.map(d=>({...d,panel:1})),
+    ...SK.map(d=>({...d,panel:2})),
+  ];
+
+  // Compute yOffset: push keys to bottom of board with small margin
+  let maxY=-Infinity;
+  all.forEach(d=>{
+    const p=pt(d.row,d.col+d.panel*PANEL_COLS);
+    maxY=Math.max(maxY,p.y+r);
+  });
+  const yOff=S.bh-maxY-4;
+
+  D.ltrack.style.width=`${stride*3+r*2}px`;
+  D.ltrack.style.height=`${S.bh}px`;
+
+  all.forEach(d=>{
+    const p=pt(d.row,d.col+d.panel*PANEL_COLS);
+    const key=makeKey(d,p.x,p.y+yOff);
+    D.ltrack.appendChild(key);
+  });
+
+  // Snap points — centre each panel in viewport
+  const ctr=i=>i*stride+r+4.5*hs;
+  const rs=W/2-ctr(0), qs=W/2-ctr(1), ss=W/2-ctr(2);
+  S.lSnaps=[rs,(rs+qs)/2,qs,(qs+ss)/2,ss];
+
+  syncShift();updateLabels();
+}
+
+function buildEmoji(W){
+  D.etrack.innerHTML='';
+  const{r,hs,vs,stride}=S.geo;
+  const perPanel=PANEL_COLS*EMOJI_ROWS; // 50 per panel, 5 panels = 250 slots
+  const N=ALL_EMOJI.length;
+
+  // Distribution: most common emojis in centre panels
+  // Panel 2 (home): emojis 0-49
+  // Panel 3 (right 1): emojis 50-99
+  // Panel 4 (right 2): emojis 100-149
+  // Panel 1 (left 1): emojis 150-199 reversed
+  // Panel 0 (left 2): emojis 200-249 reversed
+  const panels=[];
+  panels[2]=ALL_EMOJI.slice(0, perPanel);
+  panels[3]=ALL_EMOJI.slice(perPanel, perPanel*2);
+  panels[4]=ALL_EMOJI.slice(perPanel*2, perPanel*3);
+  panels[1]=[...ALL_EMOJI.slice(perPanel*3, perPanel*4)].reverse();
+  panels[0]=[...ALL_EMOJI.slice(perPanel*4)].reverse();
+
+  D.etrack.style.width=`${stride*5+r*2}px`;
+  D.etrack.style.height=`${S.bh}px`;
+  const topM=8;
+
+  panels.forEach((items,pi)=>{
+    (items||[]).forEach((em,i)=>{
+      const col=Math.floor(i/EMOJI_ROWS);
+      const row=i%EMOJI_ROWS;
+      const p=pt(row,col+pi*PANEL_COLS);
+      const el=document.createElement('div');
+      el.className=`key emj ${rk(row)}`;
+      el.style.cssText=`width:${r*2}px;height:${r*2}px;left:${p.x-r}px;top:${p.y+topM-r}px;`;
+      el.dataset.act='emj';
+      el.dataset.out=em;
+      const ef=document.createElement('div');
+      ef.className='face';
+      const vr=r-VGAP;
+      ef.style.cssText=`width:${vr*2}px;height:${vr*2}px;font-size:${vr*.88}px;`;
+      ef.style.display='flex';ef.style.alignItems='center';ef.style.justifyContent='center';
+      ef.textContent=em;
+      el.appendChild(ef);
+      D.etrack.appendChild(el);
+    });
+  });
+
+  const ctr=i=>i*stride+r+4.5*hs;
+  S.eSnaps=Array.from({length:5},(_,i)=>W/2-ctr(i));
+}
+
+// ── SNAP FUNCTIONS ─────────────────────────────────────────────────────
+function snapL(anim){
+  D.ltrack.style.transition=anim?'transform .28s cubic-bezier(.2,.8,.2,1)':'none';
+  D.ltrack.style.transform=`translateX(${S.lSnaps[S.lPanel]}px)`;
+  if(!S.emoji)renderDots();
+}
+function snapE(anim){
+  D.etrack.style.transition=anim?'transform .28s cubic-bezier(.2,.8,.2,1)':'none';
+  D.etrack.style.transform=`translateX(${S.eSnaps[S.ePanel]}px)`;
+  if(S.emoji)renderDots();
+}
+function snapV(anim){
+  D.vtrack.style.transition=anim?'transform .28s cubic-bezier(.2,.8,.2,1)':'none';
+  D.vtrack.style.transform=S.emoji?`translateY(${-S.bh}px)`:'translateY(0)';
+  renderDots();
+}
+
+function nearSnap(arr,x){
+  let b=0,bd=Infinity;
+  arr.forEach((s,i)=>{const d=Math.abs(x-s);if(d<bd){bd=d;b=i;}});
+  return b;
+}
+
+// ── DOTS ───────────────────────────────────────────────────────────────
+function renderDots(){
+  const names=S.emoji?EPN:LPN;
+  const active=S.emoji?S.ePanel:S.lPanel;
+  const count=S.emoji?5:5;
+  D.dotRow.innerHTML='';
+  for(let i=0;i<count;i++){
+    const d=document.createElement('div');
+    d.className='dot';
+    if(i===active)d.classList.add(i%2===0?'on':'hf');
+    D.dotRow.appendChild(d);
+  }
+  D.panLbl.textContent=names[active]||'';
+}
+
+// ── LONG PRESS ─────────────────────────────────────────────────────────
+function getLPOpts(el){
+  if(S.emoji)return null;
+  if(el.dataset.act!=='ins')return null;
+  const b=(el.dataset.base||'').toLowerCase();
+  const alts=LP_MAP[b];
+  if(!alts?.length)return null;
+  const primary=S.shift||S.caps?(el.dataset.base||'').toUpperCase():(el.dataset.base||'');
+  return[primary,...alts.map(a=>S.shift||S.caps?a.toUpperCase():a)];
+}
+
+function openLP(el,opts){
+  closeLP();
+  LP.open=true;LP.src=el;LP.opts=opts;LP.sel=0;
+  opts.forEach((item,i)=>{
+    const o=document.createElement('div');
+    o.className='alt'+(i===0?' sel':'');
+    const sz=S.geo.r*.9;
+    o.style.fontSize=sz+'px';
+    o.textContent=item;
+    D.popup.appendChild(o);
+  });
+  D.popup.hidden=false;
+  const pr=D.popup.getBoundingClientRect();
+  const cr=D.clip.getBoundingClientRect();
+  const kr=el.getBoundingClientRect();
+  let left=kr.left+kr.width/2-pr.width/2-cr.left;
+  let top=kr.top-pr.height-10-cr.top;
+  left=Math.max(8,Math.min(left,cr.width-pr.width-8));
+  top=Math.max(8,top);
+  D.popup.style.left=left+'px';
+  D.popup.style.top=top+'px';
+}
+
+function closeLP(){
+  clearTimeout(LP.timer);LP.timer=null;LP.open=false;
+  LP.src=null;LP.opts=[];LP.sel=-1;
+  D.popup.hidden=true;D.popup.innerHTML='';
+}
+
+function updateLPSel(cx,cy){
+  if(!LP.open)return;
+  const pr=D.popup.getBoundingClientRect();
+  const ch=[...D.popup.children];
+  if(!ch.length)return;
+  let idx=LP.sel;
+  if(cx>=pr.left&&cx<=pr.right&&cy>=pr.top&&cy<=pr.bottom){
+    idx=Math.max(0,Math.min(ch.length-1,Math.floor((cx-pr.left)/(pr.width/ch.length))));
+  }
+  LP.sel=idx;
+  ch.forEach((c,i)=>c.classList.toggle('sel',i===idx));
+}
+
+function commitLP(){
+  if(!LP.open||!LP.src)return;
+  const chosen=LP.opts[Math.max(0,LP.sel)];
+  performAct(LP.src,chosen);
+}
+
+// ── BACKSPACE ──────────────────────────────────────────────────────────
+function stopBS(){
+  if(BS.el)BS.el.classList.remove('pressed');
+  BS.el=null;clearTimeout(BS.hold);clearTimeout(BS.rep);
+  BS.hold=BS.rep=null;BS.n=0;
+}
+function schedBS(){
+  const iv=Math.max(BS_MIN,BS_START-BS.n*BS_ACCEL);
+  BS.rep=setTimeout(()=>{bsOnce();BS.n++;schedBS();},iv);
+}
+function startBS(el){
+  stopBS();BS.el=el;el.classList.add('pressed');bsOnce();
+  BS.hold=setTimeout(schedBS,BS_DELAY);
+}
+
+// ── PERFORM ACTION ─────────────────────────────────────────────────────
+function flash(el){el.classList.add('pressed');setTimeout(()=>el.classList.remove('pressed'),110);}
+
+function performAct(el,override=null){
+  const act=el.dataset.act;
+  const out=override??el.dataset.out??'';
+  if(act!=='bs')flash(el);
+  switch(act){
+    case 'sh': doShift(); break;
+    case 'cl': if(S.cur>0){S.cur--;renderTxt();} break;
+    case 'cr': if(S.cur<S.chars.length){S.cur++;renderTxt();} break;
+    case 'en': insertTxt('\n'); break;
+    case 'bs': bsOnce(); break;
+    case 'emj': insertTxt(out); break;
+    default: {
+      const up=(S.shift||S.caps)&&/^[a-z]$/i.test(out);
+      insertTxt(up?out.toUpperCase():out);
+      if(S.shift&&!S.caps&&up){S.shift=false;syncShift();updateLabels();}
+    }
+  }
+}
+
+// ── GESTURE ────────────────────────────────────────────────────────────
+function resetG(){
+  G.pid=null;G.sx=0;G.sy=0;G.dx=0;G.dy=0;
+  G.drag=false;G.dir=null;G.key=null;G.suppress=false;
+  G.board=S.emoji?'emoji':'letters';
+}
+
+function onDown(e){
+  if(G.pid!==null)return;
+  G.pid=e.pointerId;G.sx=e.clientX;G.sy=e.clientY;
+  G.dx=0;G.dy=0;G.drag=false;G.dir=null;G.suppress=false;
+  G.board=S.emoji?'emoji':'letters';
+  G.key=e.target.closest('.key');
+
+  if(!S.emoji&&G.key){
+    if(G.key.dataset.act==='bs'){
+      startBS(G.key);
+    } else {
+      const opts=getLPOpts(G.key);
+      if(opts){
+        LP.timer=setTimeout(()=>{
+          LP.timer=null;
+          openLP(G.key,opts);
+          G.suppress=true;
+        },LP_MS);
+      }
+    }
+  }
+  e.preventDefault();
+}
+
+function onMove(e){
+  if(e.pointerId!==G.pid||!G.pid)return;
+  G.dx=e.clientX-G.sx;G.dy=e.clientY-G.sy;
+
+  if(LP.open){updateLPSel(e.clientX,e.clientY);return;}
+
+  if(!G.drag&&(Math.abs(G.dx)>DRAG_TH||Math.abs(G.dy)>DRAG_TH)){
+    G.drag=true;G.suppress=true;
+    G.dir=Math.abs(G.dx)>=Math.abs(G.dy)?'h':'v';
+    clearTimeout(LP.timer);LP.timer=null;
+    stopBS();
+  }
+  if(!G.drag){
+    if(Math.abs(G.dx)>TAP_TOL||Math.abs(G.dy)>TAP_TOL){
+      clearTimeout(LP.timer);LP.timer=null;
+    }
+    return;
+  }
+
+  if(G.dir==='v'){
+    D.vtrack.style.transition='none';
+    const base=S.emoji?-S.bh:0;
+    D.vtrack.style.transform=`translateY(${Math.max(-S.bh,Math.min(0,base+G.dy))}px)`;
+    return;
+  }
+  if(G.board==='letters'){
+    D.ltrack.style.transition='none';
+    D.ltrack.style.transform=`translateX(${S.lSnaps[S.lPanel]+G.dx}px)`;
+  } else {
+    D.etrack.style.transition='none';
+    D.etrack.style.transform=`translateX(${S.eSnaps[S.ePanel]+G.dx}px)`;
+  }
+}
+
+function onUp(e){
+  if(e.pointerId!==G.pid)return;
+  if(LP.open){commitLP();closeLP();stopBS();resetG();return;}
+  clearTimeout(LP.timer);LP.timer=null;
+
+  if(G.drag){
+    if(G.dir==='v'){
+      if(G.dy<-SWIPE_TH)S.emoji=true;
+      else if(G.dy>SWIPE_TH)S.emoji=false;
+      snapV(true);snapL(true);snapE(true);
+    } else {
+      if(G.board==='letters'){
+        const raw=S.lSnaps[S.lPanel]+G.dx;
+        let t=nearSnap(S.lSnaps,raw);
+        if(G.dx<-SWIPE_TH&&t<=S.lPanel&&S.lPanel<4)t=S.lPanel+1;
+        if(G.dx>SWIPE_TH&&t>=S.lPanel&&S.lPanel>0)t=S.lPanel-1;
+        S.lPanel=t;snapL(true);
+      } else {
+        const raw=S.eSnaps[S.ePanel]+G.dx;
+        let t=nearSnap(S.eSnaps,raw);
+        if(G.dx<-SWIPE_TH&&t<=S.ePanel&&S.ePanel<4)t=S.ePanel+1;
+        if(G.dx>SWIPE_TH&&t>=S.ePanel&&S.ePanel>0)t=S.ePanel-1;
+        S.ePanel=t;snapE(true);
+      }
+    }
+  } else if(!G.suppress&&G.key){
+    if(G.key.dataset.act==='bs')stopBS();
+    else performAct(G.key);
+  } else {
+    stopBS();snapV(true);snapL(true);snapE(true);
+  }
+  resetG();
+}
+
+function onCancel(e){
+  if(e.pointerId!==G.pid)return;
+  clearTimeout(LP.timer);LP.timer=null;
+  closeLP();stopBS();
+  snapV(true);snapL(true);snapE(true);
+  resetG();
+}
+
+// ── INIT ───────────────────────────────────────────────────────────────
+function init(){
+  renderTxt();renderDots();build();
+  D.clip.addEventListener('pointerdown',onDown,{passive:false});
+  D.clip.addEventListener('pointermove',onMove,{passive:true});
+  D.clip.addEventListener('pointerup',onUp);
+  D.clip.addEventListener('pointercancel',onCancel);
+  window.addEventListener('resize',()=>{closeLP();stopBS();build();});
+}
+
+window.addEventListener('load',init);
+</script>
+</body>
+</html>
