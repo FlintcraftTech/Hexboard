@@ -36,6 +36,12 @@ Editor: Zettlr
 
 <!-- The `.md` editor you work in, from the optional /setup question. When it names an editor, Claude points you to your open docs with a link instead of re-pasting their text into chat, saving tokens. Left as `not recorded` if you skipped the question — Claude then quotes the text inline as usual. -->
 
+## Working mode
+
+Working mode: local
+
+<!-- `local` = you're at the desktop, where edited files open instantly, so Claude points you to files with links instead of re-pasting their text. `remote` = you're on your phone via remote control, so Claude pastes doc text into chat. Flip it for one session by saying so ("I'm remote today"); it reverts next session. -->
+
 <!-- ▲ PLUGIN-MANAGED — do not edit above this line. ▲ -->
 
 ## Project rules
@@ -45,3 +51,5 @@ Hexboard (working name) is an Android keyboard app being designed around circula
 The core differentiator is a perceptual claim: users feel more confident aiming at circles than at hexagons with visible corners, aim more centrally, and tap more accurately as a result. This distinguishes Hexboard from existing tessellation-based keyboards (Typewise, MessagEase, Thumb-Key), all of which the project owner has used and rejected. Don't re-litigate this — the differentiator is settled.
 
 Current phase: extended planning, no implementation. Target stack is Kotlin / Jetpack Compose. A working browser prototype (hexboard17.html) demonstrates the layout, gestures, and key inventory and should be treated as the canonical reference for current design intent.
+
+Layout previews during planning use `planning/layout-preview.html` — the standing fixture. Edit its `LAYOUTS` block (real zag + circle geometry, lifted from hexboard17.html) and reload to preview any row config. Maintain this rather than rebuilding a previewer.
