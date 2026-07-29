@@ -1,32 +1,23 @@
 # QUEUE
 
-## Red flags
+## Processed
 
-Security, privacy, and data-exposure risks Claude has surfaced — kept at the top so they're the first thing seen each session. Each carries a state: open, resolved, or accepted. Empty until a risk comes up.
+Vetted work, ready to build — worked top to bottom. Each piece of work is one item: a `#### ` heading naming it, a `[slug]` at the end of that heading line, and a short rationale beneath. A leading flavor tag names how it runs — none for a build (Claude edits files), `[audit]` for a review pass, `[user]` for a step only you can do. A security or privacy risk Claude surfaces lives here too, as a work item carrying a `Red flag · State: cleared/uncleared` marker. The line below marks how far down is cleared to build; anything below it is decided but not ready yet.
 
-## Batches
+#### [user] Set up the Android Studio project — Claude guides, you drive [android-studio-setup]
+Captured by you. Stand up the Kotlin / Jetpack Compose project in Android Studio. Claude guides you through it step by step so we don't scaffold the whole project by hand. This is the first concrete build step; the Android build is a fresh effort, not a port of the browser prototype.
 
-Worked top to bottom. Each batch is one /next session. Subheadings name the kind of work (Build, Test, Audit).
+--- Cleared to run above this line ---
 
-### Build
+#### [user] Verify hit-testing and accessibility nodes on-device against TalkBack and switch access [verify-a11y-ondevice]
+Captured by you. Once an Android build exists, install it on the Pixel 6 (wireless debugging) and confirm two things with accessibility services active: (1) nearest-centre routing still selects the intended key, and (2) each key's accessibility node exposes the right label and bounds under TalkBack and switch access. You run this on-device. Lift-condition: cleared to run once a first Android build is installable on the Pixel 6.
 
-- Set up the project in Android Studio (you guide me to do it so we don't have to scaffold the whole project by hand).
+## Unprocessed
 
-### Parked
+Captured ideas and tasks not yet fully processed. The next /plan session goes through these with you and decides each one's fate — keep it (move it up to Processed) or drop it. Each is filed as its own `#### ` heading, so the list shows up in an editor's outline.
 
-## Deferred tests
+#### Pull the canonical key manifest and its four inviolable rules into the project docs [key-manifest-rules]
+Captured by you. Pull the canonical key manifest from the top of hexboard17.html's script section into the project docs, verbatim. The four rules — no lost keys, no unresolved duplicates, no silent changes, empty slots are opportunities. The old plan hand-off wanted these preserved as a guardrail for the Android build; they're currently only in the prototype file, not in SPEC or the queue. Decide during /plan where they should live (likely SPEC, as product truth).
 
-Verification waiting on an event — not a parallel to-do list. A planned test lands here when it can't run in the session that planned it: the behaviour only goes live after the plugin updates, a person has to do something first, or an outside event hasn't happened yet. Each line records what to verify, what will confirm it, and two things about the wait — the deferral reason (why it waits: host-side / needs-user / external) and the runnability once the wait clears (who runs it then: Claude-runnable / user-run). Claude writes lines here and clears them; each /plan asks which waits have cleared and rolls the now-runnable ones into a test batch. You don't maintain this section.
-
-## Captures
-
-Captured outside /plan. Picked up and routed during the next /plan session.
-
-- Left-space relocation: left space currently at row 3 col 4; should move to row 3 col 2 (currently the comma) so both spaces sit symmetric from the screen edges, one per thumb. Open: where does the comma go, and what fills the vacated col 4?
-- Hit-test verification: nearest-centre is the intended strategy but should be confirmed against accessibility services (TalkBack, switch access) before being cemented.
-- Capitalisation glyph sizing: uppercase currently shares font size with lowercase, so capitals look bigger. Confirm whether that's desired or whether glyph metrics should be normalised.
-- Key manifest and its four inviolable rules: pull the canonical key manifest from the top of hexboard17.html's script section into the project docs, verbatim. The four rules — no lost keys, no unresolved duplicates, no silent changes, empty slots are opportunities. The old plan hand-off wanted these preserved as a guardrail for the Android build; they're currently only in the prototype file, not in SPEC or the queue. Decide during /plan where they should live (likely SPEC, as product truth).
-
----
-
-### Parked
+#### Preview harness recorded as a standing planning fixture [preview-harness]
+Captured by you. `planning/layout-preview.html` is a reusable layout-preview tool built this session. It renders any row config with the prototype's real zag + circle geometry (lifted verbatim from hexboard17.html); edit the `LAYOUTS` block at the top and reload. Standard fixture for previewing layout changes during /plan — use and maintain this rather than rebuilding one. Committed this session.

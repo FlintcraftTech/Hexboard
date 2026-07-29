@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>Hexboard — Layout Preview</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#13131a;color:#e2e2f2;font-family:system-ui,"Segoe UI",Roboto,sans-serif;padding:24px;}
+  h1{font-size:18px;font-weight:600;margin-bottom:4px;}
+  .sub{color:#6d6d82;font-size:13px;margin-bottom:24px;}
+  .layout{margin-bottom:28px;}
+  .layout h2{font-size:14px;font-weight:600;color:#c7c7e7;margin-bottom:10px;}
+  .board{position:relative;background:#0d0d12;border:1px solid #1f2030;border-radius:12px;}
+  .key{position:absolute;border-radius:50%;display:flex;align-items:center;justify-content:center;
+       border:1.5px solid;}
+  .lbl{line-height:1;pointer-events:none;}
+  .col-tag{position:absolute;font-size:10px;color:#4a4a5c;transform:translateX(-50%);}
+</style>
+</head>
+<body>
+<h1>Hexboard — Row Layout Preview</h1>
+<div class="sub">Edit the <code>LAYOUTS</code> block below, save, reload. Kinds: <code>sp</code> shift · <code>spc</code> space · <code>pun</code> punctuation · <code>ltr</code> letter · <code>sym</code> symbol.</div>
+<div id="root"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+//  EDIT THIS BLOCK EACH PLANNING SESSION
+//  Each layout is one row rendered with the real zag + circle geometry.
+//  key = { col, lbl, kind, large? }
+// ═══════════════════════════════════════════════════════════════════
+// Optional per-key `fs` multiplies the font size (default 1). Used below to
+// shrink capitals for the "normalised" comparison.
+const ROW = "QWERTYUIOP".split("");
+const mkRow = (upper, fs) => ROW.map((c,i) => ({
+  col:i, lbl: upper ? c : c.toLowerCase(), kind:'ltr', fs: fs||1
+}));
+
+const LAYOUTS = [
+  { title: "Lowercase (reference)",                         keys: mkRow(false) },
+  { title: "Uppercase — as-is (same font size as lowercase → caps look bigger)", keys: mkRow(true) },
+  { title: "Uppercase — normalised ×0.90 (proposed)", keys: mkRow(true, 0.90) },
+];
+
+// ── Geometry (lifted verbatim from hexboard17.html) ──────────────────
+const r = 30;                              // touch-target radius (fixed for preview)
+const VGAP = 3;                            // visible inset per side
+const g = Math.max(1.5, r*0.09);
+const vs = 2*r + g;                        // vertical step
+const hs = vs*(Math.sqrt(3)/2);            // horizontal step
+const vr = r - VGAP;                       // visible circle radius
+const par = c => ((c%2)+2)%2;              // column parity → zag
+const pt = (col) => ({ x:r + col*hs, y:r + (par(col)?vs*0.5:0) });
+
+const COLORS = {
+  sp:  {bg:'#16182a',bd:'#2c3358',tx:'#79a0ff'},
+  spc: {bg:'#06311d',bd:'#0a6d44',tx:'#38d286'},
+  pun: {bg:'#252530',bd:'#404055',tx:'#c7c7e7'},
+  ltr: {bg:'#2a2a38',bd:'#484858',tx:'#e2e2f2'},
+  sym: {bg:'#1b1d28',bd:'#2c2f44',tx:'#a0a6d3'},
+};
+
+function renderLayout(spec){
+  const wrap = document.createElement('div');
+  wrap.className = 'layout';
+  const h = document.createElement('h2');
+  h.textContent = spec.title;
+  wrap.appendChild(h);
+
+  const board = document.createElement('div');
+  board.className = 'board';
+  const maxCol = Math.max(...spec.keys.map(k=>k.col));
+  const width  = 2*r + maxCol*hs;
+  const height = 2*r + vs*0.5;             // room for the lowered odd cols
+  board.style.width  = width + 'px';
+  board.style.height = (height + 18) + 'px';
+
+  spec.keys.forEach(k=>{
+    const p = pt(k.col);
+    const c = COLORS[k.kind] || COLORS.ltr;
+    const el = document.createElement('div');
+    el.className = 'key';
+    el.style.cssText =
+      `width:${vr*2}px;height:${vr*2}px;left:${p.x-vr}px;top:${p.y-vr}px;`+
+      `background:${c.bg};border-color:${c.bd};`;
+    const s = document.createElement('span');
+    s.className = 'lbl';
+    s.style.fontSize   = ((k.large ? vr*0.78 : vr*0.90) * (k.fs||1)) + 'px';
+    s.style.fontWeight = k.large ? '700' : '600';
+    s.style.color      = c.tx;
+    s.textContent = k.lbl;
+    el.appendChild(s);
+    board.appendChild(el);
+
+    const tag = document.createElement('div');
+    tag.className = 'col-tag';
+    tag.textContent = k.col;
+    tag.style.left = p.x + 'px';
+    tag.style.top  = (height + 2) + 'px';
+    board.appendChild(tag);
+  });
+
+  wrap.appendChild(board);
+  return wrap;
+}
+
+const root = document.getElementById('root');
+LAYOUTS.forEach(spec => root.appendChild(renderLayout(spec)));
+</script>
+</body>
+</html>

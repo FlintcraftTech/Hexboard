@@ -19,7 +19,9 @@ Layout details carried from the prototype:
 - Two space bars in row 3, one per thumb — a deliberate compromise that preserves layout familiarity at the cost of one mild oddity.
 - The visible circle is intentionally smaller than the touch target — a bigger targeting zone, and less crowded aesthetics.
 - Long-press accents cover diacritics for common letters plus alternate punctuation forms.
+- Uppercase glyphs render at 0.92× the lowercase font size, so capitals no longer overfill the circle relative to lowercase. This is a scaling factor, not a shared font size; chosen by eye against the layout preview.
 - Intended hit-testing for Android: nearest-centre (Voronoi) assignment — full coverage, no gaps, no z-order tie-breaks. (The prototype's overlapping square boxes are incidental, not the design.)
+- Accessibility: each key must expose its own accessibility node — an individually-focusable element with a text label and correct bounds — so screen readers and switch access work. Accessibility services largely bypass raw-touch routing, so these nodes are a separate requirement from the nearest-centre hit-testing above; both must be correct.
 
 Target stack: Kotlin / Jetpack Compose. The Android build is a fresh effort, not a line-by-line port. The browser prototype (`hexboard17.html`) is the canonical reference for layout, gestures, and key inventory.
 
