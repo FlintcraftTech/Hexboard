@@ -1,4 +1,4 @@
-# [HASH] — Canonical key manifest written to resources/key-manifest.md, with a SPEC principle governing the key inventory
+# dca16ac — Canonical key manifest written to resources/key-manifest.md, with a SPEC principle governing the key inventory
 
 The key inventory — which characters exist, which panel they sit on, where in the grid — lived only as a comment block at the top of `hexboard17.html`. That made a prototype file the source of truth for something the Android build, the layout preview, and any future key-audit check all need. Moving it to `resources/key-manifest.md` gives it a home that outlives the prototype.
 

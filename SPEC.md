@@ -23,7 +23,7 @@ Layout details carried from the prototype:
 - Intended hit-testing for Android: nearest-centre (Voronoi) assignment — full coverage, no gaps, no z-order tie-breaks. (The prototype's overlapping square boxes are incidental, not the design.)
 - Accessibility: each key must expose its own accessibility node — an individually-focusable element with a text label and correct bounds — so screen readers and switch access work. Accessibility services largely bypass raw-touch routing, so these nodes are a separate requirement from the nearest-centre hit-testing above; both must be correct.
 
-Target stack: Kotlin / Jetpack Compose. The Android build is a fresh effort, not a line-by-line port. The browser prototype (`hexboard17.html`) is the canonical reference for layout, gestures, and key inventory.
+Target stack: Kotlin / Jetpack Compose. The Android build is a fresh effort, not a line-by-line port. The browser prototype (`hexboard17.html`) is frozen as the canonical reference for layout, gestures, and key inventory.
 
 ## Project docs
 
@@ -35,7 +35,7 @@ Three project docs structure each project:
 ## Principles
 
 - **The perceptual wedge is inviolable.** Any suggestion that compromises it (e.g. "just use rounded squares") should be questioned, not quietly accepted.
-- **The key inventory is governed by a canonical manifest.** `resources/key-manifest.md` is the single source of truth for which characters the keyboard offers and where they sit. Four rules hold: no key may be lost (verify the shipped key set against the manifest before shipping); no unresolved duplicates (a character lives on one panel unless a second copy is deliberately justified); no silent changes (any move, addition, or removal is reflected in the manifest and noted in the commit); and empty slots are opportunities, not acceptable gaps (a freed slot gets filled with a character that has no other home, agreed first).
+- **The key inventory is governed by a canonical manifest.** `resources/key-layout.json` is the single source of truth for which characters the keyboard offers and where they sit; `resources/key-manifest.md` is a human-readable view generated from it, and is not hand-edited. The config carries the key inventory only — geometry stays in code, so a variant may change which characters exist but never the perceptual geometry. Four rules hold: no key may be lost (verify the shipped key set against the config before shipping); no unresolved duplicates (a character lives on one panel unless a second copy is deliberately justified); no silent changes (any move, addition, or removal is reflected in the config and noted in the commit); and empty slots are opportunities, not acceptable gaps (a freed slot gets filled with a character that has no other home, agreed first).
 - **Predictive text is planned but deferred.** The eventual version won't fail every time a typo has the wrong first letter, because it will search the letters backwards too. Held until after the first working model — get the keyboard right first.
 - **Familiarity over radical departure.** Keep it close enough to QWERTY that users adopt it without relearning.
 - Single dark theme is enough for v0; theming and customisation come later.
