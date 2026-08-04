@@ -35,6 +35,7 @@ Three project docs structure each project:
 ## Principles
 
 - **The perceptual wedge is inviolable.** Any suggestion that compromises it (e.g. "just use rounded squares") should be questioned, not quietly accepted.
+- **The key inventory is governed by a canonical manifest.** `resources/key-manifest.md` is the single source of truth for which characters the keyboard offers and where they sit. Four rules hold: no key may be lost (verify the shipped key set against the manifest before shipping); no unresolved duplicates (a character lives on one panel unless a second copy is deliberately justified); no silent changes (any move, addition, or removal is reflected in the manifest and noted in the commit); and empty slots are opportunities, not acceptable gaps (a freed slot gets filled with a character that has no other home, agreed first).
 - **Predictive text is planned but deferred.** The eventual version won't fail every time a typo has the wrong first letter, because it will search the letters backwards too. Held until after the first working model — get the keyboard right first.
 - **Familiarity over radical departure.** Keep it close enough to QWERTY that users adopt it without relearning.
 - Single dark theme is enough for v0; theming and customisation come later.
