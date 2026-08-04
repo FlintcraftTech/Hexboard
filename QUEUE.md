@@ -4,45 +4,6 @@
 
 Vetted work, ready to build — worked top to bottom. Each piece of work is one item: a `#### ` heading naming it, a `[slug]` at the end of that heading line, and a short rationale beneath. A leading flavor tag names how it runs — none for a build (Claude edits files), `[audit]` for a review pass, `[user]` for a step only you can do. A security or privacy risk Claude surfaces lives here too, as a work item carrying a `Red flag · State: cleared/uncleared` marker. The line below marks how far down is cleared to build; anything below it is decided but not ready yet.
 
-#### Define resources/key-layout.json as the source of truth for key data, with the manifest generated from it [layout-config-source]
-Captured by you. Key data currently lives as prose hand-copied across `hexboard17.html`, `planning/layout-preview.html`, and `resources/key-manifest.md` — three copies that can silently drift, which manifest rule 3 forbids.
-
-The build: create `resources/key-layout.json` holding the key inventory — every character, its panel, its row and column, its label, and its long-press accent list — as the single source of truth. Add `scripts/generate-key-manifest.py`, which regenerates `resources/key-manifest.md` from that JSON; the manifest keeps its current readable shape and its four inviolable rules verbatim, and gains a header line saying it is generated and must not be hand-edited. Add a Gradle task in `android/` copying the JSON into the app's assets at build time, so no second copy is checked in. Add a "frozen — reference only, does not consume the config" note to `hexboard17.html`. Add a separate note to `planning/layout-preview.html` saying it does not read the config either — but that file stays the live layout fixture per CLAUDE.md and is not frozen; it is edited and reloaded to preview row configurations as before.
-
-Decided in this session: the JSON is the truth and the manifest is generated, not the reverse — a generated view cannot drift by construction, whereas a hand-authored manifest parsed into JSON would just swap the old drift risk for a markdown-parser one. Neither file is hand-edited in practice; Alex reviews the generated manifest in the same readable form it has today, and the eventual [variant-editor] writes JSON rather than markdown tables. `hexboard17.html` is confirmed frozen as a historical design reference, which is what reduced this from three consumers to one.
-
-Also decided: the config carries the key inventory only — geometry stays in Kotlin (zag offsets, circle radius, touch-target-larger-than-circle, 0.92× uppercase scaling, nearest-centre hit-testing). The reason is the perceptual wedge SPEC calls inviolable: if geometry were configurable, a fork could flatten the zag or square the keys and Hexboard would stop meaning anything. A variant may change which letters you get, never how it feels to aim at them. Accepted cost: a future per-language geometry change (a fourth row, say) is a code change, not a config change — judged the right trade, since that's a deliberate design decision anyway.
-
-Unblocks [android-key-audit], which verifies the shipped key set against this config, and [variant-editor], which reads and writes it.
-
-#### Validate key-layout.json against the manifest rules as a unit test [key-config-validator]
-Captured by you. Split out of [android-key-audit] during planning. The config being the single source of truth means the app's key set can't drift from it — but it says nothing about whether the config itself is sound, and that's where the manifest's inviolable rules actually bite.
-
-The build: a JVM unit test in the Android project that loads `resources/key-layout.json` and asserts it holds. Checks: no character appears on more than one panel unless the entry carries an explicit justification field; no two keys share a row and column within a panel; every row/column falls inside the panel's declared bounds; every long-press accent list is well-formed and its characters are distinct; and every declared slot in a panel is either filled or carries a note explaining why it's empty. A failure names the offending character and panel, so the message is actionable without reading the JSON.
-
-This covers manifest rules 2 (no unresolved duplicates) and 4 (empty slots are opportunities, not acceptable gaps), and enforces the "no silent changes" rule by failing the build when a change breaks them. It needs no keyboard and no device — it runs against the config file alone, so it can be built as soon as [layout-config-source] lands.
-
-#### Add the PolyForm Noncommercial 1.0.0 licence to the repo [add-licence]
-Captured by you. Decided in the /plan session of 2026-08-04, after researching the options — the full comparison is at `resources/research/licence-options.md`.
-
-The build: add `LICENSE` at the repo root containing the verbatim text of PolyForm Noncommercial 1.0.0, fetched from the PolyForm project rather than reproduced from memory, with Alex named as licensor. Add a short licence section to `README.md` (creating it if absent) saying the project is source-available under that licence, that forks to build Hexboard for other languages are welcome, and that commercial use is not permitted.
-
-Why this licence: Alex's intent is that people may read the source and fork it to build Hexboard in another language, but get no general right to copy it. That's a purpose-limited derivative right, and nothing standard grants exactly that. PolyForm Noncommercial is the closest fit — a hobbyist building a German Hexboard is squarely permitted, and anyone selling Hexboard is not. It's plain-language, lawyer-drafted, and recognised, which a custom licence would not be.
-
-Known and accepted gap: the licence also permits noncommercial forks that weren't the intent, so someone could publish a free rival keyboard built on this code. Judged acceptable — the realistic threat is commercial appropriation. Also accepted: source-available terms exclude the project from some open-source ecosystems and can deter contributors.
-
-Independent of the repo going public — the licence should be in place first either way.
-
-#### [audit] Review the full git history for anything that shouldn't go public [git-history-audit]
-Red flag · State: cleared
-Captured by you. Split out of [licence-and-go-public] during planning, because it must complete before the repo goes public and nothing else in that item gated it.
-
-The audit: read the repo's entire commit history — not just the current files — for content that shouldn't leave the machine. Look for absolute machine paths containing the user's name, email addresses and account identifiers, anything personal in commit messages or in the planning docs' history, and any credentials or tokens. Report findings as fresh captures naming each occurrence and the commits it appears in.
-
-If findings appear, cleaning them is a separate build — rewriting history is destructive and needs its own decision, so this pass reports and does not fix.
-
-Red flag: making the repo public exposes everything in its git history, not just the current files, and this repo's history includes machine paths and could include personal detail. The flag is cleared by design rather than by acceptance: the risk is removed from the go-public path by making this audit a prerequisite of it, and [repo-go-public] records that gate as its lift-condition. Nothing is exposed until the audit has run and any findings are dealt with.
-
 --- Cleared to run above this line ---
 
 #### Verify every key in the config actually renders and emits its character [android-key-audit]
@@ -75,6 +36,62 @@ Captured by you. Once an Android build exists, install it on the Pixel 6 (wirele
 ## Unprocessed
 
 Captured ideas and tasks not yet fully processed. The next /plan session goes through these with you and decides each one's fate — keep it (move it up to Processed) or drop it. Each is filed as its own `#### ` heading, so the list shows up in an editor's outline.
+
+#### Last session advises building layout-config-source next [advisory]
+The /plan session of 2026-08-04 settled the format question that was blocking it: `resources/key-layout.json` is the source of truth, `resources/key-manifest.md` is generated from it, and geometry stays in Kotlin. Nothing unprocessed overlaps it, and three cleared items behind it — [key-config-validator], [add-licence], [git-history-audit] — depend on nothing else. Building the config first also gets it in place before any Kotlin key code starts consuming the manifest by hand. Suggested next step is /next. Filed after `6e09dad`. (This advisory is consumed and cleared at the next /plan.)
+
+#### [user] Run the key-config validator test in Android Studio to confirm it compiles and passes [run-key-config-validator]
+Claude wrote `android/app/src/test/java/tech/flintcraft/hexboard/KeyLayoutValidationTest.kt` during the build of [key-config-validator], but could not run it: Gradle needs a local loopback network connection that the session's environment blocks, so every attempt failed before the build started. The config itself was verified — Claude reimplemented all six checks in a throwaway Python script and every one passed against `resources/key-layout.json` — so what's unverified is the Kotlin, not the key data. Specifically: that the test compiles, that Gson resolves as a test dependency, and that the test locates the config file at runtime.
+
+The walkthrough:
+1. Open the `android` folder in Android Studio and let it sync Gradle.
+2. In the Project pane, open `app/src/test/java/tech/flintcraft/hexboard/KeyLayoutValidationTest.kt`.
+3. Click the green run arrow next to the class name `KeyLayoutValidationTest` and choose Run.
+4. Report what happens — all six tests green, a compile error, or a test failure. A test failure would name the offending character and panel.
+
+If it can't find the config file, the likely cause is the `hexboard.repoRoot` system property set in `android/app/build.gradle.kts`; the test also walks up from the working directory as a fallback.
+
+Filed after `6e09dad`.
+
+#### Decide what to do with the untracked session-payload sample containing machine paths [session-payload-sample]
+Red flag · State: uncleared
+
+`resources/research/session-start-payload-sample.json` sits untracked in the working tree. It was saved by an earlier session as a sample of the data a session-start hook receives. It contains `C:\Users\Alex 2\...` absolute paths twice, a Claude Code session ID, and a full transcript path.
+
+Red flag: the [git-history-audit] pass confirmed the repo's history holds no machine paths at all. Committing this file would put them there, and going public would then publish them — a later deletion would not help, because the history keeps the old content. Machine paths reveal the account name and folder structure; the transcript path points at a local conversation record.
+
+Three options. Delete it, if the sample has served its purpose. Keep it untracked and add it to `.gitignore`, so no future session can stage it by accident — this is the safest option if the sample is still wanted. Or scrub the paths and session ID to placeholders and commit the scrubbed version, if the shape of the payload is what matters rather than the values.
+
+This is not something Claude should decide alone: the file may still be needed for work on the Sovereign Implementer method, which is a separate project. It stays uncommitted until then, so nothing is exposed by waiting.
+
+Filed after `6e09dad`.
+
+#### Decide what to do about the email address in every commit before going public [git-history-email]
+Finding 1 of the [git-history-audit] pass. Every commit in the repo carries `recyclobat@gmail.com` as both author and committer — all six, from `18ea3b9` (2026-07-02) through `6e09dad` (2026-08-04). Commit metadata is public and machine-readable on GitHub, and address-harvesting from it is routine, so publishing the repo publishes the address.
+
+Two halves to decide separately. For future commits, GitHub can supply a `noreply` address that hides the real one; setting it is a config change and costs nothing. For the six commits already made, the address can only be removed by rewriting the whole history, which changes every commit hash — a destructive operation that needs its own decision and its own build.
+
+Worth weighing against the fact that the address may already be public elsewhere, in which case the rewrite buys little.
+
+Filed after `6e09dad`.
+
+#### Reword the candid line about Alex in the variant-editor queue item [queue-candid-line]
+Finding 2 of the [git-history-audit] pass. `QUEUE.md` line 88, inside the [variant-editor] item, reads "Alex has flagged this as beyond him". It was written for a private planning doc and reads differently on a public page — it is a self-assessment about Alex's own limits, not a fact about the project.
+
+It appears in one commit only, `6e09dad`, so rewording it in the working file is cheap and stops it appearing in the published current state. The original wording stays in the git history unless that commit is rewritten, which is the same destructive operation [git-history-email] weighs — so the two may be worth deciding together.
+
+The substance is worth keeping: the fork-sync question genuinely is unresolved and genuinely needs outside input. What changes is framing it as a property of the question rather than of the person.
+
+Filed after `6e09dad`.
+
+#### Decide consciously whether the internal planning record goes public [planning-record-public]
+Finding 3 of the [git-history-audit] pass. `LOG/` (six session entries), `QUEUE.md`, `CLAUDE.md` and `FAQ/` are all tracked, so making the repo public publishes the entire internal planning record: every design decision and its reasoning, every alternative that was weighed and why it lost, the working process, and the fact that the project is built with an AI method plugin.
+
+None of this is a data leak and nothing here is unsafe. Some projects publish exactly this deliberately, and it is arguably the most interesting thing in the repo for a visitor. The reason it is filed is that it would otherwise happen by default rather than by choice, and it is the bulk of what a stranger landing on the repo would actually read.
+
+Options if the answer is no: move the method docs to a separate private repo, or add them to `.gitignore` and remove them from tracking — the second still leaves them in history, which again ties into [git-history-email].
+
+Filed after `6e09dad`.
 
 #### Write a proper README before the repo goes public [public-readme]
 Surfaced in the wind-down re-scan of the /plan session on 2026-08-04. [add-licence] creates a README only as a home for a licence section, which is not enough for a repo strangers will land on. A public README should say what Hexboard is, state the perceptual claim that distinguishes it from other tessellation keyboards, make clear it is an in-progress Android build rather than a shipping app, and spell out plainly what a fork may and may not do under PolyForm Noncommercial. Should be ordered before [repo-go-public]. Filed after `dca16ac`.

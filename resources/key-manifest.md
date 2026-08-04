@@ -1,6 +1,12 @@
+<!-- GENERATED FILE — DO NOT HAND-EDIT.
+     Generated from resources/key-layout.json by scripts/generate-key-manifest.py.
+     Edit the JSON and re-run the script; any edit made here will be overwritten. -->
+
 # Canonical key manifest
 
-This document is the canonical source of truth for Hexboard's key inventory: which characters exist, which panel they live on, and where on that panel they sit. It is lifted verbatim from the manifest block at the top of `hexboard17.html`, which was the canonical copy until this file took over.
+This document is a readable view of Hexboard's key inventory: which characters exist, which panel they live on, and where on that panel they sit. It is generated from `resources/key-layout.json`, which is the actual source of truth. Edit the JSON, then re-run `scripts/generate-key-manifest.py`.
+
+Geometry is deliberately not here and not in the config: zag offsets, circle radius, touch-target sizing, uppercase scaling and nearest-centre hit-testing live in Kotlin, because they are the perceptual claim SPEC calls inviolable. A variant may change which characters you get, never how it feels to aim at them.
 
 ## The four inviolable rules
 
@@ -11,14 +17,12 @@ This document is the canonical source of truth for Hexboard's key inventory: whi
 
 Rule 1 names `audit_keys.js`, which is a browser-prototype script. The wording is kept as written because it describes the prototype. The underlying principle — verify the shipped key set against this manifest before shipping — is what carries over to Android, where the mechanism will be different.
 
-## Known copies to reconcile
+## Files that do not read this config
 
-This manifest is the source; the following are copies that must be brought back into line whenever it changes. Rule 3 points here.
+These hold their own copies of key data by design. They are not generated from the config and are not kept in step with it automatically.
 
-- `hexboard17.html` — the browser prototype. Holds the manifest comment block, the `LK` / `SK` / `RAR_ROWS` key definitions, and `LP_MAP`.
-- `planning/layout-preview.html` — the standing layout preview fixture. Holds its own `LAYOUTS` block and circle geometry.
-
-A future Android build, and any key-audit check written for it, become consumers of this manifest too.
+- hexboard17.html — the browser prototype. Frozen: reference only, does not read this config.
+- planning/layout-preview.html — the standing layout preview fixture. Does not read this config either; it stays hand-edited per CLAUDE.md.
 
 ## Panel 0 — RARE
 
@@ -26,48 +30,65 @@ Three rows, ten keys each.
 
 - **row0** (cols 0–9): `~` `` ` `` `|` `<` `>` `¬` `∞` `√` `∑` `π` — `{` `}` `[` `]` `\` were moved from here to SYMBOLS.
 - **row1** (cols 0–9): `«` `»` `°` `€` `£` `¥` `©` `®` `§` `¶`
-- **row2** (cols 1–10, offset +1 to align with the QWERTY middle row; col 10 is visible on the half-snap): `™` `…` `–` `—` `×` `÷` `±` `≠` `≤` `≥`
+- **row2** (cols 1–10): `™` `…` `–` `—` `×` `÷` `±` `≠` `≤` `≥` — Offset +1 to align with the QWERTY middle row; col 10 is visible on the half-snap.
 
 ## Panel 1 — QWERTY
 
-- **row0** (cols 0–9): `Q` `W` `E` `R` `T` `Y` `U` `I` `O` `P` — all insert keys.
-- **row1** (cols 0–9): `A` `S` `D` `F` `G` `H` `J` `K` `L` `⌫` — `⌫` at col 9 is backspace, not an output character.
-- **row2**: `⇤` cursor-left at col 0; `Z` `X` `C` `V` `B` `N` `M` at cols 1–7; `⇥` cursor-right at col 8; `↵` enter at col 9.
-- **row3** (cols 0–9): `⇧` shift, `?`, `,`, `!`, `␣` space, `'`, `␣` space, `"`, `.`, `-` — two space bars, one per thumb.
+The home panel. Four rows; row 3 carries shift, common punctuation and the two space bars.
 
-Non-output keys on this panel: `⇧` shift, `⌫` backspace, `⇤` and `⇥` cursor movement, `↵` enter (outputs a newline).
+- **row0** (cols 0–9): `Q` `W` `E` `R` `T` `Y` `U` `I` `O` `P` — All insert keys.
+- **row1** (cols 0–9): `A` `S` `D` `F` `G` `H` `J` `K` `L` `⌫` — `⌫` at col 9 is backspace, not an output character.
+- **row2** (cols 0–9): `⇤` `Z` `X` `C` `V` `B` `N` `M` `⇥` `↵` — `⇤` cursor-left at col 0; `Z`–`M` at cols 1–7; `⇥` cursor-right at col 8; `↵` enter at col 9.
+- **row3** (cols 0–9): `⇧` `?` `,` `!` `␣` `'` `␣` `"` `.` `-` — Full zag row: two space bars, one per thumb.
+
+Non-output keys on this panel: `⌫` backspace, `⇤` cursor-left, `⇥` cursor-right, `↵` enter (outputs a newline), `⇧` shift.
 
 ## Panel 2 — SYMBOLS
 
-Left block (cols 0–6) is punctuation; right block (cols 7–9) is numpad plus math. `·` marks an intentionally empty slot.
+Left block (cols 0–6) is punctuation; right block (cols 7–9) is numpad plus math.
 
-- **row0**: `[` `·` `@` `·` `#` `·` `$` `1` `2` `3`
-- **row1**: `\` `*` `·` `(` `·` `)` `·` `4` `5` `6`
-- **row2**: `%` `/` `^` `{` `&` `·` `_` `7` `8` `9`
-- **row3**: `·` `]` `·` `}` `·` `:` `;` `0` `=` `+`
+`·` marks an intentionally empty slot.
+
+- **row0** (cols 0–9): `[` `·` `@` `·` `#` `·` `$` `1` `2` `3`
+- **row1** (cols 0–9): `\` `*` `·` `(` `·` `)` `·` `4` `5` `6`
+- **row2** (cols 0–9): `%` `/` `^` `{` `&` `·` `_` `7` `8` `9`
+- **row3** (cols 0–9): `·` `]` `·` `}` `·` `:` `;` `0` `=` `+`
 
 Freed slots filled with `[` `]` `{` `}` `\`, moved here from RARE for closer access. Removed from SYMBOLS, and now only on QWERTY row3: `?` `!` `'` `"` `-`.
 
+Why each empty slot is empty:
+
+- row0 col1 — Spacing gap in the punctuation block — keeps the sparse left-hand symbols from reading as a dense grid. An opportunity slot per manifest rule 4.
+- row0 col3 — Spacing gap in the punctuation block. An opportunity slot per manifest rule 4.
+- row0 col5 — Spacing gap in the punctuation block. An opportunity slot per manifest rule 4.
+- row1 col2 — Spacing gap in the punctuation block. An opportunity slot per manifest rule 4.
+- row1 col4 — Spacing gap in the punctuation block, keeping `(` and `)` visually paired and separated. An opportunity slot per manifest rule 4.
+- row1 col6 — Spacing gap in the punctuation block. An opportunity slot per manifest rule 4.
+- row2 col5 — Spacing gap in the punctuation block. An opportunity slot per manifest rule 4.
+- row3 col0 — Spacing gap on the bottom zag row. An opportunity slot per manifest rule 4.
+- row3 col2 — Spacing gap on the bottom zag row, keeping `]` and `}` visually paired and separated. An opportunity slot per manifest rule 4.
+- row3 col4 — Spacing gap on the bottom zag row. An opportunity slot per manifest rule 4.
+
 ## Long-press map — letters
 
-- a → `à á â ä ã å æ`
+- a → `à` `á` `â` `ä` `ã` `å` `æ`
 - c → `ç`
 - d → `ð`
-- e → `è é ê ë ē`
-- i → `ì í î ï ī`
+- e → `è` `é` `ê` `ë` `ē`
+- i → `ì` `í` `î` `ï` `ī`
 - n → `ñ`
-- o → `ò ó ô ö õ ø œ`
-- s → `ß š`
-- u → `ù ú û ü ū`
-- y → `ý ÿ`
+- o → `ò` `ó` `ô` `ö` `õ` `ø` `œ`
+- s → `ß` `š`
+- u → `ù` `ú` `û` `ü` `ū`
+- y → `ý` `ÿ`
 - z → `ž`
 
 ## Long-press map — punctuation
 
-- `,` → `;` `…`
-- `.` → `…` `:`
 - `?` → `¿`
+- `,` → `;` `…`
 - `!` → `¡`
+- `'` → `‘` `’` `` ` ``
+- `"` → `“` `”` `«` `»`
+- `.` → `…` `:`
 - `-` → `–` `—`
-- `'` → `'` `'` `` ` ``
-- `"` → `"` `"` `«` `»`
