@@ -1,4 +1,4 @@
-# [HASH] — resources/key-layout.json is now the single source of truth for key data, with key-manifest.md generated from it
+# a42cd01 — resources/key-layout.json is now the single source of truth for key data, with key-manifest.md generated from it
 
 Key data had been living as prose hand-copied across three files — the browser prototype, the layout preview fixture, and the manifest — which is exactly the silent drift manifest rule 3 forbids. This build collapses that to one machine-readable file and one generated view.
 

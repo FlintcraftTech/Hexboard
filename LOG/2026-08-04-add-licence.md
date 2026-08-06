@@ -1,4 +1,4 @@
-# [HASH] — PolyForm Noncommercial 1.0.0 added as LICENSE, with a plain-English licence section in a new README
+# a42cd01 — PolyForm Noncommercial 1.0.0 added as LICENSE, with a plain-English licence section in a new README
 
 The licence choice was settled at the previous planning session; this build only put it in place. The intent it serves is a purpose-limited derivative right — people may read the source and fork it to build Hexboard in another language, but get no general right to copy it — and nothing off-the-shelf grants exactly that. PolyForm Noncommercial is the closest fit: a hobbyist building a German Hexboard is squarely permitted, anyone selling Hexboard is not, and unlike a custom licence it is plain-language, lawyer-drafted and recognised.
 

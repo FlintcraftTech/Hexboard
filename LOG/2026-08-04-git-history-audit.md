@@ -1,4 +1,4 @@
-# [HASH] — Git history audited before going public: no machine paths or credentials, three findings captured
+# a42cd01 — Git history audited before going public: no machine paths or credentials, three findings captured
 
 This audit is the mitigation the [repo-go-public] red flag was cleared by, so it had to run before the repo could be flipped. Its point is that making a repo public exposes the whole commit history, not just the current files — so a path or a personal line removed months ago is still published.
 
@@ -13,6 +13,8 @@ The item carried a red flag, cleared at processing rather than here. It was clea
 **Files touched:** none — the audit read the full commit history and every file ever added, and edited nothing.
 
 **Routed to Captures:** [git-history-email], [queue-candid-line], [planning-record-public], [session-payload-sample]
+
+A forward-recommendation advisory, [advisory-2], was also filed after the commit, pointing the next planning session at these findings.
 
 A fourth capture was filed at the close rather than during the audit. Staging for the commit surfaced an untracked file, `resources/research/session-start-payload-sample.json`, holding absolute machine paths and a session transcript path. It was left out of the commit and filed as [session-payload-sample] with an uncleared red flag. It is worth noting how it was caught: the audit reads committed history, so an untracked file is outside what it looks at, and it was the commit step's out-of-scope dirty-path check that found it.
 

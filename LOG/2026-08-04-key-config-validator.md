@@ -1,4 +1,4 @@
-# [HASH] — Unit test added validating key-layout.json against the manifest's inviolable rules
+# a42cd01 — Unit test added validating key-layout.json against the manifest's inviolable rules
 
 The config being the single source of truth stops the app's key set drifting from it, but says nothing about whether the config itself is sound — and soundness is where the manifest's rules actually bite. This test closes that gap: six checks over the config alone, needing no keyboard and no device.
 

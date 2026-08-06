@@ -53,3 +53,7 @@ The core differentiator is a perceptual claim: users feel more confident aiming 
 Current phase: extended planning, no implementation. Target stack is Kotlin / Jetpack Compose. A working browser prototype (hexboard17.html) demonstrates the layout, gestures, and key inventory and should be treated as the canonical reference for current design intent.
 
 Layout previews during planning use `planning/layout-preview.html` — the standing fixture. Edit its `LAYOUTS` block (real zag + circle geometry, lifted from hexboard17.html) and reload to preview any row config. Maintain this rather than rebuilding a previewer.
+
+The repo is going public, and the planning record goes with it — `LOG/`, `QUEUE.md`, `CLAUDE.md` and `SPEC.md` are tracked, so anyone will be able to read them. This was decided deliberately on 2026-08-06: the planning record is a worked example of the Sovereign Implementer method, which is itself public, so the demonstration value is the point. `FAQ/` is the exception — it stays on disk so both Alex and Claude can consult how the method works mid-session, but it is untracked and does not ship with the repo.
+
+Write the tracked docs accordingly. Be candid about the work; never candid about the person. An unresolved question is framed as a property of the question — what makes it hard, what it depends on — never as a limitation of Alex's. Never write personal contact details into a tracked file, including in text *about* those details.
