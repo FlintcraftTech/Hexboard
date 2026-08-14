@@ -1,0 +1,19 @@
+# Sovereign Implementer method documentation — kept on disk for reference
+# during sessions, but not shipped with the public repo.
+FAQ/
+
+# Written by the Sovereign Implementer session-start hook. Contains local
+# account paths, a session ID and a transcript path, so it must never be
+# committed. Ignored rather than deleted, because the hook recreates it.
+resources/research/session-start-payload-sample.json
+
+# Android Studio's per-machine project settings.
+android/.idea/
+
+# Messages other projects send this one. Kept out of the repository so another
+# project's raw text is never published here.
+INBOX/
+
+# Transient signal saying a file is being written right now, so an editor open
+# on the same document can hold off. Never committed.
+.throughliner/

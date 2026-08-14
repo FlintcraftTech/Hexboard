@@ -4,53 +4,6 @@
 
 Vetted work, ready to build — worked top to bottom. Each piece of work is one item: a `#### ` heading naming it, a `[slug]` at the end of that heading line, and a short rationale beneath. A leading flavor tag names how it runs — none for a build (Claude edits files), `[audit]` for a review pass, `[user]` for a step only you can do. A security or privacy risk Claude surfaces lives here too, as a work item carrying a `Red flag · State: cleared/uncleared` marker. The line below marks how far down is cleared to build; anything below it is decided but not ready yet.
 
-#### Point this repo's git identity at the GitHub noreply address [git-noreply-email]
-Captured by you as [git-history-email]; rewritten during planning after the finding below reduced its scope.
-
-The build: set this repository's local git config to `283077209+FlintCraftTech@users.noreply.github.com`, so commits made here from now on no longer carry the real address. One `git config --local user.email` command; no project files change. Verify by making the next commit and checking its author metadata.
-
-The history rewrite the original item weighed is **ruled out**, and the reasoning is recorded here so it isn't re-proposed. The address is already public: `FlintCraftTech/sovereign-implementer` and `FlintCraftTech/Taskflowapp` are both public repos and every commit in each carries the same personal address, checked during this planning session. The address itself is deliberately not written into this file — naming it here would publish it in the very document that argues against publishing it. Rewriting Hexboard's six commits would change every commit hash, force a rewrite of the pushed remote, and invalidate every hash reference in `LOG/` and `QUEUE.md` — real cost, to hide an address that stays visible elsewhere regardless. So this item is tidiness for future commits, not protection; it does not un-publish anything.
-
-A global git identity was set to the same noreply address during this planning session. It does not cover this repo, because a local setting overrides it — which is why this item still exists.
-
-One further fact found while scrubbing this file: the address is present in tracked file *content* in commit `a42cd01`, inside the earlier version of this item, which described the address by naming it. So it sits in the repo's file history as well as in commit metadata. The current working tree is clean. Removing the historical occurrence would need the same rewrite ruled out above, and the same reasoning applies — so it stands as a recorded fact, not an open question.
-
-Standing rule this item exists under: the personal address is never written into a tracked project file, including in text *about* the address. Refer to it indirectly.
-
-#### Create the root `.gitignore` — untrack `FAQ/` and block the session-payload sample [untrack-faq]
-Red flag · State: cleared
-
-Captured by you during the [planning-record-public] decision, and widened on the same date when the payload-sample risk turned out to need the same file.
-
-`FAQ/` documents how the Sovereign Implementer method works. It is installed into each project on purpose, so that both Alex and Claude can consult it mid-session — so the folder must stay on disk and keep working. What it should not do is ship with a public keyboard repo, where it is method documentation a visitor has no use for.
-
-**Red flag, and how it cleared.** `resources/research/session-start-payload-sample.json` contains this machine's account paths, a Claude Code session ID and a local transcript path. An earlier decision this session was to delete it; that was wrong, and the correction is recorded here so it isn't repeated. The Sovereign Implementer plugin's session-start hook writes this file whenever it is absent, so deleting it guarantees a fresh copy at the next session start with that session's paths in it. The risk is designed out by ignoring rather than deleting: the `.gitignore` this item creates lists the file, so no session can stage it and it can never enter a commit. The file stays on disk, ignored and harmless. This item must land before [repo-go-public], which it already gates.
-
-The build: create a root `.gitignore` (the repo has none — only `android/.gitignore` exists) listing three paths — `FAQ/`, `resources/research/session-start-payload-sample.json`, and `android/.idea/` — then run `git rm --cached -r FAQ/` to remove the FAQ from git's index without touching the working copy. Verify five things: `git ls-files FAQ/` returns nothing; the `FAQ/` folder and its two files are still present on disk; `git status` no longer lists the payload sample as untracked; `git status` no longer lists `android/.idea/` as untracked; and `git status` shows the FAQ removal staged with no other untracked-file noise.
-
-The third path, `android/.idea/`, was folded in here during planning on 2026-08-06, from a separate item that asked for it. It is there for a different reason than the other two: Android Studio writes that folder, it has never been committed (confirmed by the [git-history-audit] pass), and nothing in it is exposed — it is noise in every `git status`, not a risk. It lives in this item purely because this item creates the file, and writing the `.gitignore` complete in one pass is better than creating it and then reopening it to add a line.
-
-Known limitation, accepted when this was decided: `FAQ/faq.md` and `FAQ/index.md` are in every commit made so far, so untracking cleans the current file tree and all future commits, but not the history. Anyone browsing past commits could still read them. Full removal would need the history rewrite ruled out in [git-noreply-email], and the same reasoning applies. The payload sample carries no such limitation — it has never been committed, and this item ensures it never can be.
-
-Must land before [repo-go-public].
-
-#### Write a proper public-facing README [public-readme]
-Surfaced in the wind-down re-scan of the /plan session on 2026-08-04; scoped during the /plan session of 2026-08-06 after reading the current file.
-
-The existing `README.md` is not empty — [add-licence] gave it a thorough licence section that already explains forking in plain terms, and that section is kept as-is. What's missing is everything a visitor needs before reaching the licence: the entire description of the project is currently one sentence.
-
-The build adds five things to `README.md`, above the existing licence section:
-
-1. **What Hexboard is and why it exists** — circular keys in a hexagonal tessellation, zig-zag rows trading row-straightness for larger keys, and the perceptual claim stated properly: users aim more confidently at circles than at hexagons with visible corners, so they aim more centrally and type more accurately. This is what separates Hexboard from Typewise, MessagEase and Thumb-Key, and it is the most interesting sentence available. State it as the perceptual claim it is — not the functional claim that hex keyboards mis-route taps, which SPEC.md explicitly disowns.
-2. **Honest status** — an in-progress Android build with no working keyboard yet. Say so plainly rather than letting a visitor hunt for an install that doesn't exist.
-3. **The browser prototype** — `hexboard17.html` runs in any browser with no build step, and is currently the only part anyone can actually try. Say how to open it and what it demonstrates (layout, gestures, key inventory), and that it is a frozen reference rather than the product.
-4. **A pointer to the planning record** — `LOG/` and `QUEUE.md` are public by deliberate decision (see CLAUDE.md, decided 2026-08-06), and are arguably the most compelling content in the repo. A visitor won't find them unless the README says they're there and why: this is a worked example of the Sovereign Implementer method.
-5. **An image of the layout** — a keyboard is a visual product and a README about key shapes with no picture asks too much of the reader. Capture a screenshot of `hexboard17.html` (or `planning/layout-preview.html`) rendered in a browser, save it under a sensible path in the repo, and embed it near the top.
-
-Files: `README.md`, plus one new image file.
-
-Must land before [repo-go-public] — this is the page a stranger sees first.
-
 #### [user] Run the key-config validator test in Android Studio [run-key-config-validator]
 Captured by you. Confirmed as user-work during planning on 2026-08-06, after Claude exhausted every route it had.
 
@@ -150,4 +103,13 @@ A fourth thing to know before designing this, added on 2026-08-07. The neighbour
 Not yet designed enough to build — what exists is the insight and the approach, not a description of what any build would change. It needs a later /plan to turn into buildable work, and SPEC holds predictive text until after the first working keyboard anyway. The three caveats above are the known starting points for that design session.
 
 Filed after `a42cd01`.
+
+#### Bring the project docs in line with the renamed and reshaped method [throughliner-doc-drift]
+Filed during the /setup migration on 2026-08-14, which brought this project up to the current document format. The migration updated the scaffolding files it owns, but it does not rewrite content, so two kinds of drift are left over and both need a decision rather than a find-and-replace.
+
+The name. The method was called Sovereign Implementer and is now called Throughliner. `CLAUDE.md` still uses the old name throughout, and so does the prose in several queue items and LOG entries. The README was written this session and already says Throughliner, so the repo is currently inconsistent with itself. What needs deciding is how far back to go: CLAUDE.md is live instruction and should almost certainly be updated, but LOG entries are a record of what happened at the time, and rewriting them would misreport what the sessions actually said.
+
+The queue shape. The current format expects every item below the cleared-to-run line to carry a `Blocked by: [slug]` line naming the queue item that holds it. Three items are below the line without one — [android-key-audit], [repo-go-public] and [verify-a11y-ondevice]. Each does state a lift-condition in prose, but two of the three wait on something in the world (a working Compose keyboard, an installable build on the Pixel 6) rather than on a queue item, and under the new shape that thing has to be filed as its own item before it can be named as a blocker. So this is real processing work, not formatting.
+
+Filed after `24b811a`.
 
