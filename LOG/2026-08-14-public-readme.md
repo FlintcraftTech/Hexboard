@@ -1,4 +1,4 @@
-# [HASH] — README expanded from one sentence to a full public-facing page, with a rendered layout screenshot and the method named as Throughliner
+# def1f5a — README expanded from one sentence to a full public-facing page, with a rendered layout screenshot and the method named as Throughliner
 
 The licence section an earlier session wrote was left exactly as it was. Everything added sits above it, because what was missing was not the terms but the entire description of the project — a visitor reached a thorough licence for something described in one sentence.
 
@@ -14,4 +14,4 @@ That mismatch turned out to be broader than this file, and the rest of it is fil
 
 **Files touched:** `README.md` (five sections added above the untouched licence section); `resources/images/hexboard-layout.png` (new, 636×342).
 
-**Routed to Captures:** [throughliner-doc-drift]
+**Routed to Captures:** [throughliner-doc-drift], [github-org-case-drift]

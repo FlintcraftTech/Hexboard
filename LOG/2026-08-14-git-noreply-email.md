@@ -1,4 +1,4 @@
-# [HASH] — This repo's git identity repointed at the GitHub noreply address, with the history rewrite left ruled out
+# def1f5a — This repo's git identity repointed at the GitHub noreply address, with the history rewrite left ruled out
 
 One `git config --local` command, and the whole of the item's value is in what it deliberately does not do.
 

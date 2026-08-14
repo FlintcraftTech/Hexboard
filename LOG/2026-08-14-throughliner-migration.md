@@ -1,4 +1,4 @@
-# [HASH] — Project migrated to the current Throughliner document format: INBOX added, version markers renamed, two ignore lines added
+# def1f5a — Project migrated to the current Throughliner document format: INBOX added, version markers renamed, two ignore lines added
 
 This ran mid-session, because the session-start check refused to proceed normally: the project's documents were on format 1 and the installed plugin expects format 3. The warning is deliberate about why it halts rather than degrading — a session reading documents in a shape it no longer parses reports a confidently wrong picture instead of an error.
 

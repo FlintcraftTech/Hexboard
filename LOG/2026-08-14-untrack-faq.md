@@ -1,4 +1,4 @@
-# [HASH] — Root `.gitignore` created and `FAQ/` untracked; the session-payload red flag carried through as cleared
+# def1f5a — Root `.gitignore` created and `FAQ/` untracked; the session-payload red flag carried through as cleared
 
 The repository had no root `.gitignore` at all — only `android/.gitignore` — so this item created one, and it was written complete in one pass rather than created and reopened. Three paths went in, for three different reasons, and each carries a comment in the file saying which.
 
