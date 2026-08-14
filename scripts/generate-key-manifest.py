@@ -138,6 +138,11 @@ def build(config):
         "from `resources/key-layout.json`, which is the actual source of truth. Edit the "
         "JSON, then re-run `scripts/generate-key-manifest.py`.",
         "",
+        "Its scope is the three letter and symbol panels. The emoji panels reached by "
+        "vertical swipe down are system-supplied content rather than a hand-curated "
+        "inventory, so they are deliberately outside this manifest and the four rules "
+        "below do not apply to them — their absence here is correct, not a gap.",
+        "",
         "Geometry is deliberately not here and not in the config: zag offsets, circle radius, "
         "touch-target sizing, uppercase scaling and nearest-centre hit-testing live in Kotlin, "
         "because they are the perceptual claim SPEC calls inviolable. A variant may change "
