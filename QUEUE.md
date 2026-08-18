@@ -76,6 +76,8 @@ It was deliberately not written as a blocker on [repo-go-public], because whethe
 
 Also worth knowing when planning that session: a reply is waiting in this project's INBOX from the Throughliner project, answering the report sent on 2026-08-14 about closing asks that name a slash command.
 
+Still current at the close of the /next run of 2026-08-14, and now with one more thing to process alongside it. The run built the two text items ahead of [repo-go-public] and stopped there, because that item is marked `Runs alone` — so the flip is now the first thing a /next run would reach, and the editor question is still unsettled in front of it. The INBOX reply named above was opened and archived during that run; it needed no reply and changed no work here, so it is no longer waiting. What is new is [editor-public-if-no-personal-details], the user's condition for publishing the editor, which should be processed in the same pass as [hexboard-editor-status] since it settles that item's risk half and leaves only the question of what the file is.
+
 #### Move the left space bar to row 3 col 2, and decide what displaces and what fills col 4 [left-space-relocation]
 Carried out of `hexboard-plan.md` on 2026-08-07, when that document was folded into SPEC and deleted. It was the one open question in it that nothing else records, so deleting the file as-is would have lost it.
 

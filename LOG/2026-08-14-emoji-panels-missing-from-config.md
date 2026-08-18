@@ -1,4 +1,4 @@
-# [HASH] — The key config and its generated manifest now say the emoji panels are deliberately outside their scope
+# 67a7dd0 — The key config and its generated manifest now say the emoji panels are deliberately outside their scope
 
 The key config described itself as the single source of truth for which characters exist and where they sit, with no carve-out. SPEC's manifest principle said the same. Emoji are characters on panels, and five emoji panels exist in the prototype and in SPEC — so on a plain reading of both documents they belonged in the config and were missing from it. That tension was noticed on 2026-08-07 while checking the emoji panel count.
 

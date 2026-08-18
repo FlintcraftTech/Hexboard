@@ -7,40 +7,26 @@ This project uses the Throughliner method.
 ## Project docs
 
 - **SPEC.md** — product truth. What it is, who it's for, how it works.
-- **QUEUE.md** — work queue, top-to-bottom. Red flags (security, privacy, and breach risks Claude surfaced, kept at the top so they're seen first — each carries an open, resolved, or accepted state), Batches (Build/Test/Audit subheadings), Deferred tests (one line per planned test that couldn't run in its own session — source batch slug, what to verify, what confirms it, and two axes: the deferral reason (host-side / needs-user / external) and the runnability once unblocked (Claude-runnable / user-run); /done writes entries here, /plan reads the section each session and asks which deferrals have cleared, rolling the now-runnable user-run ones into a test batch, /done's close-out removes any line this session's activity already confirmed), Captures (split by `---` — processed above with slugs, raw appended below). Items removed from active flow carry `Blocked by:` (trigger-based) or `Parked:` (indefinite) headers. A `--- Plan session here: <reason> ---` marker between batches means /next halts there until a /plan session addresses the named reason.
+- **QUEUE.md** — your work, in two sections. **Processed** work is vetted and ready to build, worked top-to-bottom; a `--- Cleared to run above this line ---` line marks how far down is greenlit (below it is decided but not ready yet). **Unprocessed** work is captured ideas and tasks not yet fully processed. Each piece of work is one line: a `#### ` heading naming the work, with a `[slug]` at the end of that heading line and a short rationale beneath it, plus a `captured by you` credit on items you personally raised (anything else is unmarked — Claude is the default author). A work item can carry a leading flavor tag: none means a build (Claude edits files), `[audit]` a review pass (Claude reads and reports), `[user]` a step only you can run. A security or privacy risk Claude surfaces becomes a work item carrying a `Red flag · State: cleared/uncleared` marker — surfaced first each session while uncleared, until it's cleared (either designed out, or you're told the risk plainly and choose to accept it).
 - **LOG/** — session records: what was built, tested, decided. One file per session entry, plus index.md one-line summaries naming each entry file.
 - **FAQ/** — workflow FAQ. Index loaded at session start; details in FAQ/faq.md.
+- **INBOX/** — messages from other projects you run. Anything waiting is mentioned at session start; handled messages move to `INBOX/archive/`. A message going out to another project is always shown to you for approval first.
 
 ## Workflow
 
 - `/setup` — scaffold project docs (done if you're reading this).
 - `/plan` — queue management, captures, design questions.
-- `/next` — execute the top batch (build, test, or audit). `/next freeform` does loosely-scoped work that isn't any of those — an ad-hoc change or a discussion of edits already made.
+- `/next` — execute the top piece of ready work (a build or an audit, by its flavor tag). It can work several cleared pieces of work back-to-back, top-down, stopping at the readiness line or when something genuinely needs you.
+- `/rescan` — read back over the conversation and file anything decided or noticed but never written down. Run it whenever, as often as you like; it only looks back as far as the last time you ran it. It files things and leaves the deciding to /plan.
 - `/done` — record, update docs, commit.
 
 ## Rules for Claude
 
-- SPEC.md is a normal doc — it changes during planning or a build, always with your approval, and there's no separate spec batch. A planning decision that changes what SPEC says edits SPEC in that /plan session; a build that needs a SPEC change asks you and adds SPEC.md to its file list. The safety check still blocks a build from editing SPEC unless its batch lists it, so a spec change never rides in silently. Note spec issues for /plan as they come up.
-- Only touch files listed in the active build scope. Halt and ask if you need more.
-- One build at a time. Never start a second build while _build.md exists — finish and /done before starting another. (A planning session in a separate chat alongside a build is allowed.)
-- State problems plainly. Don't hide them or silently fix unrelated things.
-- Route discoveries to QUEUE.md rather than acting on them immediately.
+- SPEC.md is a normal doc — it changes during planning or a build, always with your approval, and there's no separate spec-edit step. A planning decision that changes what SPEC says edits SPEC in that /plan session; a build that needs a SPEC change asks you and adds SPEC.md to its file list. The safety check still blocks a build from editing SPEC unless that build lists it in its files, so a spec change never rides in silently. Note spec issues for /plan as they come up.
 
 ## Language
 
 Language: English
-
-## Editor
-
-Editor: Zettlr
-
-<!-- The `.md` editor you work in, from the optional /setup question. When it names an editor, Claude points you to your open docs with a link instead of re-pasting their text into chat, saving tokens. Left as `not recorded` if you skipped the question — Claude then quotes the text inline as usual. -->
-
-## Working mode
-
-Working mode: local
-
-<!-- `local` = you're at the desktop, where edited files open instantly, so Claude points you to files with links instead of re-pasting their text. `remote` = you're on your phone via remote control, so Claude pastes doc text into chat. Flip it for one session by saying so ("I'm remote today"); it reverts next session. -->
 
 <!-- ▲ PLUGIN-MANAGED — do not edit above this line. ▲ -->
 

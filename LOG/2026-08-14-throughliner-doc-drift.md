@@ -1,4 +1,4 @@
-# [HASH] — The method's new name written into the two files that instruct rather than record
+# 67a7dd0 — The method's new name written into the two files that instruct rather than record
 
 The method this project runs on was called Sovereign Implementer and is now called Throughliner. The /setup migration earlier on 2026-08-14 updated the scaffolding it owns but does not rewrite content, so the old name was left standing in several places while the README, written the same day, already used the new one. The repo was inconsistent with itself at the moment it was about to become public.
 
