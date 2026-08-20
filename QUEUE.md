@@ -183,6 +183,13 @@ Captured by you. The second blocker was added on 2026-08-20: TalkBack cannot be 
 
 Captured ideas and tasks not yet fully processed. The next /plan session goes through these with you and decides each one's fate — keep it (move it up to Processed) or drop it. Each is filed as its own `#### ` heading, so the list shows up in an editor's outline.
 
+#### Last session advises starting with [compose-keyboard-renders-config] [forward-advisory]
+Filed at the close of 2026-08-20. It is the first cleared item and the one the most work waits on: [first-installable-build] and [android-key-audit] both name it as their blocker, and [install-and-enable-on-pixel] and [verify-a11y-ondevice] sit behind those, so four held items are downstream of this one shipping.
+
+It is also the first point at which Hexboard becomes something to look at rather than to read about, which matters for the items that follow it — [panel-switch-gestures] was deliberately deferred on the grounds that where panel switching lives is better answered against a surface that exists.
+
+Two things worth knowing before the run. It was designed out in full on 2026-08-20, so its file list and what changes inside each file are already written into the item — the build should not need to re-open the design. And a run that carries on past it reaches [repo-go-public], which is marked `Runs alone` and irreversible, so the run stops there rather than continuing.
+
 #### A contributor-facing layout editor for building language / key-set variants [variant-editor]
 Captured by you. Idea: a tool that lets a collaborator who forks Hexboard define their own key set — other languages, alternate character sets, long-press accent maps, panel contents — and output a config the Android build consumes, so people build Hexboard variants without hand-editing code. The fixed perceptual geometry (zag rows, circular keys) stays; only the key set varies, keeping variants clear of the inviolable perceptual wedge. Strategic note: this expands Hexboard's posture from one opinionated keyboard to a layout platform for variants — a conscious SPEC-level scope decision to make when taken up, not assumed now. (That decision was taken on 2026-08-20 and is recorded further down; the two sentences before this one describe the fork framing the same session rejected, and are kept as the original capture rather than as current design.) Prerequisite, now met: [layout-config-source] has landed. `resources/key-layout.json` exists and SPEC names it the canonical manifest, so the config this editor would produce and the Android build would consume is real rather than hypothetical. Confirmed during the /plan session of 2026-08-07. Far downstream of a first Android build; filed as a design thread, not near-term work.
 
