@@ -4,56 +4,6 @@
 
 Vetted work, ready to build — worked top to bottom. Each piece of work is one item: a `#### ` heading naming it, a `[slug]` at the end of that heading line, and a short rationale beneath. A leading flavor tag names how it runs — none for a build (Claude edits files), `[audit]` for a review pass, `[user]` for a step only you can do. A security or privacy risk Claude surfaces lives here too, as a work item carrying a `Red flag · State: cleared/uncleared` marker. The line below marks how far down is cleared to build; anything below it is decided but not ready yet.
 
-#### Render one panel of keys from the config, on the real zag geometry [compose-keyboard-renders-config]
-Filed on 2026-08-14 during planning, when [throughliner-doc-drift] surfaced that two held items were waiting on things in the world with no queue item to name. Filing it exposed something worth stating plainly: until then the queue had no item for building the keyboard itself. The pieces around it were all queued — the key config, its validator, the audit that checks the keys reach the screen — but not the thing they are about.
-
-Narrowed to one panel on 2026-08-20, when the item was designed out in planning and split. The horizontal-swipe half went back to Unprocessed as [panel-switch-gestures], because where panel switching lives is an architecture question best answered against a surface that exists. What remains here is the surface: the QWERTY panel drawn from the config, which is what everything downstream actually waits on.
-
-Two of the item's three original questions were settled here rather than deferred. The zag rule gets exactly one home in Kotlin — SPEC calls the geometry inviolable and the config's own `about` field already excludes it — and it is ported from `planning/layout-preview.html`, which carries the working parity and circle maths (`par(c)`, `pt(col)`) lifted from the prototype. And `hexboard17.html` is treated as specification for layout, gestures and key inventory, which is what SPEC already says of it; the porting question was never open.
-
-The plumbing is further along than the item assumed. `android/app/build.gradle.kts` already copies `resources/key-layout.json` into the app's assets at build time, so the config reaches the APK with no second copy checked in. What it lacks is Gson on the main source set — it is `testImplementation` only today.
-
-The build:
-- `android/app/build.gradle.kts` — promote Gson to `implementation` so the app can parse the config it already ships.
-- `KeyLayout.kt` (new) — data classes matching the config's panel/row/key shape, and a loader that reads `key-layout.json` from assets.
-- `KeyGeometry.kt` (new) — the single home of the perceptual geometry: column parity, key centre from row and column, radius solved to the available width, touch target larger than the drawn circle, uppercase at 0.92×. Nothing else in the codebase computes a position.
-- `KeyboardPanel.kt` (new) — the Compose surface. Draws the QWERTY panel's circles, resolves a touch by nearest centre across all keys rather than by per-key bounds, and gives every key its own semantics node with label and bounds, per SPEC's accessibility requirement.
-- `MainActivity.kt` — host the panel so it can be looked at on screen without an IME service, which [first-installable-build] brings.
-
-Not marked `Runs alone`; it adds files rather than moving them.
-
-Files: `android/app/build.gradle.kts`, `android/app/src/main/java/tech/flintcraft/hexboard/MainActivity.kt`, and three new files under `android/app/src/main/java/tech/flintcraft/hexboard/`.
-
-#### Move `hexboard-editor.html` to `planning/` and record it as prior art [hexboard-editor-status]
-Noticed on 2026-08-14 during the /plan close, while listing tracked files to check go-public readiness. It was seen and not asked about at the time, which is why it is filed rather than left in conversation.
-
-`hexboard-editor.html` sits at the repo root, is tracked, and is 557 lines of a self-contained page titled "HexBoard Layout Editor". It has not been touched since the project was adopted on 2026-07-02, and nothing in SPEC, CLAUDE.md, the README or any queue item mentions it. The README points a visitor at `hexboard17.html` as the frozen prototype and at `planning/layout-preview.html` as the planning fixture; this third HTML file at the root is named in none of them.
-
-Settled by reading the file during the /plan session of 2026-08-20. It is a working drag-and-drop key-arrangement editor — three panel tabs, real zag geometry, keys dragged between slots, structural keys locked — and its export button is what dates it. It emits JavaScript source fragments (`RAR_ROWS_EXPORT`, `SK_EXPORT`, a commented manifest summary) for pasting into the prototype's code. That targets the pre-config world, where key data lived in `hexboard17.html`. Since [layout-config-source] landed, `resources/key-layout.json` is the canonical manifest, so what this editor exports now goes to the wrong place in the wrong format.
-
-So it is the second of the three candidate fates — a superseded experiment — with one qualification that decides what happens to it. It is also genuine prior art for [variant-editor], which wants a contributor-facing layout editor: a working drag-and-drop board on the real geometry already exists, and only the export target changed. Deleting it would discard that, so it is moved rather than removed. The user's call, on Claude's recommendation.
-
-The build: move `hexboard-editor.html` to `planning/`, alongside `layout-preview.html`; add a line to `README.md` naming it a prototype-era editor kept as prior art for a future variant editor and not maintained; and check the README's existing HTML-file paragraph still reads correctly with a third file in it.
-
-Cleared to go public, on your condition and on a read rather than a scan. You said during the /next run of 2026-08-14 that the editor is fine to publish as long as it doesn't carry your email or anything like that; that was filed as [editor-public-if-no-personal-details], which recorded a shape-scan and said plainly that a scan cannot settle whether some line quietly identifies a real person. The read was done on 2026-08-20 and it can. Every piece of free text in the file is structural — the page title and heading, the tagline, the key-type legend, two button labels, and section comments of the form `// ── EXPORT ──` — with the rest CSS, key data and drag handlers. The one `@` is the symbol panel's `@` key at line 238. Nothing in it refers to a person. That item was a clearance rather than work, so it was folded here and deleted.
-
-Ordering: this sits ahead of [repo-go-public], because the whole reason it was raised is to settle the file before publication makes the root permanent reading. Not marked `Runs alone` — no other queue item names this path, so no run in flight goes stale when it moves.
-
-Files: `hexboard-editor.html` (moved), `README.md`.
-
-#### Put both candidate row-3 space arrangements into the layout preview [row3-space-candidates]
-Split out of [left-space-relocation] on 2026-08-20, when the choice turned out to rest on a trade-off that has to be looked at rather than argued about.
-
-QWERTY row 3 today is `⇧ ? , ! ␣ ' ␣ " . -`, with space bars at columns 4 and 6. The finding that reframes the whole thing: column parity is what the zag rule keys on, so even columns sit half a key higher than odd ones. Both spaces are even today and therefore sit at the same height, reading as a matched pair. A pair genuinely symmetric about the row means columns `c` and `9−c`, and because 9 is odd one of those is always even and the other always odd. **Two space bars cannot be both edge-symmetric and at the same height.** That is arithmetic, not taste, and it is why the original item's assumption that col 2 would make the pair symmetric is wrong.
-
-So there are two candidates, each giving up one thing, and both better than today for thumb reach:
-- spaces at cols 2 and 6 — same height, matched pair kept; left space 2 from the left edge, right space 3 from the right;
-- spaces at cols 3 and 6 — exactly equal from each edge; the two spaces sit at different heights.
-
-The build: add both arrangements to the `LAYOUTS` block in `planning/layout-preview.html`, alongside the current 4-and-6 row for comparison, labelled so they can be told apart on screen. That is the fixture's stated purpose and CLAUDE.md requires maintaining it rather than building a new previewer. No other file changes; nothing here touches `resources/key-layout.json`.
-
-Files: `planning/layout-preview.html`.
-
 #### Flip the Hexboard repo from private to public on GitHub [repo-go-public]
 Captured by you. Split out of [licence-and-go-public] during planning.
 Runs alone
@@ -273,4 +223,17 @@ SPEC's manifest principle says `resources/key-layout.json` is the single source 
 The likely resolution is that the manifest rules describe *a* layout rather than *the* layout, and each contributed variant is governed by them individually — but that is a guess, and it should be settled deliberately rather than inferred by whoever next reads the two sentences together.
 
 It interacts with the schema question that currently holds [variant-editor] and [layout-switching], because how many files there are and what identifies each one is the same question seen from the SPEC side.
+
+#### [user] Compile the app in Android Studio and look at the QWERTY panel [compile-and-view-panel]
+Filed at the close of 2026-08-21, when [compose-keyboard-renders-config] shipped code that nothing has run. Gradle cannot run on this machine — it needs a loopback connection to its own daemon and every route Claude has is blocked from making one, established across four attempts and recorded in [run-key-config-validator] — so three things are unverified: that the new Kotlin compiles, that Gson parses `key-layout.json` out of the app's assets at runtime, and that the panel draws.
+
+Nothing in the queue already covers this. [run-key-config-validator] runs a unit test against the config and never touches the app; [install-and-enable-on-pixel] does cover a real build, but it is held behind [first-installable-build], so the first compile of this code would otherwise wait on an IME service that has not been written. Checking it now is what stops a broken foundation being built on.
+
+The walkthrough:
+1. Open Android Studio and open the `android` folder inside the Hexboard project. Wait for the Gradle sync to finish — a progress bar runs along the bottom.
+2. Click the green ▶ Run button in the top toolbar, with any device or emulator selected. A compile error appears in the Build panel at the bottom and names the file and line; report that text if it comes.
+3. If it runs, the app shows a line of text at the top and the QWERTY panel at the bottom: circular keys in zig-zag rows, with the two green space bars in the bottom row. Tap a few keys and check that what appears in the text at the top is what you aimed at.
+4. Report three things: whether it compiled, whether the keys drew, and whether the characters that arrived were the right ones.
+
+If it compiles but crashes on launch, the likely cause is the config not being found in the assets — the Gradle copy task that puts it there is in `android/app/build.gradle.kts` and the app reads it by the filename `key-layout.json`.
 

@@ -40,17 +40,33 @@
 //  Each layout is one row rendered with the real zag + circle geometry.
 //  key = { col, lbl, kind, large? }
 // ═══════════════════════════════════════════════════════════════════
-// Optional per-key `fs` multiplies the font size (default 1). Used below to
-// shrink capitals for the "normalised" comparison.
-const ROW = "QWERTYUIOP".split("");
-const mkRow = (upper, fs) => ROW.map((c,i) => ({
-  col:i, lbl: upper ? c : c.toLowerCase(), kind:'ltr', fs: fs||1
+// Optional per-key `fs` multiplies the font size (default 1).
+//
+// Currently showing: the three candidate arrangements for QWERTY row 3, the row
+// that carries the two space bars. Odd columns sit half a key lower than even
+// ones — that is the zag rule, and it is why the two candidates below are not
+// interchangeable. A pair genuinely symmetric about the row means columns c and
+// 9−c, and because 9 is odd one of those is always even and the other always
+// odd, so two space bars cannot be both edge-symmetric and at the same height.
+// Each candidate gives up one of those.
+//
+// Both candidates are swaps, not vacancies: the key displaced by the moved space
+// takes the freed column, so no slot is left empty.
+
+const mkRow3 = spec => spec.split(" ").map((lbl, col) => ({
+  col,
+  lbl: lbl === "_" ? "␣" : lbl,
+  kind: col === 0 ? 'sp' : lbl === "_" ? 'spc' : 'pun',
+  large: col === 0
 }));
 
 const LAYOUTS = [
-  { title: "Lowercase (reference)",                         keys: mkRow(false) },
-  { title: "Uppercase — as-is (same font size as lowercase → caps look bigger)", keys: mkRow(true) },
-  { title: "Uppercase — normalised ×0.90 (proposed)", keys: mkRow(true, 0.90) },
+  { title: "Today — spaces at cols 4 and 6 (same height; right space nearer its edge than the left one is)",
+    keys: mkRow3("⇧ ? , ! _ ' _ \" . -") },
+  { title: "Candidate A — spaces at cols 2 and 6 (both even, so matched height; 2 from the left edge, 3 from the right)",
+    keys: mkRow3("⇧ ? _ ! , ' _ \" . -") },
+  { title: "Candidate B — spaces at cols 3 and 6 (equal reach from each edge; the two sit at different heights)",
+    keys: mkRow3("⇧ ? , _ ! ' _ \" . -") },
 ];
 
 // ── Geometry (lifted verbatim from hexboard17.html) ──────────────────

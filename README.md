@@ -38,7 +38,7 @@ nothing to install.
 
 `hexboard17.html` is a browser prototype. Download or clone the repo and open that file in
 any browser — no build step, no dependencies. It's the only part of Hexboard you can
-actually use today.
+actually type on today.
 
 It demonstrates the layout, the swipe gestures between panels, and the full key inventory:
 three letter panels (RARE / QWERTY / SYMBOLS) reached by swiping horizontally, emoji
@@ -47,6 +47,14 @@ panels by swiping down, and long-press accents on letters that need them.
 The prototype is **frozen** — a reference for what the design intends, not the product and
 not a maintained app. The real key data now lives in
 [`resources/key-layout.json`](resources/key-layout.json), which the Android build reads.
+
+One more page is kept in the repo without being maintained.
+[`planning/hexboard-editor.html`](planning/hexboard-editor.html) is a prototype-era layout
+editor: keys are dragged between slots on the real zag geometry, with the structural keys
+locked. It is superseded — it exports JavaScript fragments for pasting into the prototype,
+which is where key data lived before the config existed — and it is kept as prior art for
+a future contributor-facing editor, since the drag-and-drop half of that job is already
+worked out here.
 
 ## The planning record is public on purpose
 
