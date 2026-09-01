@@ -1,4 +1,4 @@
-# [HASH] — The compile-and-look step given a real device story, pairing the Pixel 6 over Wi-Fi, and cleared to run
+# be3516e — The compile-and-look step given a real device story, pairing the Pixel 6 over Wi-Fi, and cleared to run
 
 This item existed because the Compose keyboard shipped on 2026-08-21 with nothing having compiled it. Its walkthrough said "with any device or emulator selected", which quietly assumed a device target that is not set up — so the step could not actually be performed as written. Asked which of three routes matched the real setup, the user chose the Pixel 6 over Wi-Fi, over an emulator and over a compile-only Build → Make Project.
 

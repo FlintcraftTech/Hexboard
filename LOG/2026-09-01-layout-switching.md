@@ -1,4 +1,4 @@
-# [HASH] — The layout picker settled as living in the app's own settings, not on the keyboard surface
+# be3516e — The layout picker settled as living in the app's own settings, not on the keyboard surface
 
 [layout-switching] was held by the same variant-identity gap as [variant-editor], and gained the same `Blocked by: [variant-schema]` line on the same terms — the reasoning is in the entry for [variant-schema].
 

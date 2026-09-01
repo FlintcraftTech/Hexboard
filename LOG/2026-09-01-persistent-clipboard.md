@@ -1,4 +1,4 @@
-# [HASH] — A persistent clipboard designed with a threat model, and no clear-all button on purpose
+# be3516e — A persistent clipboard designed with a threat model, and no clear-all button on purpose
 
 The user raised this against Gboard, whose clipboard clears and loses something copied twenty minutes ago. Their retention rule, restated as a build can implement it: a clip is kept if it is younger than an hour, or if it is among the twenty most recent, and dropped only when both fail.
 

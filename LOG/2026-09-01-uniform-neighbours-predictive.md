@@ -1,4 +1,4 @@
-# [HASH] — Predictive text gains saved words and loses proper nouns, moving the red flag from designed-out to informed consent, and its word-list question answered
+# be3516e — Predictive text gains saved words and loses proper nouns, moving the red flag from designed-out to informed consent, and its word-list question answered
 
 Two decisions of the user's changed this item, one of them reversing something already in SPEC.
 

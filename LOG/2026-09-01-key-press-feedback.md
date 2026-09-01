@@ -1,4 +1,4 @@
-# [HASH] — Press feedback settled as the key's own highlight, with the touch-point marker rejected on the perceptual wedge
+# be3516e — Press feedback settled as the key's own highlight, with the touch-point marker rejected on the perceptual wedge
 
 The user's complaint was that the keyboard as it stands is inert, and their first description asked for touches showing and fading alongside a key highlight. Reading `KeyboardPanel.kt` turned that into a sharper question than a polish job.
 

@@ -1,4 +1,4 @@
-# [HASH] — SPEC's scaffold-written "Project docs" section cut entirely rather than replaced by a pointer
+# be3516e — SPEC's scaffold-written "Project docs" section cut entirely rather than replaced by a pointer
 
 The section listed SPEC, QUEUE and LOG and said what each was for. Three things were wrong with it, one more than the item had noticed: it was method machinery inside a document whose job is product truth; its wording was retired, calling QUEUE.md "work batches"; and it said "three project docs" when the project has six.
 

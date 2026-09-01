@@ -1,4 +1,4 @@
-# [HASH] — A SPEC read-through filed as user work, because seven changes in one session were never read end to end
+# be3516e — A SPEC read-through filed as user work, because seven changes in one session were never read end to end
 
 Filed by /rescan from a suggestion made in passing during the same session's planning and never written down — which is exactly the class of thing a rescan exists to catch.
 

@@ -1,4 +1,4 @@
-# [HASH] — Voice adaptation filed as the real answer to accents, after a claim of this session's was challenged and found wrong
+# be3516e — Voice adaptation filed as the real answer to accents, after a claim of this session's was challenged and found wrong
 
 This is the item the accent picker lost to. An accent list reaches whoever matches one of its entries; adapting to the individual voice is the only approach that does not care what the speaker's first language was, which is the case the user raised.
 

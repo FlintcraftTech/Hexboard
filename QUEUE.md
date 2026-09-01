@@ -4,34 +4,6 @@
 
 > Vetted work, ready to build — worked top to bottom. Each piece of work is one item: a `#### ` heading naming it, a `[slug]` at the end of that heading line, and a short rationale beneath. A leading flavor tag names how it runs — none for a build (Claude edits files), `[audit]` for a review pass, `[user]` for a step only you can do. A security or privacy risk Claude surfaces lives here too, as a work item carrying a `Red flag · State: cleared/uncleared` marker. The line below marks how far down is cleared to build; anything below it is decided but not ready yet.
 
-#### Give the key config a variant identity, so more than one layout can exist [variant-schema]
-Split out of [variant-editor] on 2026-09-01. The recommendation and the reasoning are Claude's; you agreed to the split.
-
-SPEC says Hexboard is a platform for layout variants contributed into this repository, with one app shipping them all. `resources/key-layout.json` cannot express that: read on 2026-09-01, its top-level fields are `schemaVersion`, `about`, `generates`, `manifestRules`, `rule1Note`, `nonConsumers` and `panels`, and nothing there says which layout this is. So a contributed variant has no way to identify itself, and both [variant-editor] and [layout-switching] are held by that single gap — an editor has to write an identifier and a picker has to read one.
-
-Why this is designable now, which is the part that changed. [variant-editor]'s own prose said the shape "follows from a build, not from a decision anyone can make now", and that is true of only half of it. How the app enumerates layouts at runtime and where it stores the user's pick do wait on a working keyboard. What does not wait: whether a variant is its own file, what identifies it, and what happens to the generated manifest. Those three are decisions at a desk and nothing about them changes once the app exists.
-
-The three decisions this item makes and records:
-- **One file per variant.** A contributed layout is a new file alongside `key-layout.json` rather than a section inside it, so a contribution adds one file and touches nothing else — which is the whole reason contribution was chosen over forking.
-- **Identity fields.** The config gains an `id` (a stable machine name), a `name` (what a person would see), and a statement of which layout the app falls back to when none is chosen. `key-layout.json` itself is that fallback, per SPEC's default-layout sentence.
-- **The manifest follows the layout.** `generates` currently names one fixed path. A named layout generates a manifest of its own, so the field and the generator's header carry the layout's name rather than assuming there is only one.
-
-Folded in on 2026-09-01, noticed while reading the config during this item's own discussion. That file's `about` field still opens "This file is the single source of truth for which characters exist" — wording SPEC dropped on 2026-08-20 when the principle was reworded to "the key inventory is governed by config, never by code", and narrowed again on 2026-09-01 to call this file the default layout the app ships with. The config is now the only place the retired phrase survives, and it contradicts both the platform principle and the default-layout sentence. Rewrite that opening so it describes this file as one layout's inventory rather than the only one; the rest of the `about` text, including the emoji-panel carve-out, stands unchanged. The generator script copies this prose into the manifest, so the regeneration below is what carries the correction through.
-
-The build: add the identity fields to `resources/key-layout.json` and bump its `schemaVersion` to 2; teach `scripts/generate-key-manifest.py` to read the layout's name into the manifest header and to honour `generates` rather than a hard-coded path; and regenerate `resources/key-manifest.md` by running the script rather than hand-editing it, as the config's own `about` field requires.
-
-SPEC needs no edit from this build: the one-file-per-variant rule and the identity fields were written into SPEC's key-inventory principle at the close of 2026-09-01, when the spec-sync gate caught them as the session's one decision whose sentence had not been written. The build is checked against that sentence rather than writing it.
-
-What this deliberately does not do: nothing here changes the Android code. Gson ignores JSON fields the data classes do not declare, so `KeyLayout.kt` keeps parsing the config unchanged, and the app carries on loading the one layout it loads today. Reading a variant list at runtime is [layout-switching]'s work, not this item's.
-
-The observation that shows it landed: `python scripts/generate-key-manifest.py --check` reports no drift between the config and the regenerated manifest, and the manifest's header names the layout.
-
-Rests on: `resources/key-layout.json` having no identity fields today, read 2026-09-01; SPEC's default-layout sentence, written 2026-09-01; Gson ignoring undeclared fields, which is why the Android code is untouched — not verified by running anything, since Gradle cannot run here, so treat it as the reason no Kotlin change is listed rather than as a tested claim.
-
-Files: `resources/key-layout.json`, `resources/key-manifest.md`, `scripts/generate-key-manifest.py`. `SPEC.md` is read, not changed.
-
-Placed at the top of the cleared region rather than at its end, because [repo-go-public] is marked `Runs alone` and its own recorded placement puts it last among the build items — anything filed after it would not be reached in an unattended run.
-
 #### Flip the Hexboard repo from private to public on GitHub [repo-go-public]
 Captured by you. Split out of [licence-and-go-public] during planning.
 Runs alone
@@ -237,14 +209,14 @@ Captured by you. The second blocker was added on 2026-08-20: TalkBack cannot be 
 
 > Captured ideas and tasks not yet fully processed. The next /plan session goes through these with you and decides each one's fate — keep it (move it up to Processed) or drop it. Each is filed as its own `#### ` heading, so the list shows up in an editor's outline.
 
-#### Last session advises processing compile-and-view-panel next [forward-advisory]
-Filed at the close of 2026-09-01. It is the step where the Compose keyboard stops being code nobody has run, and three items now wait on it: [panel-switch-gestures] and [key-press-feedback] are held against it directly, and everything else touching `KeyboardPanel.kt` is downstream of the same unverified foundation.
+#### Last session advises processing repo-go-public next [forward-advisory]
+Filed at the close of 2026-09-01, replacing the spent advisory that pointed at [compile-and-view-panel]. That one has done its job: it was written to say the Compose keyboard was code nobody had run, and it still is, but it is no longer the first thing a run meets.
 
-It is `[user]` work — opening the `android` folder in Android Studio, pairing the Pixel 6 over Wi-Fi, running, and reporting whether it compiled, whether the keys drew and whether the right characters arrived. Its walkthrough was rewritten on 2026-09-01 to do the pairing first, which also completes the first two steps of [install-and-enable-on-pixel].
+[variant-schema] shipped this session and left the queue, so [repo-go-public] is now the top cleared item. It is marked `Runs alone` and it sits first, so a /next run will build it and then end — and it is irreversible in the way that matters, since once the history is public it can be cloned and making the repository private again un-exposes nothing. Whoever runs it must say plainly what becomes readable and stop for an explicit yes in that same session. The three limitations already recorded on the item — a personal address in commit metadata and in file content, a reworded candid line, and the FAQ in every commit so far — all stay readable in history afterwards, and each was consciously accepted rather than overlooked. Read the item before starting it, not after.
 
-Two things to know before a build run rather than after it. [variant-schema] sits at the top of the cleared region and is the only cleared item a run can build without you present. Immediately after it is [repo-go-public], marked `Runs alone` and irreversible, so a run will stop there and must get an explicit yes before flipping the repository public — which means the three `[user]` items below it, including this one, are not reached by an unattended run at all.
+Everything cleared below it is `[user]` work, so nothing else in the queue can be built without you present. Of those, [compile-and-view-panel] is still the one that unlocks the most: [panel-switch-gestures] and [key-press-feedback] are both held against it, and both change `KeyboardPanel.kt`, which has never been compiled.
 
-The overlap check was run: nothing in Unprocessed contradicts or invalidates [variant-schema], the top cleared item. The two entries that name its slug, [variant-editor] and [layout-switching], are held *by* it rather than against it — they are downstream, and they lift when it ships.
+The overlap scan was run against the unprocessed work, and one thing came out of it rather than nothing. [variant-editor] and [layout-switching] were both held by [variant-schema], which has now shipped — so their blocker is resolved and they are candidates to lift, not items whose premise failed. Neither contradicts or invalidates [repo-go-public]; they are simply the work that this session's build released. Nothing else waiting in Unprocessed touches the top cleared item.
 
 #### A contributor-facing layout editor for building language / key-set variants [variant-editor]
 Blocked by: [variant-schema]

@@ -1,4 +1,4 @@
-# [HASH] — Panel switching designed out as a horizontal pager, with the consumed-down gesture trap researched and filed before the build meets it
+# be3516e — Panel switching designed out as a horizontal pager, with the consumed-down gesture trap researched and filed before the build meets it
 
 The item's open question was architectural: is a panel a screen the keyboard navigates between, or a slice of one continuously drawn surface? Reading `KeyboardPanel.kt` answered it without appeal to preference. The tap handler sits on the board rather than on individual keys, and it has to — SPEC requires nearest-centre routing, so a tap goes to the closest key centre rather than to whichever circle contains it. Panel switching therefore cannot be a per-key concern and must wrap the whole board, which is a horizontal pager holding three pages, opening on QWERTY, keeping the drag-follows-finger feel the browser prototype has.
 

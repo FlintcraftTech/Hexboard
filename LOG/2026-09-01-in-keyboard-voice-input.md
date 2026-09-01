@@ -1,4 +1,4 @@
-# [HASH] — Voice input designed to live inside the keyboard, held open by the thumb, with the accent picker designed and then dropped
+# be3516e — Voice input designed to live inside the keyboard, held open by the thumb, with the accent picker designed and then dropped
 
 The user's requirement was that nobody should have to switch to another keyboard to dictate, because they switch away and never switch back. That this is achievable was checked rather than assumed: an input method can run recognition itself, `isOnDeviceRecognitionAvailable` and `createOnDeviceSpeechRecognizer` existing from API 31 and on-device recognition being forced from API 33, and two existing keyboards are built this way.
 

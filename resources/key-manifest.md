@@ -1,10 +1,11 @@
 <!-- GENERATED FILE — DO NOT HAND-EDIT.
+     Layout: QWERTY (English) (qwerty-en).
      Generated from resources/key-layout.json by scripts/generate-key-manifest.py.
      Edit the JSON and re-run the script; any edit made here will be overwritten. -->
 
-# Canonical key manifest
+# Key manifest — QWERTY (English)
 
-This document is a readable view of Hexboard's key inventory: which characters exist, which panel they live on, and where on that panel they sit. It is generated from `resources/key-layout.json`, which is the actual source of truth. Edit the JSON, then re-run `scripts/generate-key-manifest.py`.
+This document is a readable view of one Hexboard layout's key inventory: which characters this layout offers, which panel they live on, and where on that panel they sit. The layout is QWERTY (English), identified as `qwerty-en`, and is the default layout the app ships with. It is generated from `resources/key-layout.json`, which is the actual source of truth. Edit the JSON, then re-run `scripts/generate-key-manifest.py`.
 
 Its scope is the three letter and symbol panels. The emoji panels reached by vertical swipe down are system-supplied content rather than a hand-curated inventory, so they are deliberately outside this manifest and the four rules below do not apply to them — their absence here is correct, not a gap.
 

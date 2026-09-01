@@ -1,4 +1,4 @@
-# [HASH] — SPEC's manifest-versus-platform tension found already resolved, one surviving word fixed, and the item deleted
+# be3516e — SPEC's manifest-versus-platform tension found already resolved, one surviving word fixed, and the item deleted
 
 A rescan pass filed this on 2026-08-20, having noticed that SPEC's manifest principle called `resources/key-layout.json` the single source of truth while the platform principle added the same day said many contributed layouts ship in one app. The item asked for the contradiction to be settled deliberately rather than guessed at.
 

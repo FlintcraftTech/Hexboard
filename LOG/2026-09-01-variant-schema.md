@@ -1,4 +1,4 @@
-# [HASH] — Variant identity split out as its own buildable item after half the reason for deferring it proved false
+# be3516e — Variant identity split out as its own buildable item after half the reason for deferring it proved false
 
 [variant-editor] and [layout-switching] had both been skipped on 2026-08-20 against a single stated reason: a contributed config has no way to say which variant it is, and that schema "follows from a build, not from a decision anyone can make now". Re-reading that reason against the actual config showed only half of it survives.
 

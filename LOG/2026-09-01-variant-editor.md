@@ -1,4 +1,4 @@
-# [HASH] — The layout editor held against the new variant-identity item rather than skipped again, and kept in Unprocessed deliberately
+# be3516e — The layout editor held against the new variant-identity item rather than skipped again, and kept in Unprocessed deliberately
 
 The reasoning behind the split is in the entry for [variant-schema] and is not restated here. What this entry records is where [variant-editor] landed and why it did not go further.
 
