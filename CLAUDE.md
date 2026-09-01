@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-<!-- ▼ PLUGIN-MANAGED — do not edit between these markers. Updated on /setup and plugin reinstall. ▼ -->
+<!-- ▼ PLUGIN-MANAGED — do not edit between these markers. Refreshed by /setup's migration, which reports what it replaces. Your own rules belong below the end marker. ▼ -->
 
 This project uses the Throughliner method.
 
@@ -22,7 +22,14 @@ This project uses the Throughliner method.
 
 ## Rules for Claude
 
-- SPEC.md is a normal doc — it changes during planning or a build, always with your approval, and there's no separate spec-edit step. A planning decision that changes what SPEC says edits SPEC in that /plan session; a build that needs a SPEC change asks you and adds SPEC.md to its file list. The safety check still blocks a build from editing SPEC unless that build lists it in its files, so a spec change never rides in silently. Note spec issues for /plan as they come up.
+- SPEC.md is a normal doc, and there's no separate spec-edit step — but **it changes during planning, not during a build**. When a planning decision changes what SPEC says, Claude writes that sentence in the /plan session, with you there. A build never writes product truth: if a build discovers SPEC is missing a sentence, it writes the sentence down as a new queue item and carries on, so SPEC is behind by at most that one sentence until your next planning session — and it's behind visibly, as an item you can see, rather than quietly. The reason is that the session which made a choice shouldn't be the one that certifies it as product truth. A large SPEC rework is ordinary build work that lists SPEC.md among its files, and the safety check still blocks a build from editing SPEC unless it does. Note spec issues for /plan as they come up.
+
+## Visibility
+
+<!-- Set at setup: which repository holds this project's documents, and whether
+     they are published anywhere. Left blank until that is settled. -->
+
+Visibility: this folder's own git repository holds the project's documents. `SPEC.md`, `QUEUE.md`, `CLAUDE.md` and `LOG/` are tracked and go public with the repo; `FAQ/` and `INBOX/` stay out of it.
 
 ## Language
 

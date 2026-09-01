@@ -1,4 +1,4 @@
-# [HASH] — The QWERTY panel drawn from the config on the real zag geometry, with the perceptual geometry given one Kotlin home
+# 09d0044 — The QWERTY panel drawn from the config on the real zag geometry, with the perceptual geometry given one Kotlin home
 
 Until now the Android app was a template with a "Hello Android" greeting in it, and every piece of Hexboard that exists — the frozen browser prototype, the key config, the layout preview fixture — was about a keyboard that had never been drawn in Kotlin. This is the surface those things were waiting for, and four held queue items sit behind it.
 

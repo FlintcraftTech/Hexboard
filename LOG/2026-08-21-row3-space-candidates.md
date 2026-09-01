@@ -1,4 +1,4 @@
-# [HASH] — Both candidate row-3 space arrangements put into the layout preview, with the parity arithmetic recorded beside them
+# 09d0044 — Both candidate row-3 space arrangements put into the layout preview, with the parity arithmetic recorded beside them
 
 QWERTY row 3 carries the two space bars, one per thumb, and today they sit at columns 4 and 6 — adjacent-but-one rather than symmetric, so the left-thumb key is further from the left thumb than the right one is from the right. The fix looked like a one-line change until planning found what actually constrains it: the zag rule keys on column parity, so even columns sit half a key higher than odd ones, and a pair genuinely symmetric about a ten-column row means columns `c` and `9−c`. Nine is odd, so one of any such pair is always even and the other always odd. Two space bars cannot be both edge-symmetric and at the same height. That is arithmetic rather than taste, and it is why this became a choice to look at rather than a change to make.
 

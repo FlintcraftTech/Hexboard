@@ -5,7 +5,7 @@ FAQ/
 # Written by the Throughliner session-start hook. Contains local
 # account paths, a session ID and a transcript path, so it must never be
 # committed. Ignored rather than deleted, because the hook recreates it.
-resources/research/session-start-payload-sample.json
+workshop/resources/research/session-start-payload-sample.json
 
 # Android Studio's per-machine project settings.
 android/.idea/

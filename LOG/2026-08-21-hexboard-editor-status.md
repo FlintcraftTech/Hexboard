@@ -1,4 +1,4 @@
-# [HASH] — `hexboard-editor.html` moved into `planning/` and recorded in the README as superseded prior art
+# 09d0044 — `hexboard-editor.html` moved into `planning/` and recorded in the README as superseded prior art
 
 A third HTML file had been sitting at the repo root since the project was adopted, tracked, untouched, and named in nothing — not SPEC, not CLAUDE.md, not the README, not any queue item. With the repo about to go public, the root becomes permanent reading for anyone who arrives, so an unexplained file there is a question every visitor has to answer for themselves.
 
