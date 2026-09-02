@@ -1,4 +1,4 @@
-# PLACEHOLDER — [left-space-relocation] deleted: it existed only to apply a space-bar move the user decided against
+# 6f66348 — [left-space-relocation] deleted: it existed only to apply a space-bar move the user decided against
 
 Planning record for [left-space-relocation], 2026-09-02.
 

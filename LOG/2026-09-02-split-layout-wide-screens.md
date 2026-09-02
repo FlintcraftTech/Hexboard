@@ -1,4 +1,4 @@
-# PLACEHOLDER — [split-layout-wide-screens] settled as automatic whenever width exceeds height, written into SPEC, and held in Unprocessed until the keyboard can be seen in landscape
+# 6f66348 — [split-layout-wide-screens] settled as automatic whenever width exceeds height, written into SPEC, and held in Unprocessed until the keyboard can be seen in landscape
 
 Planning record for [split-layout-wide-screens], 2026-09-02.
 

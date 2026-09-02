@@ -4,260 +4,6 @@
 
 > Vetted work, ready to build — worked top to bottom. Each piece of work is one item: a `#### ` heading naming it, a `[slug]` at the end of that heading line, and a short rationale beneath. A leading flavor tag names how it runs — none for a build (Claude edits files), `[audit]` for a review pass, `[user]` for a step only you can do. A security or privacy risk Claude surfaces lives here too, as a work item carrying a `Red flag · State: cleared/uncleared` marker. The line below marks how far down is cleared to build; anything below it is decided but not ready yet.
 
-#### Register Hexboard as an Android input method [first-installable-build]
-Lifted above the line on 2026-09-02: its blocker [compose-keyboard-renders-config] was built on 2026-08-21 and verified on the Pixel 6 by [compile-and-view-panel] on 2026-09-02 — the panel compiled, drew and typed. The premise below (no service in the manifest, a panel to host) was last checked against the files on 2026-08-20 and nothing since has touched the manifest.
-
-Filed on 2026-08-14 during planning, alongside [compose-keyboard-renders-config], for the same reason: [verify-a11y-ondevice] waited on an installable build with no queue item to name as its blocker.
-
-Designed out on 2026-08-20, and narrowed by a split. The threshold is not keys on screen — that is the rendering item — but Android accepting Hexboard as an input method the user can pick. Confirmed by reading `android/app/src/main/AndroidManifest.xml` during that session: there is no service of any kind declared today, only the launcher activity. SPEC puts IME polish (settings screen, language switching) out of scope for early iterations, so the target is the minimum that lets you type on the thing.
-
-The build:
-- `HexboardImeService.kt` (new) — an `InputMethodService` whose input view is a `ComposeView` hosting the panel from [compose-keyboard-renders-config], committing each key's output character through the current input connection. **Set the lifecycle, saved-state and view-model owners on that view explicitly**: Compose inside an `InputMethodService` has no owners by default and crashes the first time the keyboard is shown. This is the known trap and it is written here so the build does not rediscover it.
-- `AndroidManifest.xml` — a `<service>` declaration with `BIND_INPUT_METHOD`, an intent filter for `android.view.InputMethod`, and meta-data pointing at the descriptor below.
-- `res/xml/method.xml` (new) — the input-method descriptor and its subtype.
-- `res/values/strings.xml` — the label Android shows in the keyboard picker.
-- `MainActivity.kt` — a button opening the system's input-method settings, so switching Hexboard on is findable rather than hunted for.
-
-Held below the line because there is nothing to host before keys render. Building and installing the APK is not Claude's — no `adb` on this machine and Gradle cannot run here — so that half is split out as [install-and-enable-on-pixel], which this item releases.
-
-Files: `android/app/src/main/AndroidManifest.xml`, `android/app/src/main/res/values/strings.xml`, `android/app/src/main/java/tech/flintcraft/hexboard/MainActivity.kt`, and two new files (`HexboardImeService.kt`, `res/xml/method.xml`).
-
-#### Key press feedback — the pressed key lightens and fades back [key-press-feedback]
-Lifted above the line on 2026-09-02: [compile-and-view-panel] ran the app on the Pixel 6 that day and the panel compiled, drew and typed, so the code this edits is no longer unverified. Its premise — the board-level nearest-centre tap handler in `KeyboardPanel.kt` — was read on 2026-09-01 and that file has not changed since.
-
-Captured by you on 2026-09-01 and designed with you in the same session. Your words for the problem: the keyboard as it stands is a bit inert.
-
-**What was decided, and it is narrower than the original ask.** You first described touches showing and fading on each press alongside the key highlight. Presented with the choice, you chose the key highlight alone: the pressed key lightens instantly, holds, then fades back, and nothing marks where the finger actually landed.
-
-**Why the touch-point marker lost, recorded because it is the more obvious of the two and will look like an oversight.** The board's tap handler resolves a tap by nearest centre, so the touch target is larger than the drawn circle and a tap landing between two circles still goes somewhere definite. A marker at the real touch point would therefore show the gap between where you aimed and which key won. That is honest feedback, and it is exactly the feedback SPEC's perceptual wedge does not want: the wedge is about aiming *confidently* at circles, and a display that draws the eye to near-misses the routing already absorbed works against it. The highlight alone still answers "did that register, and on which key".
-
-**The build:** in `KeyboardPanel.kt`, hold per-key press state at the board level — which is where the tap is already resolved — and render the resolved key with a lighter fill that animates back to its normal colour. Concurrent presses each animate independently, because a fast typist starts the next press before the last has finished fading. A gesture that turns into a panel swipe rather than a tap must not leave a key stuck lit.
-
-**Timing, to be set by eye rather than by argument.** Start with the highlight instant, a brief hold, and a fade of about 150ms. These are opening values; you will have the keyboard in front of you when you run [compile-and-view-panel], and adjusting them on sight is the point rather than a fallback.
-
-The observation that shows it landed: on the Pixel 6, tapping a key visibly lightens that key and it fades back, and typing quickly shows several keys fading at once rather than one cancelling another.
-
-Held below the line against [compile-and-view-panel] rather than cleared. This changes code that has never been compiled, and stacking a second unverified change on the first means debugging both together if the compile fails. The cost was named to you and accepted: the effect appears on the phone a sitting later than it otherwise would. Placement interacts with [panel-switch-gestures], which is held against the same item and touches the same file — whichever is built second should expect the other's changes to `KeyboardPanel.kt` to be there already. Settled on 2026-09-02: this is built first of the three items editing that file, then [backspace-key-repeat], which hangs a hold timer on the per-key press state this item introduces, then the swipe. That ordering is written on all three.
-
-Rests on: `KeyboardPanel.kt` resolving taps at board level by nearest centre, read 2026-09-01; SPEC's perceptual wedge, which is what rules out the touch-point marker.
-
-Files: `android/app/src/main/java/tech/flintcraft/hexboard/KeyboardPanel.kt`.
-
-#### Backspace and the cursor keys repeat while held, at the phone's own timing [backspace-key-repeat]
-Held backspace and cursor keys repeat, the way every keyboard's do; today holding delete removes one character and stops.
-
-Captured by you on 2026-09-02, from the first time the app was run on the Pixel 6 during [compile-and-view-panel], and designed with you the same day. The absence reads as the keyboard being broken rather than as a missing feature. Everything else in that first run was right.
-
-**Which keys repeat: backspace, cursor-left and cursor-right, and nothing else.** A held letter is the accent menu the config already declares, so letters cannot repeat. Enter, shift and space do not repeat either; on every mainstream keyboard a held space does something else or nothing.
-
-**Keyed off the key's `action` in code, not a new config field.** Repeat is what an action does, not which keys exist, and SPEC gives behaviour to code and inventory to config. The Russian layout and every later one get it with no schema change. A `repeat` field in the config was the alternative and lost on that ground.
-
-**Timing follows the phone's settings, never a number of ours.** Your requirement, from setting up phones for people slower than you: the hold delay must scale with Android's accessibility "Touch & hold delay" setting. Android's `ViewConfiguration` reports exactly that — `getLongPressTimeout()` is the value that setting changes, and `getKeyRepeatDelay()` is the system's own repeat interval — so the build reads both at runtime and hard-codes neither. AOSP's keyboard used fixed 400 ms / 50 ms; that was the first proposal here and it lost to yours. The same rule binds every hold on this keyboard, the accent menus included, and SPEC carries it.
-
-**What the board lacks today is any notion of a key being held**, read from `KeyboardPanel.kt` on 2026-09-02: it runs `detectTapGestures` and nothing else, so neither repeat nor the long-press accents can work yet. The press-and-release tracking this needs is the same per-key press state [key-press-feedback] introduces, so this is built second of the four items editing that file: feedback first, then this, then [long-press-accent-popup] (which reuses this item's hold detection for keys that have alternatives — a key never both repeats and pops up), then [panel-switch-gestures]. A repeating key stays lit for as long as it repeats; a press that becomes a panel swipe stops the repeat. That ordering is written on all four.
-
-The build: in `KeyboardPanel.kt`, on a press resolved to a key whose action is backspace, cursor-left or cursor-right, start a timer at the system long-press timeout that re-fires the action every system key-repeat interval until release or until the gesture becomes a swipe.
-
-The observation that shows it landed: on the Pixel 6, holding delete removes characters continuously after a short pause and stops on release; holding a letter does not repeat it; and changing Settings → Accessibility → Timing controls → Touch & hold delay from Short to Long visibly lengthens the pause before repeating starts.
-
-Rests on: `KeyboardPanel.kt` using `detectTapGestures` only, read 2026-09-02; `ViewConfiguration.getLongPressTimeout()` tracking the accessibility touch-and-hold setting and `getKeyRepeatDelay()` existing, from memory of Android's API on 2026-09-02 and not looked up — the build should confirm both against the platform documentation before relying on them.
-
-Files: `android/app/src/main/java/tech/flintcraft/hexboard/KeyboardPanel.kt`.
-
-#### Long-press accent popup, as the prototype draws it [long-press-accent-popup]
-Holding a key that has alternatives shows them in a row above it; slide to choose, release to type. The config already declares every list and SPEC already promises the feature; nothing in the Kotlin shows one.
-
-Found on 2026-09-02 while designing [backspace-key-repeat] and processed the same day: `resources/key-layout.json` carries eighteen `longPress` lists (and the Russian layout adds Ё under Е and Ъ under Ь), SPEC lists long-press accents among the layout details, and `KeyboardPanel.kt` runs a tap detector only — read 2026-09-02 — so no hold reaches the config's lists. Nobody's work until now.
-
-**The gesture is the prototype's, which SPEC names canonical for gestures**, read from `hexboard17.html` on 2026-09-02: on a hold, a row of the key's alternatives appears above it with the first highlighted; sliding sideways moves the highlight along the row; releasing types the highlighted one. The base character is not in the row — a tap gives that. **On release without sliding, the first alternative is typed**, which is the prototype's behaviour and was kept over Gboard's (where release gives the base letter) because it saves a slide for the commonest case; settled with you on 2026-09-02.
-
-**Timing is the phone's own touch-and-hold delay**, per the SPEC sentence added the same day, replacing the prototype's fixed 320 ms. Keys with no alternatives do nothing on a hold unless they repeat ([backspace-key-repeat]); a key never both repeats and pops up.
-
-The build: in `KeyboardPanel.kt`, on a hold resolved to a key whose `accents` list is non-empty, draw the row above that key (clamped inside the board edges as the prototype does), track the pointer's horizontal position against the row to move the highlight, and commit the highlighted alternative on release. A press that becomes a panel swipe closes the row and types nothing. The row is drawn by the board, not by the key, since the board already owns press state.
-
-Built after [backspace-key-repeat] and before [panel-switch-gestures]: it uses the hold detection that item introduces on the press state [key-press-feedback] introduces, and the swipe item is the one that resolves all contention last. That ordering is written on those items too.
-
-The observation that shows it landed: on the Pixel 6, holding **e** shows è é ê ë ē above it, sliding highlights each in turn, releasing types the highlighted one, and releasing without sliding types è; holding a key with no list shows nothing.
-
-Rests on: the `accents` accessor in `KeyLayout.kt` and the tap-only detector in `KeyboardPanel.kt`, both read 2026-09-02; the prototype's popup logic (`openLP`, `updateLPSel`, `commitLP`), read 2026-09-02.
-
-Files: `android/app/src/main/java/tech/flintcraft/hexboard/KeyboardPanel.kt`.
-
-#### Horizontal swipe between the three letter panels [panel-switch-gestures]
-Lifted above the line on 2026-09-02: [compile-and-view-panel] ran the app on the Pixel 6 that day and the panel compiled, drew and typed. The premise — the board-level tap detector and the consumed-down behaviour of `detectTapGestures` — was read on 2026-09-01 and nothing has executed the gesture code since; the rests-on line below still stands as written.
-
-Split out of [compose-keyboard-renders-config] during the /plan session of 2026-08-20, which kept the rendering half and returned this half here. The rendering item draws one panel; this is what makes RARE, QWERTY and SYMBOLS reachable from each other, with QWERTY as home per SPEC.
-
-Design progress made before the split, so the next session starts further along. Two of the three questions the original item raised are settled and belong to the rendering half: the zag rule gets one Kotlin home ported from `planning/layout-preview.html`, and `hexboard17.html` is treated as specification for layout, gestures and key inventory exactly as SPEC already says. What was not answerable in that session is this one — where panel switching lives.
-
-That question is genuinely architectural rather than a detail. It decides whether a panel is a screen the keyboard navigates between or a slice of one continuously drawn surface, and that choice reaches how state is held, how a swipe is disambiguated from a key press near a panel edge, and whether an in-flight drag can cross a boundary. SPEC already rules out one thing: a mis-tap cannot cross a swipe boundary, recorded in [uniform-neighbours-predictive].
-
-What would settle it: a rendering surface that exists, so the gesture can be tried against real keys rather than reasoned about. So this waits on the rendering half rather than on a decision anyone can make now.
-
-Designed out on 2026-09-01, and the architectural question is answered by reading the code rather than by preference. `KeyboardPanel.kt` puts its tap detector on the board, not on the individual keys, and it has to: SPEC requires nearest-centre routing, so a tap goes to the closest key centre rather than to whichever circle contains it. Panel switching therefore cannot be a per-key concern and must wrap the whole board. That settles the screens-versus-one-surface question in favour of a horizontal pager holding three pages, one `KeyboardPanel` each, opening on QWERTY — which also keeps the drag-follows-finger feel `hexboard17.html` has, rather than a hard cut between panels.
-
-The known trap, which is why this item exists in this shape. `detectTapGestures`, which the board already runs, consumes the pointer-down event, and a consumed down starves whatever else is contending for the gesture — so the obvious construction is exactly the one reported to leave the pager unable to swipe. Two established remedies: a hand-written tap detector that detects without consuming, or having the parent detect its drag in Compose's Initial pass, which runs ahead of the child's Main-pass detector. Both live in `KeyboardPanel.kt`, so which one is needed does not change the file list — it is discovered by running the thing, not decided at a desk.
-
-Cites research: `workshop/resources/research/compose-pager-vs-board-tap-gesture.md`, which carries the sources and states plainly that none of it was executed.
-
-Two alternatives were never investigated rather than ruled out, and are recorded so nobody assumes they were weighed: drawing all three panels on one continuously offset surface with a single detector handling both tap and drag, and switching on a discrete fling with no drag-follows-finger, which would sidestep the gesture contention entirely.
-
-The build: wrap the three panels in a horizontal pager opening on QWERTY, with panel state held at the surface rather than inside a panel, and apply whichever of the two remedies the run shows is needed.
-
-The observation that shows it landed: on the Pixel 6, a horizontal swipe moves between RARE, QWERTY and SYMBOLS, and a tap that does not travel still types its key — including near a panel edge, which is where the two behaviours compete.
-
-Rests on: `KeyboardPanel.kt`'s board-level tap detector, read 2026-09-01; the consumed-down behaviour of `detectTapGestures`, read from documentation on 2026-09-01 and not executed; the project's Compose version, which the research does not pin down and which the build should read off `android/app/build.gradle.kts` before trusting any of it.
-
-Files: `android/app/src/main/java/tech/flintcraft/hexboard/KeyboardPanel.kt`, `android/app/src/main/java/tech/flintcraft/hexboard/MainActivity.kt`.
-
-Shares `KeyboardPanel.kt` with [key-press-feedback], [backspace-key-repeat] and [long-press-accent-popup], and is built last of the four (settled 2026-09-02): feedback introduces per-key press state, repeat hangs a hold timer on it, the accent popup reuses that hold, and this item's swipe must cancel all three — a gesture that turns into a panel swipe leaves no key lit, no key repeating and no popup open. That ordering is written on all four.
-
-Held below the line against [compile-and-view-panel] rather than against the rendering item, which shipped. The old wording said this waits on "a rendering surface that exists" — the surface exists as code, but nothing has compiled or run it, and the observation above is a thing seen on a phone. The compile check is that release condition made into an item that can actually resolve.
-
-#### Dictation test screen calling Android's on-device recogniser [ondevice-recogniser-test]
-Lifted above the line on 2026-09-02: [compile-and-view-panel] ran the app on the Pixel 6 that day, so the app this edits has compiled and the phone is paired. Nothing has verified the recogniser API premise since it was read on 2026-09-01; the rests-on line below still stands as written.
-
-Filed on 2026-09-02, out of the question of whether Hexboard's dictation can match Gboard's. The research is `workshop/resources/research/gboard-speech-correction.md`, and its central unknown is this: Gboard uses Google's own recogniser, Hexboard would call Android's public on-device one, and nothing found establishes whether those are the same engine on a Pixel. If they are, Hexboard starts at Gboard's recognition quality for nothing; if they are not, the gap is inside recognition where no transcript-level correction can reach it. That difference decides whether a correction feature is worth designing at all, so it is settled by measurement before any design.
-
-It rides the existing app rather than waiting for the keyboard. This needs no input method service and no keyboard: `MainActivity` is an ordinary app screen that already exists, so a button and a text area are enough to exercise the recogniser. That is what makes the answer available now rather than several items downstream.
-
-The build:
-- `MainActivity.kt` — a test screen: a button that starts on-device recognition and shows the returned text, and a line reporting what `SpeechRecognizer.isOnDeviceRecognitionAvailable()` returned, which also answers whether this handset has on-device recognition at all.
-- `AndroidManifest.xml` — the `RECORD_AUDIO` permission and the runtime request for it.
-
-**This scaffolding must not reach a shipped build.** The microphone permission belongs to [in-keyboard-voice-input], which introduces it properly with the press-and-hold control and the guarantees around it; a test screen carrying it is fine on your own handset and is not something to publish. Removing both is part of that item's work rather than a trailing step here.
-
-The observation that shows it landed: on the Pixel 6, the screen reports whether on-device recognition is available, and pressing the button and speaking a sentence puts recognised text on screen.
-
-Cites research: `workshop/resources/research/gboard-speech-correction.md`.
-
-Rests on: `SpeechRecognizer.isOnDeviceRecognitionAvailable()` and `createOnDeviceSpeechRecognizer()` existing from API 31 and requiring `RECORD_AUDIO`, read from Android's documentation on 2026-09-01 and recorded in `workshop/resources/research/android-voice-input-and-accents.md`; that `MainActivity` is a plain Compose activity, read on 2026-09-01.
-
-Held against [compile-and-view-panel] because it changes the same untried app and wants the Pixel already paired, which that item does.
-
-Files: `android/app/src/main/java/tech/flintcraft/hexboard/MainActivity.kt`, `android/app/src/main/AndroidManifest.xml`.
-
-#### Verify every key in the config actually renders and emits its character [android-key-audit]
-Lifted above the line on 2026-09-02: its blocker [compose-keyboard-renders-config] was built on 2026-08-21 and verified on the Pixel 6 by [compile-and-view-panel] on 2026-09-02, so keys now exist on screen to drive. Running the test it writes is not Claude's — Gradle cannot run here, recorded on [install-and-enable-on-pixel] — so the build writes the test and the run of it is yours, in Android Studio.
-
-Captured by you. Rewritten during planning as the second half of a split; the validator half is [key-config-validator].
-
-Original framing was to confirm the Kotlin keyboard's character set matches the manifest. The [layout-config-source] decision removes that need: the app reads `resources/key-layout.json` directly, so its key set *is* the config and the two cannot disagree. What remains worth checking is wiring — a key correctly declared in the config can still render nothing, render in the wrong slot, or emit the wrong character.
-
-The build: an instrumented or Compose UI test that walks every key in the config, asserts a key node exists at the expected panel, row and column, and asserts that activating it emits exactly the character the config declares. Long-press accents get the same treatment — each accent in a key's list is reachable and emits its own character. Failures name the character and its panel position.
-
-This is what manifest rule 1 — verify the shipped key set before shipping — actually means once the config is authoritative: not a comparison of two lists, but proof that the one list reaches the screen intact.
-
-Lift-condition: cleared to run once the Compose keyboard renders keys from the config, since there is nothing to drive until keys exist on screen.
-
-#### Russian layout, copied from Gboard's Russian keyboard [language-starter-layouts]
-A second layout config for the app: Russian, transcribed from FlorisBoard's Russian layout file. It is the first layout after English and the first to need rows wider than ten.
-
-**Rewritten whole on 2026-09-02, the second rewrite that day.** The morning's version assumed the QWERTY panel gives 30 letter slots and hid two Russian letters behind long-presses; a /next run halted on it because four of those slots are backspace, cursor-left, cursor-right and enter, leaving 26. Rather than hide six letters, you settled the method that now governs every layout: **copy the standard phone keyboard for the language as far as Hexboard's layout allows, and improvise nothing.** Your one condition, in your words: "as long as we don't have missing keys, that's the main thing." SPEC's layout principle carries this.
-
-**The source is a file, not a screenshot.** You first proposed screenshotting Gboard in each language, then withdrew it the same hour: Gboard offers several Russian layouts and reading them by eye is work you would rather not do. The replacement, found by web search with you present, is FlorisBoard's layout data — Apache 2.0, one JSON per layout and one popup file per language, read directly by Claude with nobody squinting at a phone. The finding is `workshop/resources/research/open-source-layout-sources.md`. Its Russian file, `jcuken_russian.json`, gives three letter rows of eleven, eleven and nine — Й Ц У К Е Н Г Ш Щ З Х · Ф Ы В А П Р О Л Д Ж Э · Я Ч С М И Т Ь Б Ю — and its `ru.json` popups put **Ё under Е and Ъ under Ь** and nothing else. Your Gboard screenshot of the default Russian keyboard, taken the same day, shows the identical rows, so the two sources agree.
-
-**Why widening won, having lost the day before.** The morning's item refused wider rows because narrower keys cut against the big-keys thesis. That reasoning was Claude's, and it lost to copying the standard: there is no ten-column Russian phone keyboard to copy (Gboard and iOS both use 11-11-9), so any six-letter hiding scheme is an invention, and the tenth-narrower key is a trade every Russian typist already takes on Gboard. It applies to the Russian layout alone; English is untouched. Defeated with it: six invented pairings, and dropping the cursor keys to make 28 slots and four pairings — both improvisation. Spilling letters onto the RARE panel stays refused: a letter is not rare in its own language.
-
-**The arrangement, all four rows eleven wide**, because `KeyboardPanel.kt` sizes keys from the panel's widest row (read 2026-09-02: `solveRadius(maxWidth, panel.maxCol + 1)`), so a ten-wide row 3 would sit narrower than the board rather than keep bigger keys:
-- Rows 0 and 1: the eleven letters each, as shown. No backspace in row 1.
-- Row 2: cursor-left at col 0, the nine letters at cols 1–9, backspace at col 10 — backspace where Gboard has it.
-- Row 3: Hexboard's own row, shift through hyphen at cols 0–9 as in the English layout, plus enter at col 10 — enter on the right, where Gboard's is. The two space bars at cols 4 and 6 sit symmetric about the centre column.
-- Cursor-right has no slot and is not on this layout. Gboard has no cursor keys at all, so this is the one key English has that Russian does not; named here so it reads as a decision rather than a loss.
-
-The build:
-- `resources/key-layout-ru.json` (new) — a schemaVersion 3 config: `id` `jcuken-ru`, `name` `ЙЦУКЕН (Russian)`, `isDefault: false`, `language` `ru`, `order`, `generates` naming its own manifest; the QWERTY panel's rows 0–3 with `colMax` 10 laid out as above, Ё as a long-press entry on Е and Ъ on Ь. Its `about` names FlorisBoard and the two file paths it was transcribed from, with the read date, and a `NOTICE` line for FlorisBoard's Apache 2.0 licence goes in the repository's `README.md` (the attribution rule the research file states). The RARE and SYMBOLS panels are copied from the English layout unchanged, since neither is language-specific.
-- `resources/key-manifest-ru.md` (new) — generated by `python scripts/generate-key-manifest.py --config resources/key-layout-ru.json`, never hand-written.
-- `planning/layout-preview.html` — its `LAYOUTS` block gains the Russian arrangement, so the board can be looked at without anyone editing JavaScript. The preview's geometry is fixed-radius, so an eleven-wide board simply renders wider.
-
-The observation that shows it landed: the generator runs against the new config without error and writes the manifest to the path the config names; `--check` reports no drift; the manifest lists all 33 Russian letters, 31 as keys and Ё and Ъ as long-press entries, which is the no-missing-keys condition made checkable; and the layout renders in `planning/layout-preview.html` with the 31 visible letters in the rows above. Reads but does not change: `resources/key-layout.json`, for the RARE and SYMBOLS panels and row 3. Runs but does not change: `scripts/generate-key-manifest.py`. No Kotlin changes: the panel already sizes to the widest row.
-
-**A check by a Russian reader before this ships is [russian-layout-check], and this item does not clear it.** It is now a confirmation of a copy rather than a judgment on Claude's pairings, but a shipped layout is copied rather than read, so it stays.
-
-Cites research: `workshop/resources/research/open-source-layout-sources.md`, which carries the file paths, the licence and the row contents; and `workshop/resources/research/cyrillic-overflow-and-slot-budget.md`, superseded on 2026-09-02 and marked so at its top.
-
-Rests on: the row contents and the two popups, read from FlorisBoard's `jcuken_russian.json` and `ru.json` on 2026-09-02; the function-key positions, read from your Gboard screenshot on 2026-09-02; `KeyboardPanel.kt` sizing keys from `maxCol`, read 2026-09-02; the `language` and `order` fields from [variant-language-fields], built 2026-09-02.
-
-Which further languages follow is [language-list-choice], and each follows this same method: Claude reads FlorisBoard's layout and popup files for the language and transcribes them. The phonetic Russian layout (ЯВЕРТЫ) exists as a Gboard option and was not investigated; not ruled out.
-
-Files: `resources/key-layout-ru.json`, `resources/key-manifest-ru.md`, `planning/layout-preview.html`, `README.md`.
-
-#### Deprecated `srcDir` call in the app's Gradle build file [assets-srcdir-deprecation]
-Noticed on 2026-09-02 during [run-key-config-validator], in the same Build panel output as the error that halted the sync, and filed rather than fixed because it stops nothing today.
-
-The warning: `'fun srcDir(srcDir: Any): Any' is deprecated. Use 'directories' mutable set instead`. It is on `sourceSets["main"].assets.srcDir(generatedAssetsDir)`, the line that puts `key-layout.json` into the app's assets so the app can read the key inventory at runtime.
-
-Why it is worth filing rather than leaving. This is the same API whose Provider-taking overload became a hard error in the plugin version now in use, which is what stopped the build in that session. A deprecation on the surviving overload is the same thing happening again more slowly, and the failure lands the next time the Android Gradle Plugin is upgraded — which is to say, at a moment chosen by somebody else.
-
-**Settled on 2026-09-02: the Variant API route.** Wire the copy task's output through `androidComponents { onVariants { it.sources.assets?.addGeneratedSourceDirectory(task, { it.outputDir }) } }`, giving the copy task a `DirectoryProperty` output to hand over. That is the route the plugin's own error message recommended, and it restores the task-dependency wiring the plain-`File` fix gave up rather than only silencing the warning. The `directories` mutable set is the recorded fallback if the copy task cannot be made to expose that output on this plugin version — the build reads the AGP 9.2 documentation for the exact method shapes before editing, since neither was looked up during planning.
-
-Gradle cannot run on this machine, so nothing here is verified by the build itself. The observation that shows it landed: at the next Android Studio run — [install-and-enable-on-pixel] is the next item that compiles — the Gradle sync passes without the `srcDir` deprecation in the Build panel, and the app still finds `key-layout.json` in its assets at runtime on the Pixel 6, which [compile-and-view-panel] established on 2026-09-02 and a regression here would break. Until that run, the change is unconfirmed; the item is cleared anyway because the alternative is a build file that breaks at a moment nobody here chooses.
-
-Placed last in the cleared region: nothing depends on it, and a build-file change is the one kind that can stop a sync, so it should follow the Kotlin work rather than precede it.
-
-Rests on: the deprecation text and the error message, read from Android Studio's Build panel on 2026-09-02; AGP 9.2.1, read from `android/gradle/libs.versions.toml` on 2026-09-02.
-
-Files: `android/app/build.gradle.kts`.
-
-#### Android Studio steps should name something visible, not a keyboard shortcut [android-studio-step-authoring]
-A one-sentence rule added to `CLAUDE.md`: a walkthrough step for a GUI app names something visible to click or a menu path, and a keyboard shortcut may ride alongside as an aside but is never the instruction.
-
-Filed on 2026-09-02, from driving two Android Studio items in one session, and kept the same day. It is a rule about how steps are written rather than work on the keyboard, so it lives in `CLAUDE.md`, which governs how Claude works on this project; SPEC is what the product is, and a queue item cannot hold a standing rule. A planning session may not edit `CLAUDE.md`, which is why this is a build rather than done on the spot.
-
-The build: one sentence under **Project rules** in `CLAUDE.md`, in the wording above. The observation that shows it landed: a grep of `CLAUDE.md` for "never the instruction" finds it. Placed beside [claude-md-phase-ran], which edits the same file, so one run does both.
-
-The same instance was also reported to the plugin's own project by mail on 2026-09-02, since the method's walkthrough rule already asks each step to name the thing to click and this is a sharper version of it; that send is in `INBOX/sent.md`.
-
-Rule gate: one rule is added, and it earns its place because the failure it prevents was seen twice in one session and leaves no evidence when it happens — nothing to report, nothing to diagnose. It sharpens an existing project practice rather than opening a new subject, and it evicts nothing: no current `CLAUDE.md` sentence covers how a GUI step is worded.
-
-What happened. A step said to press Shift twice to open the search box and type the test's name. Nothing opened, and the reported symptom was "I did it but nothing much seemed to happen" — the failure of a double keypress is silent and leaves nothing on screen to react to. Re-issued as a click path down the Project pane's tree — expand `kotlin+java`, then the entry suffixed `(test)` — it worked first time, with each expansion confirming itself.
-
-The rule that follows: a step names something on screen that can be clicked, and a menu path where a menu will do, rather than a keyboard shortcut. A shortcut that fails produces no evidence, so there is nothing for the person following it to report and nothing for the person writing it to diagnose. The same session saw this twice — the sync was given as `File → Sync Project with Gradle Files` only after the toolbar button and the banner link had both been offered and neither found.
-
-The one thing to weigh before adopting it wholesale: shortcuts are faster once known, and a rule written too strictly would ban naming one at all. The useful form is probably that the click path is the step and a shortcut rides alongside it as an aside, never as the instruction.
-
-This generalises a fix filed the same day for one item, [install-walkthrough-refresh].
-
-#### CLAUDE.md's phase line says the Kotlin has never run, and it has [claude-md-phase-ran]
-Filed at the close of 2026-09-02, from a stale sentence this same session created. [claude-md-phase-stale] replaced "extended planning, no implementation" with wording saying that Android implementation has begun and that none of it has been compiled or run on a device, naming [compile-and-view-panel] as the item that would change that. Later in the same session [compile-and-view-panel] was driven to its end: the app compiled, installed on the Pixel 6, drew its keys, and typed the characters it was aimed at.
-
-So the second half of that sentence is now false, and it points at an item that has since been done. It is the first thing a fresh session reads about the state of the code, which is exactly why the previous version was worth correcting.
-
-The build: replace the has-not-been-compiled clause in `CLAUDE.md`'s project-rules section with what is now true — the app has been built and run on a Pixel 6, the QWERTY panel draws from the config, and taps land on the keys they were aimed at — and drop the reference to [compile-and-view-panel]. What should survive from the old wording is the caution it carried in both versions: very little of the app exists, so designing before coding still holds.
-
-**Decided on 2026-09-02: the line states the phase, not a checklist of what has run.** A phase changes rarely — the next one is "a keyboard you can switch on", when [first-installable-build] lands — so a phase line goes stale at moments worth a sentence anyway, where a what-has-run line goes stale at every run. The build writes this replacement for the first two sentences of the phase paragraph in `CLAUDE.md`'s project-rules section, leaving the rest of the paragraph (target stack, the browser prototype as reference) as it is:
-
-> Current phase: Android implementation is under way and has run on a Pixel 6 — the QWERTY panel draws from the config and types the keys it is aimed at. There is no input method service yet, so it is an app rather than a keyboard. Very little exists, so keep designing before coding rather than rushing new work into the app.
-
-The observation that shows it landed: a grep of `CLAUDE.md` for "none of it has been run" and for "compile-and-view-panel" returns nothing, and one for "has run on a Pixel 6" finds the new sentence. Placed beside [android-studio-step-authoring], which edits the same file, so one run does both.
-
-Why this was not simply fixed when it was noticed: the session that made a choice is not the session that certifies it, and a build does not write project rules twice in the session that wrote them once.
-
-Rule gate: not needed — no rule is added or removed. This replaces a stale statement of fact in the phase paragraph; the design-before-coding caution it carries is kept as an amendment to that same sentence, as the previous version did, so nothing new competes for a reader's attention.
-
-Files: `CLAUDE.md`.
-
-#### [user] Read SPEC end to end and say whether it still sounds like your project [spec-coherence-readthrough]
-Lifted above the line on 2026-09-02: [spec-principles-rework] was built that day and confirmed by the greps its record names, so the rebalanced SPEC this reads is the one on disk.
-
-Filed by /rescan on 2026-09-01, from a suggestion made in passing during that session's planning and never written down.
-
-SPEC took seven changes in one session on 2026-09-01: `key-layout.json` reworded from the canonical layout to the default layout the app ships with; a sentence saying the layout picker lives in the app's own settings; press feedback as the key's own highlight with no touch-point marker; the persistent clipboard with its hour-and-twenty rule, drag-to-bin deletion and five-minute rule for password clips; voice input held open by the thumb; voice recognition adapting to its own user with enrolment audio destroyed after adaptation; and the predictive text principle rewritten around saved words and no proper nouns. The stale "Project docs" section was removed the same day.
-
-It changed again on 2026-09-02: the platform principle was rewritten from variants arriving by outside contribution to Hexboard shipping a layout per language copied from that language's own standard, and the key-inventory principle reworded to match. That rewrite replaced sentences written the day before, which is itself a reason to read the whole thing.
-
-Each of those sentences was written against its own discussion and is correct on its own terms. Nobody has read the result end to end. The risk is a document that is accurate line by line and no longer reads as a description of a keyboard — a pile of rulings rather than product truth — and that is a judgment about tone and coherence rather than about facts, which is why it is yours.
-
-**Narrowed to one question on 2026-09-02, and this is the whole change.** The item originally asked for four things. Two of them — spotting sentences that describe machinery rather than product truth, and spotting a feature that has outgrown its importance — turned out to need no judgment about what you meant, only a careful read, so they were done in that session's planning and became [spec-principles-rework]. What is left is the one thing Claude genuinely cannot do: whether SPEC still sounds like *your* project. Claude wrote most of those sentences, so it would be marking its own homework.
-
-The walkthrough:
-1. Open `SPEC.md` and read it start to finish in one sitting, without stopping to fix anything. Look for: whether it still describes one product with a point of view, or reads as a list of decisions that happen to sit together.
-2. Report what you found, in whatever words come. Any rewording is ordinary planning work filed from what you report, not something to do while reading.
-
-This names no observable that a later session could check — nothing in the world changes when it is done — so it waits until you mention it rather than being verified.
-
-Held below the line against [spec-principles-rework], which rebalances the Principles list. Reading the document to judge its coherence is worth doing once, after that rewrite, rather than twice. That ordering is written on both items.
-
 --- Cleared to run above this line ---
 
 #### [user] Install Hexboard on the Pixel 6 and switch it on as a keyboard [install-and-enable-on-pixel]
@@ -302,6 +48,9 @@ What a result means, so the report is worth making: near-identical output sugges
 ## Unprocessed
 
 > Captured ideas and tasks not yet fully processed. The next /plan session goes through these with you and decides each one's fate — keep it (move it up to Processed) or drop it. Each is filed as its own `#### ` heading, so the list shows up in an editor's outline.
+
+#### Last session advises processing install-and-enable-on-pixel next [forward-advisory]
+Filed at the close of the build run of 2026-09-02. The run built the input method service, the four gesture changes to the panel, the dictation test screen, the key audit test and the Gradle rewiring, and none of them has compiled: every one is ticked unconfirmed and waits on one Android Studio session on the Pixel 6. The install walkthrough [install-and-enable-on-pixel] is that session, and it sits just below the cleared line with its blocker shipped, so lifting it is what turns nine unconfirmed builds into seen ones. A /next run before that lift would find only the three held user steps and build nothing. The overlap scan found two captures from the same close bearing on it: [declare-savedstate-viewmodel-deps], which names the one compile risk to expect if the build fails, and [status-lines-after-install], which is held against the install and turns over the phase line and README once it succeeds. Neither blocks the lift. Six captures are waiting to be sorted in total.
 
 #### Let a user choose which layout variant they are typing on [layout-switching]
 Blocked by: [first-installable-build]
@@ -509,4 +258,23 @@ What this does not do, and it matters for SPEC's inviolable geometry: a split se
 What is not settled, and none of it is a desk decision: at what width the split appears, whether it is automatic or a setting, how wide the gap is, and what happens to the two space bars — whether each half keeps one, which is the arrangement that most obviously puts one under each thumb.
 
 Interacts with [key-press-feedback] and [panel-switch-gestures], both of which edit the same panel code and are held against [compile-and-view-panel], now done. A horizontal swipe crossing the gap between two halves is a case that gesture work will have to answer.
+
+#### Shift behaviour: one-shot today, caps lock and double-tap undesigned [shift-behaviour]
+Filed by /rescan on 2026-09-02 from the run that built [first-installable-build]. That item left shift to the service, and the build chose the simplest thing that gives capitals at all: tapping shift uppercases the next inserted character, then clears. Nothing in SPEC or the queue says what shift does. The prototype `hexboard17.html` has a double-tap-for-caps-lock (its `caps` state with a 320 ms double-tap window), and whether Hexboard keeps that, and whether a shifted state should be visible on the key, are the questions. The timing rule in SPEC — every hold and repeat follows the phone's settings — may reach a double-tap window too. Ordinary planning work; nothing here is waiting on you.
+
+#### Every layout config must reach the app's assets, not only the English one [ship-all-layout-configs]
+Filed by /rescan on 2026-09-02 from the run that built [language-starter-layouts]. The Gradle copy task ships `resources/key-layout.json` alone, so `key-layout-ru.json` exists in the repository and not in the app. A layout picker has nothing to list until every config is copied and the app can enumerate them at runtime, which is exactly the open question [layout-switching] records. This belongs with that item and should be built with or before it; that ordering is written here and should be written there when it is processed. The copy task now takes a `DirectoryProperty` output, so copying a folder of configs rather than one file is a small change to `android/app/build.gradle.kts`.
+
+#### On an eleven-wide layout, the other two panels draw bigger keys than QWERTY [panel-key-size-consistency]
+Filed by /rescan on 2026-09-02 from the run that built [language-starter-layouts]. `KeyboardPanel` sizes its keys from its own panel's widest row, so on the Russian layout QWERTY is eleven wide and RARE and SYMBOLS stay ten wide with correspondingly larger circles. Swiping between panels would change key size. Whether all three panels should share the radius of the widest (so the narrower panels sit centred with margins), or the difference is acceptable, is a design question for the session that first sees it on the phone. Geometry lives in Kotlin, so the fix is in `KeyboardPanel.kt` or `HexboardBoard`, not in any config.
+
+#### Two support libraries the service uses are not declared directly [declare-savedstate-viewmodel-deps]
+Filed by /rescan on 2026-09-02 from the run that built [first-installable-build]. `HexboardImeService.kt` imports `androidx.savedstate` and `androidx.lifecycle.ViewModelStore` classes, which are not in `android/gradle/libs.versions.toml`; the build relies on them arriving through Compose UI and Activity, which declare them as API dependencies. If the next Android Studio build fails on unresolved references in the service, the fix is to add both to the version catalogue and the app's dependencies. If it builds, this is nothing and can be deleted at the next planning session. Nothing to do until that build runs.
+
+#### Accent row on the top row overlaps the neighbouring keys [accent-row-top-row]
+Filed by /rescan on 2026-09-02 from the run that built [long-press-accent-popup]. The row is drawn by the board, inside the board's bounds, clamped to the top edge as the prototype clamps it — but the prototype had a bar above its keys to clamp into, and the board has nothing above row 0. So holding Е or E on the top row draws the alternatives over the neighbouring keys of that same row. Options not yet weighed: draw the row below the key on the top row, draw it in a window that may extend above the input view, or shrink the row. Seen only in reasoning; the first run on the Pixel 6 will show how bad it looks.
+
+#### Phase line and README status turn over once the keyboard switches on [status-lines-after-install]
+Blocked by: [install-and-enable-on-pixel]
+Filed by /rescan on 2026-09-02. Two sentences will be false the moment the install walkthrough shows Hexboard switched on as a keyboard: the phase paragraph in `CLAUDE.md`, written this same day by [claude-md-phase-ran], says there is no input method service yet; and `README.md`'s Status section says there is no working keyboard and nothing to install. Both were true when written and one build behind by the end of the run that wrote them. The phase line states the phase, and the phase changes at exactly this point, so it turns over once rather than at every run. Held against the install because the sentences stay true until it succeeds.
 

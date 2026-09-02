@@ -37,8 +37,8 @@
 <script>
 // ═══════════════════════════════════════════════════════════════════
 //  EDIT THIS BLOCK EACH PLANNING SESSION
-//  Each layout is one row rendered with the real zag + circle geometry.
-//  key = { col, lbl, kind, large? }
+//  Each layout is one or more rows rendered with the real zag + circle geometry.
+//  key = { col, lbl, kind, large?, row? }   — row defaults to 0
 // ═══════════════════════════════════════════════════════════════════
 // Optional per-key `fs` multiplies the font size (default 1).
 //
@@ -60,7 +60,22 @@ const mkRow3 = spec => spec.split(" ").map((lbl, col) => ({
   large: col === 0
 }));
 
+// A whole panel: one string per row, space-separated labels. Row 3's markup is mkRow3's;
+// on the letter rows `<` `>` are cursor keys, `<<` backspace, `>>` enter, `_` a space bar.
+const mkPanel = rows => rows.flatMap((spec, row) => spec.split(" ").map((lbl, col) => {
+  const special = { "<": "⇤", ">": "⇥", "<<": "⌫", ">>": "↵", "^": "⇧", "_": "␣" };
+  const kind = lbl === "_" ? 'spc' : special[lbl] ? 'sp' : /^[?,!'".\-]$/.test(lbl) ? 'pun' : 'ltr';
+  return { row, col, lbl: special[lbl] || lbl, kind, large: lbl === "<<" || lbl === ">>" || lbl === "^" };
+}));
+
 const LAYOUTS = [
+  { title: "Russian — ЙЦУКЕН, transcribed from FlorisBoard (11-11-9 letter rows; Ё under Е, Ъ under Ь; enter and backspace on the right, as Gboard has them)",
+    keys: mkPanel([
+      "Й Ц У К Е Н Г Ш Щ З Х",
+      "Ф Ы В А П Р О Л Д Ж Э",
+      "< Я Ч С М И Т Ь Б Ю <<",
+      "^ ? , ! _ ' _ \" . - >>",
+    ]) },
   { title: "Today — spaces at cols 4 and 6 (same height; right space nearer its edge than the left one is)",
     keys: mkRow3("⇧ ? , ! _ ' _ \" . -") },
   { title: "Candidate A — spaces at cols 2 and 6 (both even, so matched height; 2 from the left edge, 3 from the right)",
@@ -77,7 +92,7 @@ const vs = 2*r + g;                        // vertical step
 const hs = vs*(Math.sqrt(3)/2);            // horizontal step
 const vr = r - VGAP;                       // visible circle radius
 const par = c => ((c%2)+2)%2;              // column parity → zag
-const pt = (col) => ({ x:r + col*hs, y:r + (par(col)?vs*0.5:0) });
+const pt = (col, row = 0) => ({ x:r + col*hs, y:r + row*vs + (par(col)?vs*0.5:0) });
 
 const COLORS = {
   sp:  {bg:'#16182a',bd:'#2c3358',tx:'#79a0ff'},
@@ -97,13 +112,14 @@ function renderLayout(spec){
   const board = document.createElement('div');
   board.className = 'board';
   const maxCol = Math.max(...spec.keys.map(k=>k.col));
+  const maxRow = Math.max(...spec.keys.map(k=>k.row||0));
   const width  = 2*r + maxCol*hs;
-  const height = 2*r + vs*0.5;             // room for the lowered odd cols
+  const height = 2*r + maxRow*vs + vs*0.5;  // room for the lowered odd cols
   board.style.width  = width + 'px';
   board.style.height = (height + 18) + 'px';
 
   spec.keys.forEach(k=>{
-    const p = pt(k.col);
+    const p = pt(k.col, k.row||0);
     const c = COLORS[k.kind] || COLORS.ltr;
     const el = document.createElement('div');
     el.className = 'key';
@@ -119,12 +135,14 @@ function renderLayout(spec){
     el.appendChild(s);
     board.appendChild(el);
 
-    const tag = document.createElement('div');
-    tag.className = 'col-tag';
-    tag.textContent = k.col;
-    tag.style.left = p.x + 'px';
-    tag.style.top  = (height + 2) + 'px';
-    board.appendChild(tag);
+    if ((k.row||0) === maxRow) {
+      const tag = document.createElement('div');
+      tag.className = 'col-tag';
+      tag.textContent = k.col;
+      tag.style.left = p.x + 'px';
+      tag.style.top  = (height + 2) + 'px';
+      board.appendChild(tag);
+    }
   });
 
   wrap.appendChild(board);

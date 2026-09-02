@@ -1,4 +1,4 @@
-# PLACEHOLDER — [language-starter-layouts] rewritten whole a second time: eleven-column Russian rows transcribed from FlorisBoard's layout file, with Ё and Ъ the only hidden letters and improvisation ruled out
+# 6f66348 — [language-starter-layouts] rewritten whole a second time: eleven-column Russian rows transcribed from FlorisBoard's layout file, with Ё and Ъ the only hidden letters and improvisation ruled out
 
 Planning record for [language-starter-layouts], 2026-09-02 (afternoon). The morning's record of the same slug carries the first rewrite; this one supersedes it.
 

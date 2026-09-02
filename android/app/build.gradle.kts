@@ -5,20 +5,40 @@ plugins {
 
 // resources/key-layout.json is the single source of truth for the key inventory.
 // It is copied into the app's assets at build time so no second copy is checked in.
-val keyLayoutConfig = rootProject.file("../resources/key-layout.json")
-// Resolved to a plain File here rather than left as a Provider: the Android
-// SourceSet API rejects Provider instances, so assets.srcDir() below needs a
-// real directory.
-val generatedAssetsDir = layout.buildDirectory.dir("generated/keyLayoutAssets").get().asFile
+//
+// The copy is wired through the Variant API (androidComponents / addGeneratedSourceDirectory)
+// rather than sourceSets[...].assets.srcDir(...): that call is deprecated in this plugin
+// version, its Provider-taking overload has already become an error, and the Variant API is
+// the route the plugin's own message recommends. It also restores the task dependency —
+// the plugin runs the copy whenever the assets are merged — and the plugin, not this file,
+// chooses the generated directory the task writes into.
+abstract class CopyKeyLayoutConfig : DefaultTask() {
+    @get:InputFile
+    abstract val config: RegularFileProperty
 
-val copyKeyLayoutConfig by tasks.registering(Copy::class) {
-    description = "Copies resources/key-layout.json into the app's assets."
-    from(keyLayoutConfig)
-    into(generatedAssetsDir)
+    @get:OutputDirectory
+    abstract val outputDir: DirectoryProperty
+
+    @TaskAction
+    fun copy() {
+        val target = outputDir.get().asFile
+        target.mkdirs()
+        config.get().asFile.copyTo(File(target, "key-layout.json"), overwrite = true)
+    }
 }
 
-tasks.named("preBuild") {
-    dependsOn(copyKeyLayoutConfig)
+val copyKeyLayoutConfig = tasks.register<CopyKeyLayoutConfig>("copyKeyLayoutConfig") {
+    description = "Copies resources/key-layout.json into the app's assets."
+    config.set(rootProject.file("../resources/key-layout.json"))
+}
+
+androidComponents {
+    onVariants { variant ->
+        variant.sources.assets?.addGeneratedSourceDirectory(
+            copyKeyLayoutConfig,
+            CopyKeyLayoutConfig::outputDir
+        )
+    }
 }
 
 android {
@@ -53,8 +73,6 @@ android {
     buildFeatures {
         compose = true
     }
-
-    sourceSets["main"].assets.srcDir(generatedAssetsDir)
 
     testOptions {
         unitTests.all {

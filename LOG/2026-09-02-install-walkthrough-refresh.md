@@ -1,4 +1,4 @@
-# PLACEHOLDER — [install-walkthrough-refresh] done in-session rather than queued: the install walkthrough rewritten from what the first real run taught, then the capture deleted
+# 6f66348 — [install-walkthrough-refresh] done in-session rather than queued: the install walkthrough rewritten from what the first real run taught, then the capture deleted
 
 Planning record for [install-walkthrough-refresh], 2026-09-02.
 

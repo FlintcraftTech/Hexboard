@@ -81,3 +81,9 @@ In plain terms:
 Source-available is not the same as open source: this licence restricts commercial use, so Hexboard does not qualify as open source under the OSI definition. That restriction is deliberate.
 
 The licence text in [LICENSE](LICENSE) is the authoritative version; this summary is not a substitute for it.
+
+### Notices
+
+The Russian layout in `resources/key-layout-ru.json` is transcribed from the layout and
+popup data of [FlorisBoard](https://github.com/florisboard/florisboard), which is licensed
+under the Apache License, Version 2.0. The file names the two source files it was read from.

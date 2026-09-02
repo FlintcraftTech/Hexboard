@@ -1,4 +1,4 @@
-# PLACEHOLDER — [long-press-accent-popup] found by the rescan and processed the same session: the config's eighteen accent lists and SPEC's promise had no Kotlin and no queue item behind them
+# 6f66348 — [long-press-accent-popup] found by the rescan and processed the same session: the config's eighteen accent lists and SPEC's promise had no Kotlin and no queue item behind them
 
 Planning record for [long-press-accent-popup], 2026-09-02.
 

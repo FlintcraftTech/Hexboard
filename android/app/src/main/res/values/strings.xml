@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Hexboard</string>
+    <!-- The label Android shows for Hexboard in the keyboard picker. -->
+    <string name="ime_name">Hexboard</string>
+    <string name="ime_subtype_label">English (QWERTY)</string>
+    <string name="open_keyboard_settings">Switch Hexboard on in keyboard settings</string>
 </resources>

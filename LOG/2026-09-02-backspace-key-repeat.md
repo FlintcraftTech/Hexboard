@@ -1,4 +1,4 @@
-# PLACEHOLDER — [backspace-key-repeat] kept: backspace and the cursor keys repeat while held, keyed off the key's action in code, at timings read from the phone's own touch-and-hold setting
+# 6f66348 — [backspace-key-repeat] kept: backspace and the cursor keys repeat while held, keyed off the key's action in code, at timings read from the phone's own touch-and-hold setting
 
 Planning record for [backspace-key-repeat], 2026-09-02.
 

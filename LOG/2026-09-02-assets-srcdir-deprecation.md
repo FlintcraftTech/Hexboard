@@ -1,4 +1,4 @@
-# PLACEHOLDER — [assets-srcdir-deprecation] kept: the Variant API route, cleared last among the builds, checked at the next Android Studio run
+# 6f66348 — [assets-srcdir-deprecation] kept: the Variant API route, cleared last among the builds, checked at the next Android Studio run
 
 Planning record for [assets-srcdir-deprecation], 2026-09-02.
 

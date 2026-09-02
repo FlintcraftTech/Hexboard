@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- TEMPORARY: for the dictation test on MainActivity only. Must not reach a shipped
+         build; the in-keyboard voice input work introduces the microphone properly and
+         removes this with the test screen. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -22,6 +27,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Hexboard as an input method. BIND_INPUT_METHOD is what lets only the system
+             bind to it; the intent filter is how the system finds it; the meta-data points
+             at the descriptor Android reads for the picker. -->
+        <service
+            android:name=".HexboardImeService"
+            android:label="@string/ime_name"
+            android:permission="android.permission.BIND_INPUT_METHOD"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.view.InputMethod" />
+            </intent-filter>
+            <meta-data
+                android:name="android.view.im"
+                android:resource="@xml/method" />
+        </service>
     </application>
 
 </manifest>
