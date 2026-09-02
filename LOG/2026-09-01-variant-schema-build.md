@@ -1,4 +1,4 @@
-# [HASH] — The key config gains a variant identity, and the manifest generator stops assuming there is only one layout
+# ea1e038 — The key config gains a variant identity, and the manifest generator stops assuming there is only one layout
 
 SPEC says Hexboard is a platform for layout variants contributed into this repository, with one app shipping them all. `resources/key-layout.json` could not express that: it carried no field saying which layout it was, because it was written when there was exactly one. That single gap held two other pieces of work — an editor has to write a variant identifier and a picker has to read one — so this build closes it.
 

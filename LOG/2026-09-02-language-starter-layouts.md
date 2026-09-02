@@ -1,0 +1,15 @@
+# [HASH] — Russian settled as the first copied layout, with the overflow rule derived from what phone keyboards already do about Ё
+
+The user's proposal was to research the standard keyboard layouts for common languages and copy them rather than build a tool for authoring layouts. Claude's objection to authoring — that a layout for a language nobody here reads is a confident guess that looks correct — does not apply to transcribing a published standard, so the objection dissolved rather than being overruled. What replaced it is a narrower check: two things in the Russian layout are Claude's own reading and are not copied from anywhere, and those are what [russian-layout-check] exists for.
+
+Russian was taken first because it is the hard case. Hexboard's QWERTY panel is four rows of ten with row 3 holding the space bars and punctuation, so a language gets 30 letter slots — computed from the config rather than assumed — and Cyrillic has 33 letters. The research resolved the arithmetic and then dissolved most of the problem. Standard ЙЦУКЕН has three letter rows of twelve, eleven and nine, which is 32; the 33rd, Ё, sits alone in the desktop layout's top-left corner and on a phone has no key at all, because Russian keyboards on Android put it behind a long-press on Е. So the shortfall is two letters rather than three, and the mechanism for absorbing it is one the language's own phone keyboards already use and Hexboard already has.
+
+The rule generalises past Russian and is now in SPEC: an overflow letter goes behind a long-press on the letter it is already paired with in the writing system. Two alternatives lost and are recorded so neither returns as an obvious idea. Widening the rows to eleven or twelve was rejected because more keys per row means smaller keys, and larger keys are the project's whole point — a layout that shrinks the keys to fit an alphabet has given away the thing it is varying around. Spilling overflow onto the RARE panel was rejected because a letter is not rare in its own language and a swipe per word is worse than a long-press. The phonetic Russian layout, ЯВЕРТЫ, was never investigated and is recorded as open rather than ruled out; it raises the general question of which standard to copy where a language has two.
+
+One correction to this item was made later the same session and is recorded on it: its first walkthrough for the native check asked the user to repoint the preview page's `LAYOUTS` block, which is a JavaScript edit Claude can make. Preparing the preview moved into this build instead.
+
+The reasoning that replaced the editor with copied layouts is in the [variant-editor] entry of the same date. The research is `workshop/resources/research/cyrillic-overflow-and-slot-budget.md`.
+
+**Queue changes:** rewritten from prepared starter layouts for a contributor-facing editor into the Russian layout itself, and cleared to run behind [variant-language-fields]; `planning/layout-preview.html` added to its file list.
+
+**Work processed:** kept, cleared to run — [language-starter-layouts].
