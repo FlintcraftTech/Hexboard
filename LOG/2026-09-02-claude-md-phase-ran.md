@@ -1,0 +1,5 @@
+# PLACEHOLDER — [claude-md-phase-ran] kept: the phase line states the phase, not a checklist of what has run, with its replacement sentence written on the item
+
+Planning record for [claude-md-phase-ran], 2026-09-02.
+
+The morning's build corrected CLAUDE.md's phase line to say none of the Kotlin had been compiled or run; the same afternoon's drive ran it on the Pixel 6, so the line was wrong again by the close. The capture asked the better question — whether a line tracking what has been seen to run should exist at all. Decided with the user: the line states the phase, which changes rarely (the next is "a keyboard you can switch on", when the IME service lands), rather than what has run, which changes at every run. The replacement sentence is written on the item so the build applies it: implementation is under way and has run on a Pixel 6, the QWERTY panel draws from the config and types, there is no input method service yet so it is an app rather than a keyboard, and the design-before-coding caution survives. Cleared beside [android-studio-step-authoring] so one run makes both `CLAUDE.md` edits. Rule-gate disposition: not needed, no rule added or removed.

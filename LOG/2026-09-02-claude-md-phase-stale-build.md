@@ -1,4 +1,4 @@
-# [HASH] — CLAUDE.md's phase line replaced, and by the end of the same session it was already half wrong again
+# 1979343 — CLAUDE.md's phase line replaced, and by the end of the same session it was already half wrong again
 
 `CLAUDE.md` told every session that opened this project "Current phase: extended planning, no implementation." That had not been true for some time: `MainActivity.kt`, `KeyboardPanel.kt` and `KeyLayout.kt` exist, and the Compose keyboard already draws its keys from the config. Because `CLAUDE.md` is loaded at the start of every session, it is the first thing shaping what a fresh session believes exists — one reading "no implementation" starts from a wrong picture and can propose building what is already built.
 

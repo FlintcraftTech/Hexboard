@@ -1,4 +1,4 @@
-# [HASH] — SPEC's principles rebalanced by moving machinery out, not by cutting to a length
+# 1979343 — SPEC's principles rebalanced by moving machinery out, not by cutting to a length
 
 Within the list a reader skims, a deferred feature outweighed the reason the project exists: the perceptual wedge ran 22 words against predictive text's 309. That measurement is what the item was filed on, and it overstates the problem on its own — the wedge is also described at length in "How it works" — so what was wrong was the balance inside one list rather than the coverage of the wedge.
 

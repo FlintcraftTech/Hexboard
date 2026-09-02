@@ -1,0 +1,9 @@
+# PLACEHOLDER — [backspace-key-repeat] kept: backspace and the cursor keys repeat while held, keyed off the key's action in code, at timings read from the phone's own touch-and-hold setting
+
+Planning record for [backspace-key-repeat], 2026-09-02.
+
+Captured by the user the same morning from the first run on the Pixel 6, where holding delete removed one character and stopped. Reading `KeyboardPanel.kt` showed the board runs a tap detector and nothing else — no notion of a held key — which is also why the config's long-press accents were not working and led to [long-press-accent-popup] being found later in the session.
+
+Three things were settled. **Which keys repeat:** backspace, cursor-left and cursor-right only; a held letter is its accent menu, and enter, shift and space do not repeat on any mainstream keyboard. **Where it lives:** keyed off the key's `action` in code rather than a new config field, because repeat is what an action does and SPEC gives behaviour to code and inventory to config; a `repeat` field lost on that ground. **Timing:** Claude proposed AOSP's fixed 400 ms then 50 ms; the user overruled it — the hold delay must scale with Android's accessibility "Touch & hold delay" setting, because they set up phones for people slower than themselves. Android's `ViewConfiguration` reports that setting's value and a system repeat interval, so the build reads both and hard-codes neither. The rule was written into SPEC as binding every hold on the keyboard, accent menus included.
+
+Placed second of the four items editing `KeyboardPanel.kt` — after the feedback item, whose per-key press state it hangs a hold timer on, and before the accent popup and the swipe. The order is written on all four. The `ViewConfiguration` methods were named from memory rather than looked up, and the item says the build should confirm them.

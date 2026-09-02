@@ -1,4 +1,4 @@
-# [HASH] — Key-config validator run green, after two build-config failures on the way
+# 1979343 — Key-config validator run green, after two build-config failures on the way
 
 Walk-through record for [run-key-config-validator], opened as the drive started so nothing is lost if the session ends mid-way. Appended to step by step.
 

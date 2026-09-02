@@ -1,0 +1,5 @@
+# PLACEHOLDER — [install-walkthrough-refresh] done in-session rather than queued: the install walkthrough rewritten from what the first real run taught, then the capture deleted
+
+Planning record for [install-walkthrough-refresh], 2026-09-02.
+
+The capture asked for [install-and-enable-on-pixel]'s walkthrough to be rewritten from the morning's drive, which found three things wrong with it: the phone was already paired so the opening steps were skippable; the device shows greyed out when the run configuration is a unit test rather than the app; and the Run button stays disabled after a Gradle-file edit until a sync, announced by a banner an open dropdown can hide. Rewriting a queue item's steps is planning work, not a build, so it was done here on the user's agreement: seven steps, opening on the sync and the run-configuration check, pairing only where the phone is missing, sync by menu path before Run, and the on-phone steps unchanged. Every step names something to click or a menu path — the rule the next capture, [android-studio-step-authoring], went on to make standing. The capture was then deleted as done.

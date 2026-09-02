@@ -1,5 +1,7 @@
 # Fitting a Cyrillic alphabet into Hexboard's slot budget
 
+**Superseded by: [language-starter-layouts] as rewritten on 2026-09-02** — the budget below is wrong and the rule built on it falls. Rows 0–2 hold 30 slots but four are backspace, cursor-left, cursor-right and enter, so there are 26 letter positions, not 30. Rather than hide six letters, the decision is to copy Gboard's Russian keyboard exactly, which is eleven columns wide (rows of 11, 11 and 9 letters, with Ъ and Ё the only letters hidden) — so the "widening rejected" and "pair the overflow" sections no longer stand. What still stands: the ЙЦУКЕН row contents, Ё living under Е on phones, and the note that the phonetic layout was never investigated.
+
 Researched 2026-09-02, for the question of whether Hexboard can carry layouts copied from other languages' standard keyboards, using Russian as the hard case.
 
 ## Hexboard's budget

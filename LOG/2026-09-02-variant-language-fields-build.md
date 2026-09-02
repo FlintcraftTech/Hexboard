@@ -1,4 +1,4 @@
-# [HASH] — Language and ordering fields added to the key config, with a validator that refuses a config missing them
+# 1979343 — Language and ordering fields added to the key config, with a validator that refuses a config missing them
 
 The layout picker groups layouts by language and orders them within a language, and the config could express neither. Until now the language was only implied by an id reading `qwerty-en`, which is a convention rather than data — and every layout written before these fields existed would have had to be edited afterwards, which is why this went first.
 

@@ -1,4 +1,4 @@
-# [HASH] — First run on the Pixel 6: it compiles, the panel draws, and taps land where they were aimed
+# 1979343 — First run on the Pixel 6: it compiles, the panel draws, and taps land where they were aimed
 
 Walk-through record for [compile-and-view-panel], opened as the drive started so nothing is lost if the session ends mid-way. Appended step by step.
 
