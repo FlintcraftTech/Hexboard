@@ -1,4 +1,4 @@
-# PLACEHOLDER — [ondevice-recogniser-test] built: a dictation test on the app screen that reports on-device availability and puts one recognised utterance on screen
+# 8f705a3 — [ondevice-recogniser-test] built: a dictation test on the app screen that reports on-device availability and puts one recognised utterance on screen
 
 Closed 2026-09-02 16:18. Sixth item of the run.
 

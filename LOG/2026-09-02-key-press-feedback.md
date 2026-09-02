@@ -1,4 +1,4 @@
-# PLACEHOLDER — [key-press-feedback] built: the pressed key lightens on touch and fades back on release, tracked per finger at board level
+# 8f705a3 — [key-press-feedback] built: the pressed key lightens on touch and fades back on release, tracked per finger at board level
 
 Closed 2026-09-02 16:18. Second item of the twelve-item run, and the first of four that edit `KeyboardPanel.kt`, in the order settled at planning: feedback first, because it introduces the per-key press state the other three hang on.
 

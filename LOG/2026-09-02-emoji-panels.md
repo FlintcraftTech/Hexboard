@@ -1,0 +1,17 @@
+# [HASH] — Emoji panels filed at last, after the platform turned out to sell its emoji list only bundled with its own user interface
+
+Found by the rescan mid-session, while the clipboard's route in was being settled: a grep of the Kotlin found no vertical swipe and no emoji panel anywhere. SPEC has promised five emoji panels reached by a downward swipe throughout, and no queue item had ever covered them — the feature dying in SPEC, which is the case the seeding rule exists for. The user's steer on where it sits: it is needed, and the earlier it is taken up the longer there is to resolve it.
+
+That made the question at its centre urgent rather than eventual. SPEC said the emoji panels were "system-supplied content" and nobody had established what that could mean on Android. `androidx.emoji2:emoji2-emojipicker` supplies an up-to-date list, skin-tone variants and recents — but only through `EmojiPickerView`, a vertical scrolling grid with a category header. Its catalogue is internal: the library's declared public API is the view, an item class and the recent-emoji providers, and nothing exposes the list as data. So the platform's content arrives with the platform's user interface or not at all, and SPEC's five-panel promise and its system-supplied promise could not both stand as written.
+
+The user chose the third road, which this project has taken once already. `emoji-test.txt`, published per emoji version by Unicode, lists every emoji in CLDR display order — the order keyboards use — grouped into groups and subgroups, and its own header describes it as data for keyboards. That gives the content without the interface, so Hexboard keeps its panels and its geometry. It is the same division SPEC applies to layouts, which are transcribed from open data rather than invented here, and SPEC's wording was sharpened in the same session to say so.
+
+What it costs, accepted knowingly: skin-tone variants and recently-used tracking come free from the Jetpack picker and become work here instead, and somebody refreshes the list when Unicode moves. The rendering guarantee is separable — `emoji2` can be used for rendering on older Android versions without taking the picker. Adopting `EmojiPickerView` was the alternative and lost as less work and less Hexboard; a hand-written list like the prototype's 250 characters lost for contradicting SPEC's own wording and going stale with every Unicode release.
+
+One collision is named in the item rather than left to be met: [panel-switch-gestures] shipped a `HorizontalPager` that morning, the prototype's arrangement wraps it in a vertical one, and the pointer-consumption trap that item had to solve arrives again on the second axis. The remedy filed as `compose-pager-vs-board-tap-gesture.md` was worked out for the horizontal case and is a starting point rather than an answer.
+
+The finding is filed as `workshop/resources/research/android-emoji-sources.md`, with its index line. **The Unicode Terms of Use were not read** — flagged in the finding, in the item's rests-on line and here, because this repository is public and a licence reported second-hand is not a licence checked.
+
+**Queue changes:** filed into Unprocessed and moved into Processed below the readiness line with `Blocked by: [install-and-enable-on-pixel]`. SPEC's manifest principle had its emoji sentence rewritten from "system-supplied" to content taken from the standard, with the panels stated as Hexboard's own.
+
+**Work processed:** kept — [emoji-panels].

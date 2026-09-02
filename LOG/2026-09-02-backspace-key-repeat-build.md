@@ -1,4 +1,4 @@
-# PLACEHOLDER — [backspace-key-repeat] built: backspace and the cursor keys repeat while held, at timings read from the phone's own settings
+# 8f705a3 — [backspace-key-repeat] built: backspace and the cursor keys repeat while held, at timings read from the phone's own settings
 
 Closed 2026-09-02 16:18. Third item of the run, second of the four `KeyboardPanel.kt` items, hanging a hold timer on the press state [key-press-feedback] introduced.
 

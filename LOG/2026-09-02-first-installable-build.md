@@ -1,4 +1,4 @@
-# PLACEHOLDER — [first-installable-build] built: Hexboard registered as an Android input method, hosting the Compose board in a service that owns its own lifecycle
+# 8f705a3 — [first-installable-build] built: Hexboard registered as an Android input method, hosting the Compose board in a service that owns its own lifecycle
 
 Closed 2026-09-02 16:18. Built in the twelve-item run of that afternoon, first of the run because five held items name it as their blocker.
 

@@ -1,4 +1,4 @@
-# PLACEHOLDER — [language-starter-layouts] built: the Russian ЙЦУКЕН layout transcribed from FlorisBoard into its own config, manifest, preview and licence notice
+# 8f705a3 — [language-starter-layouts] built: the Russian ЙЦУКЕН layout transcribed from FlorisBoard into its own config, manifest, preview and licence notice
 
 Closed 2026-09-02 16:18. Eighth item of the run, and the one build this run could fully confirm.
 

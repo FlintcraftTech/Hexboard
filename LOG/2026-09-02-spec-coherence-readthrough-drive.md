@@ -1,4 +1,4 @@
-# PLACEHOLDER — [spec-coherence-readthrough] driven: the SPEC read-through walked live at the end of the twelve-item run
+# 8f705a3 — [spec-coherence-readthrough] driven: the SPEC read-through walked live at the end of the twelve-item run
 
 Record opened at the start of the drive, on 2026-09-02, and appended as each step happens. The two earlier records under this slug (2026-09-01 filing, 2026-09-02 narrowing) show planning only: neither walkthrough step had been driven before this.
 

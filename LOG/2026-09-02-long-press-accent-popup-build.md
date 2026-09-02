@@ -1,4 +1,4 @@
-# PLACEHOLDER — [long-press-accent-popup] built: holding a key with alternatives shows them in a row above it, slide to choose, release to type
+# 8f705a3 — [long-press-accent-popup] built: holding a key with alternatives shows them in a row above it, slide to choose, release to type
 
 Closed 2026-09-02 16:18. Fourth item of the run, third of the four `KeyboardPanel.kt` items, reusing the hold detection [backspace-key-repeat] introduced.
 

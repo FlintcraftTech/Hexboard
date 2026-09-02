@@ -1,0 +1,13 @@
+# [HASH] — Why the board's routing must never produce a nothing-tap, recorded on the engine that makes it true
+
+The user asked whether the touch targets should be circles that kiss, on the ground that a hexagonal cell has corners that could be pressed by accident, and said plainly that finding corners smuggled back in was not what they expected. Then they asked a second question — whether a wrong keystroke is harder to correct than a missing one — and that second question answers the first, from this engine rather than from geometry.
+
+The engine corrects at the word boundary with a neighbour-weighted edit distance, where substituting a key for one of its six neighbours is a near-miss costing almost nothing. A wrong character is the failure the whole design is built around. A missing character is a different edit — a deletion — and the six-neighbour geometry carries no signal for it: nothing says which letter failed to arrive, or where in the word. So touch regions with dead space between them would produce exactly the failure this engine is worst at, in order to avoid the one it is best at. That is the standing argument for the board's full-coverage routing, and it is the user's rather than Claude's: Claude had argued only that dead zones are annoying.
+
+Two things were established alongside it. A Voronoi corner is a boundary and not a target — the point equidistant from three centres, so a tap there resolves to one of the three rather than triggering anything of its own. And making the drawn circles kiss would not remove the hexagonal cells anyway: with the gap at zero the circles merely grow, and the space between them is still assigned to the nearest centre. Geometry allows three arrangements — full coverage with hexagonal cells, overlapping circles needing an arbitrary draw-order tie-break, or circles with dead interstices — and only the third has no corners. The perceptual wedge is untouched either way, the cells never being drawn, which is what SPEC's own note means by calling the claim perceptual rather than functional.
+
+Recorded here rather than in SPEC because it is reasoning rather than product truth, and here rather than anywhere else because this is where a reader re-proposing kissing circles would land. [row-tint] carries a pointer to it into `KeyGeometry.kt`, where a reader of the geometry would meet it instead.
+
+**Queue changes:** rationale added to the item, which stays in Unprocessed held against [install-and-enable-on-pixel]. It also gained a line saying the suggestion row is not its to create — [suggestion-strip] introduces it and predictive text fills the middle.
+
+**Work processed:** amended, not processed — [uniform-neighbours-predictive].

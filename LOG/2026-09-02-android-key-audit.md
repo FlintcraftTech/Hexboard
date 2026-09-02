@@ -1,4 +1,4 @@
-# PLACEHOLDER — [android-key-audit] built: a Compose UI test that walks every key and accent in the config and proves each reaches the screen and emits its own character
+# 8f705a3 — [android-key-audit] built: a Compose UI test that walks every key and accent in the config and proves each reaches the screen and emits its own character
 
 Closed 2026-09-02 16:18. Seventh item of the run.
 

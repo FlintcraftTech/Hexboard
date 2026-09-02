@@ -1,4 +1,4 @@
-# PLACEHOLDER — [assets-srcdir-deprecation] built: the key-config copy rewired through the Variant API, removing the deprecated srcDir call
+# 8f705a3 — [assets-srcdir-deprecation] built: the key-config copy rewired through the Variant API, removing the deprecated srcDir call
 
 Closed 2026-09-02 16:18. Ninth item of the run, placed last of the code changes because a build-file change is the kind that can stop a sync.
 

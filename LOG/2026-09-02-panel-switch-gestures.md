@@ -1,4 +1,4 @@
-# PLACEHOLDER — [panel-switch-gestures] built: a horizontal pager over the three letter panels, opening on QWERTY, with the board's non-consuming press tracker underneath
+# 8f705a3 — [panel-switch-gestures] built: a horizontal pager over the three letter panels, opening on QWERTY, with the board's non-consuming press tracker underneath
 
 Closed 2026-09-02 16:18. Fifth item of the run, last of the four `KeyboardPanel.kt` items, because its swipe must cancel everything the other three started.
 
