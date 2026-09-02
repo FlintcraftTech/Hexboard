@@ -1,4 +1,4 @@
-# [HASH] — The SPEC read-through narrowed from four questions to the one the user alone can answer
+# 73231d1 — The SPEC read-through narrowed from four questions to the one the user alone can answer
 
 The item asked the user to read SPEC whole and report four things: whether it still describes one product with a point of view, which sentences read as machinery rather than product truth, what says more than its importance warrants, and then a report.
 

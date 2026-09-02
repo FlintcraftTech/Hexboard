@@ -1,4 +1,4 @@
-# [HASH] — Gboard's speech correction researched, and the feature reshaped by what the architecture turned out to be
+# 73231d1 — Gboard's speech correction researched, and the feature reshaped by what the architecture turned out to be
 
 The user raised correcting dictated speech as work separate from the keyboard's own autocorrect, with a stated target of matching Gboard, and asked for the question to be researched rather than assumed: in their words, it looks like AI but might not be.
 

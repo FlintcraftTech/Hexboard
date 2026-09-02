@@ -1,5 +1,5 @@
 <!-- GENERATED FILE — DO NOT HAND-EDIT.
-     Layout: QWERTY (English) (qwerty-en).
+     Layout: QWERTY (English) (qwerty-en), language en.
      Generated from resources/key-layout.json by scripts/generate-key-manifest.py.
      Edit the JSON and re-run the script; any edit made here will be overwritten. -->
 

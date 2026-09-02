@@ -1,4 +1,4 @@
-# [HASH] — Phone-side layout creation split out of the editor in the morning and deleted in the afternoon, with the editor it belonged to
+# 73231d1 — Phone-side layout creation split out of the editor in the morning and deleted in the afternoon, with the editor it belonged to
 
 Filed when the layout editor was settled as a web page, to hold the half that a page on a computer cannot serve: the user had said an ordinary person should be able to make a layout and keep it private, and a layout built on a desktop still has to reach the phone.
 

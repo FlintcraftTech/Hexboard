@@ -43,7 +43,7 @@ Hexboard (working name) is an Android keyboard app being designed around circula
 
 The core differentiator is a perceptual claim: users feel more confident aiming at circles than at hexagons with visible corners, aim more centrally, and tap more accurately as a result. This distinguishes Hexboard from existing tessellation-based keyboards (Typewise, MessagEase, Thumb-Key), all of which the project owner has used and rejected. Don't re-litigate this — the differentiator is settled.
 
-Current phase: extended planning, no implementation. Target stack is Kotlin / Jetpack Compose. A working browser prototype (hexboard17.html) demonstrates the layout, gestures, and key inventory and should be treated as the canonical reference for current design intent.
+Current phase: Android implementation has begun, and none of it has been run. `MainActivity.kt`, `KeyboardPanel.kt` and `KeyLayout.kt` exist, and the Compose keyboard already draws its keys from the config. Nothing written has been compiled or seen on a device — [compile-and-view-panel] is the queued step that changes that — so treat the existing Kotlin as real code of unknown correctness, and keep designing before coding rather than rushing new work into the app. Target stack is Kotlin / Jetpack Compose. A working browser prototype (hexboard17.html) demonstrates the layout, gestures, and key inventory and should be treated as the canonical reference for current design intent.
 
 Layout previews during planning use `planning/layout-preview.html` — the standing fixture. Edit its `LAYOUTS` block (real zag + circle geometry, lifted from hexboard17.html) and reload to preview any row config. Maintain this rather than rebuilding a previewer.
 

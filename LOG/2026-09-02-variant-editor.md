@@ -1,4 +1,4 @@
-# [HASH] — The contributor-facing layout editor designed out in full and then deleted the same day, when copying each language's own standard replaced building a tool to author layouts
+# 73231d1 — The contributor-facing layout editor designed out in full and then deleted the same day, when copying each language's own standard replaced building a tool to author layouts
 
 This is the entry the rest of the session's layout work cites, because the editor was designed properly before it was dropped and nothing about that design was wrong. What changed was the premise underneath it.
 

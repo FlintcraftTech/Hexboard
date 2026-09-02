@@ -1,4 +1,4 @@
-# [HASH] — SPEC's principles measured rather than judged, and the rebalancing filed as work after the count showed a deferred feature outweighing the project's whole differentiator
+# 73231d1 — SPEC's principles measured rather than judged, and the rebalancing filed as work after the count showed a deferred feature outweighing the project's whole differentiator
 
 [spec-coherence-readthrough] asked the user for four things, and two of them turned out to need no judgment about what the user meant — only a careful read. Those two were done in this planning session under the resolve-now rule and became this item; the reasoning for the split is in the [spec-coherence-readthrough] entry of the same date.
 

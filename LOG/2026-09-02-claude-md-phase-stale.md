@@ -1,4 +1,4 @@
-# [HASH] — CLAUDE.md's "no implementation" phase line filed for correction, with the instinct it carried kept rather than dropped
+# 73231d1 — CLAUDE.md's "no implementation" phase line filed for correction, with the instinct it carried kept rather than dropped
 
 Surfaced by /rescan. The project rules in `CLAUDE.md` say "Current phase: extended planning, no implementation", and that has not been true for some time: `MainActivity.kt`, `KeyboardPanel.kt` and `KeyLayout.kt` all exist, the Compose keyboard already draws from the config, and several build items are cleared to run.
 

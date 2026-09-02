@@ -4,57 +4,12 @@
 
 > Vetted work, ready to build — worked top to bottom. Each piece of work is one item: a `#### ` heading naming it, a `[slug]` at the end of that heading line, and a short rationale beneath. A leading flavor tag names how it runs — none for a build (Claude edits files), `[audit]` for a review pass, `[user]` for a step only you can do. A security or privacy risk Claude surfaces lives here too, as a work item carrying a `Red flag · State: cleared/uncleared` marker. The line below marks how far down is cleared to build; anything below it is decided but not ready yet.
 
-#### Flip the Hexboard repo from private to public on GitHub [repo-go-public]
-Captured by you. Split out of [licence-and-go-public] during planning.
-Runs alone
-
-Retagged from `[user]` to Claude-work on 2026-08-14, on your instruction, after the original premise turned out to be false. The item had said only you could do this because it was "an account action on github.com that Claude can't perform". That is wrong: the `gh` command-line tool on this machine is signed in with admin rights over the FlintcraftTech organisation, so the flip is a single command. The browser walkthrough this replaces is preserved in git history if it is ever needed again.
-
-The work is one command:
-
-```
-gh repo edit FlintcraftTech/Hexboard --visibility public --accept-visibility-change-consequences
-```
-
-The consequences flag is not optional — gh refuses the command without it whenever `--visibility` is used. The owner name carries a lowercase `c`, GitHub's current spelling, confirmed against the GitHub API on 2026-08-14.
-
-Then verify two ways, because the authenticated view cannot tell you what a stranger sees. `gh repo view FlintcraftTech/Hexboard --json isPrivate` should report `false`; and an unauthenticated request to `https://api.github.com/repos/FlintcraftTech/Hexboard` should return 200 rather than the 404 it returns today.
-
-**Ask before running it, and get an explicit yes in that same session.** Retagging changed who types the command, not who decides. Going public is irreversible in the way that matters — once the history is public it can be cloned, so making the repo private again does not un-expose anything. Whoever runs this must first say plainly what is about to become readable, and stop for an answer.
-
-Lift-condition, now met and recorded so the clearing can be checked rather than trusted: [add-licence] (done), [git-history-audit] with its findings dealt with (processed in the /plan session of 2026-08-06), [untrack-faq], [git-noreply-email], and [public-readme] have all landed. The licence should be in place before anyone can read the code; the audit was the red-flag mitigation; the FAQ should leave the tree before the tree is public; and the noreply address should be set before any further commit is published. Cleared above the readiness line on 2026-08-14 on that basis.
-
-Marked `Runs alone` because it is irreversible and outward-facing. A run that reaches it should stop there rather than carry the same session's momentum into the ask.
-
-Placement, decided on 2026-08-14 and recorded so a later re-sort does not undo it. This sits last among the build items and ahead of [run-key-config-validator], which is the only cleared `[user]` item. It goes after [throughliner-doc-drift] and [emoji-panels-missing-from-config] because both of those correct text that this item publishes — CLAUDE.md still names the old method, and the config still claims a scope SPEC has since narrowed. It goes *before* the validator test because that test is not a gate for going public, and a run halts at a `[user]` item: left in the usual end-preferred position, the validator would have blocked the flip from ever being reached in an unattended run.
-
-What the irreversibility means for the three limitations recorded elsewhere, and which the ask above must name — the personal address in commit metadata and in file content at `a42cd01`, the reworded candid line at `6e09dad`, and the FAQ in every commit so far — all remain readable in history after this runs, and each was consciously accepted rather than overlooked.
-
-#### Language and ordering fields added to the key config [variant-language-fields]
-Split out of [layout-switching] on 2026-09-01 and narrowed on 2026-09-02. The layout picker groups layouts by language and orders them within a language, and the config can express neither: schemaVersion 2 carries `id`, `name`, `isDefault` and `generates`, and the language is only implied by the id reading `qwerty-en`, which is a convention rather than data. Every layout written before these fields exist would have to be edited afterwards, so they come first.
-
-The same shape of work as [variant-schema], and buildable for the same reason: what a field is called and what it holds is a desk decision, while reading it at runtime waits on a keyboard.
-
-The build:
-- `resources/key-layout.json` — schemaVersion 2 to 3, adding `language`, a BCP 47 tag (`"en"` here), required; and `order`, an integer giving the position within that language, lower first, with a missing value sorting last. The `about` prose gains a sentence saying what each is for, as it already does for `isDefault`.
-- `scripts/generate-key-manifest.py` — validate both fields, and name the language in the manifest header alongside the layout.
-- `resources/key-manifest.md` — regenerated by running the script, never hand-edited.
-
-A display name for the language is deliberately not a field. The tag is enough: Android resolves it with `Locale.forLanguageTag(...).displayLanguage` and a browser with `Intl.DisplayNames`, both of which name the language in the reader's own language rather than in the author's. A hand-written name would arrive in twenty spellings and be wrong for everyone else.
-
-A `creator` field was designed on 2026-09-01 and dropped on 2026-09-02, and the reason is worth keeping because the field looks obviously useful. It existed to credit outside contributors and link to them from the picker. Layouts are now authored in this project by copying each language's own standard, so there is no outside author to credit and a field naming this project on every layout says nothing.
-
-No Kotlin changes. Gson ignores JSON fields the data classes do not declare, so `KeyLayout.kt` parses the config unchanged — the same reasoning [variant-schema] recorded, and untested here for the same reason, that Gradle cannot run on this machine.
-
-The observation that shows it landed: `python scripts/generate-key-manifest.py --check` reports no drift, the regenerated manifest header names the language as well as the layout, and the manifest's key data is unchanged from the previous commit. Runs but does not change: `scripts/generate-key-manifest.py` is edited by this item and then run by its own check.
-
-Rests on: the schemaVersion 2 field set, read from `resources/key-layout.json` on 2026-09-01; the generator's `--config` and `generates` handling, recorded in the [variant-schema] build record of 2026-09-01; Gson's tolerance of undeclared fields, carried from that item's reasoning and not executed.
-
-Runs before [language-starter-layouts], which writes a config carrying these fields — that ordering is written on both items. Placed after [repo-go-public] because that item is marked `Runs alone` and a run stops there regardless.
-
-Files: `resources/key-layout.json`, `scripts/generate-key-manifest.py`, `resources/key-manifest.md`.
+--- Cleared to run above this line ---
 
 #### Russian layout, copied from the standard ЙЦУКЕН arrangement [language-starter-layouts]
+Blocked by: [qwerty-letter-slot-count]
+Moved below the readiness line at the close of 2026-09-02, after a /next run halted on it. The slot budget this item rests on is wrong by four: the QWERTY panel's rows 0–2 hold 30 slots, but backspace, cursor-left, cursor-right and enter occupy four of them, leaving 26 letter positions. Russian would need six letters behind long-presses rather than the two designed below, so the build list and the landing observation both need rewriting alongside whatever [qwerty-letter-slot-count] settles.
+
 Filed on 2026-09-01 as starter layouts for a contributor-facing editor, and rewritten on 2026-09-02 when you replaced that whole approach. Your reasoning: an editor is a lot of machinery built for contributors who do not exist yet, and the layouts people actually want already exist as national standards, so copying them is cheaper and more likely to be right than any tool for authoring them. [variant-editor] and the phone-side editor were deleted on that basis.
 
 **Copying a published standard is what makes this checkable rather than invented.** The earlier version of this item refused to let Claude author key sets for languages it does not read, and that objection stands for invention — it does not apply to transcribing an arrangement that is a matter of record and can be checked against sources.
@@ -82,104 +37,6 @@ Rests on: the ЙЦУКЕН row contents and Ё's placement, read from published 
 Which further languages follow, and in what order, is [language-list-choice]. The phonetic Russian layout (ЯВЕРТЫ) was never investigated and is not ruled out; it raises the general question of which standard to copy where a language has two.
 
 Files: `resources/key-layout-ru.json`, `resources/key-manifest-ru.md`, `planning/layout-preview.html`.
-
-#### SPEC's principles rebalanced and their machinery moved out [spec-principles-rework]
-Filed on 2026-09-02 from a verification pass run in that session's planning, which is where the measurements below come from. It is the Claude-doable half of [spec-coherence-readthrough]; the judgment about whether SPEC still reads as one product stays there and stays yours.
-
-**The proportion problem, measured rather than asserted.** Word counts of the Principles bullets: the perceptual wedge, which SPEC calls inviolable and which is the project's whole differentiator, runs 22 words. Predictive text, deferred and unbuilt, runs 309. The key inventory runs 269 and the layout-per-language principle 198. Clipboard, voice input and voice adaptation run 119, 116 and 89. Every remaining bullet is under 30. So within the list a reader skims, a deferred feature outweighs the reason the project exists by fourteen to one.
-
-The count alone overstates it and the fix must not overcorrect: the wedge is also described at length in the "How it works" section, so the bullet is not its only home. What is wrong is the balance inside one list, not the total coverage of the wedge.
-
-**The machinery to move out, each checked against where it already lives.** SPEC's own admission rule is that a sentence describing internal fields, file formats or the steps a component runs through belongs in the doc owning that mechanism, with SPEC naming the behaviour instead:
-- the predictive-text principle's three sentences on deriving the neighbour table from the config plus the zag rule, and computing it at runtime rather than storing it — near-identical text already sits on [uniform-neighbours-predictive], confirmed on 2026-09-02, so this is a deletion rather than a relocation;
-- the key-inventory principle's config filenames and its list of the fields a layout config carries — both already in that config's own `about` text and in README.md;
-- the uppercase-glyph line's closing "This is a scaling factor, not a shared font size; chosen by eye against the layout preview" — the first clause is implementation and the second is how the decision was made, which belongs in the record;
-- "The prototype's overlapping square boxes are incidental, not the design" and "The Android build is a fresh effort, not a line-by-line port" — history about the prototype rather than truth about the product;
-- the wedge paragraph's "not to be re-litigated" and "not re-argued from the armchair" — guidance about how to work on the project, which is CLAUDE.md's job and which CLAUDE.md already carries.
-
-**What this must not touch, checked in the same pass and recorded so the rework does not go further than it should.** The clipboard, voice-input and voice-adaptation principles are behavioural throughout — they say what the keyboard does, not how — and are left alone. The accessibility line justifies itself, and that justification prevents a real error about accessibility services bypassing touch routing, so it stays.
-
-**This is a rewrite for balance and admission, never for length.** A true sentence about a live feature is not evicted for being long: what comes out is machinery that lives elsewhere, history, and rationale. Nothing here is a word budget, and no target figure is set.
-
-The build: rewrite the three over-long principles in `SPEC.md` — key inventory, layout-per-language, predictive text — so each states the behaviour and drops the mechanism listed above; remove the five machinery and history fragments named; leave every other bullet untouched.
-
-The observation that shows it landed: a grep of `SPEC.md` for `key-layout.json`, `key-manifest.md`, `re-litigated` and `line-by-line` returns nothing; the predictive-text bullet no longer describes when the neighbour table is computed; and every feature the file described before it still has a sentence describing it, so nothing was lost rather than shortened.
-
-Runs before [spec-coherence-readthrough], because reading the document to judge its coherence is worth doing once the rebalancing has happened rather than twice. That ordering is written on both items.
-
-Files: `SPEC.md`.
-
-#### CLAUDE.md's phase line corrected — implementation has started [claude-md-phase-stale]
-Rule gate: claude-md-phase-stale — not needed, no rule is added. This replaces a stale statement of fact about what exists in the repository. The one rule-like force the old sentence carried, that sessions should not rush into code, is kept as an amendment to that same sentence — its parent — rather than as anything freestanding, so nothing new competes for a reader's attention.
-Filed on 2026-09-02 by /rescan, and processed in the same session. The project rules in `CLAUDE.md` say "Current phase: extended planning, no implementation." That has not been true for some time: `MainActivity.kt`, `KeyboardPanel.kt` and `KeyLayout.kt` exist, the Compose keyboard already draws its keys from the config, and four build items are cleared to run.
-
-Why it matters more than a stale sentence usually does. `CLAUDE.md` is loaded at the start of every session on this project, so it is the first thing that shapes what a fresh session believes exists. One reading "no implementation" starts from a wrong picture — the failure mode being a session that proposes building what is already built, or treats the existing Kotlin as hypothetical.
-
-**The line is doing a real job as well as a wrong one, and the replacement must keep it.** "Extended planning" told sessions not to rush into code, and that instinct still holds, because nothing written has been compiled or run: [compile-and-view-panel] is the cleared `[user]` item that would establish it. So the new wording carries both facts — there is real Kotlin in the repository, and none of it has been seen to run on a device. Replacing the line with "implementation has started" alone would trade one wrong picture for another.
-
-This belongs in `CLAUDE.md` rather than `SPEC.md` because it describes how to work on the project rather than what the project is — the distinction those two files are most often confused across, and in this direction specifically.
-
-The build: replace the phase sentence in `CLAUDE.md`'s project-rules section with wording stating that Android implementation has begun, naming what exists, and stating that none of it has been compiled or run on a device, with [compile-and-view-panel] named as the item that changes that. Everything else in that section stays: the layout-preview fixture and the frozen `hexboard17.html` prototype are both still described correctly.
-
-The observation that shows it landed: a grep of `CLAUDE.md` for "no implementation" returns nothing, and the replacement names both that Kotlin exists and that it has not been run.
-
-Rests on: the three Kotlin files existing, read from the repository on 2026-09-02; that nothing has been compiled, which is what [compile-and-view-panel] and [run-key-config-validator] both exist to establish and which remains true while they are unrun.
-
-Files: `CLAUDE.md`.
-
-#### [user] Run the key-config validator test in Android Studio [run-key-config-validator]
-Captured by you. Confirmed as user-work during planning on 2026-08-06, after Claude exhausted every route it had.
-
-Claude wrote `android/app/src/test/java/tech/flintcraft/hexboard/KeyLayoutValidationTest.kt` during the build of [key-config-validator] but has never been able to execute it. What is unverified is the Kotlin, not the key data: the config itself was independently checked when it was built, by reimplementing all six checks in a throwaway Python script, and every one passed against `resources/key-layout.json`. What running the test proves is that the test compiles, that Gson resolves as a test dependency, and that the test finds the config file at runtime.
-
-Why this can't be Claude's to run, established by attempt rather than assumption. Gradle needs a loopback network connection to reach its own daemon, and every route Claude has is blocked from making one. Tried on 2026-08-06: Gradle via the Bash tool (failed — no Java on PATH); the same with Android Studio's bundled JDK 21 at `C:\Program Files\Android\Android Studio\jbr`, which Java-wise works fine (failed — "Unable to establish loopback connection"); the same again with Claude's sandbox disabled (identical failure, so the sandbox is not the cause); and via PowerShell with `--no-daemon`, which still forks a single-use daemon (identical failure). The block is below the level Claude can reach. Don't spend another session re-testing this — run it in Android Studio, which has no such restriction.
-
-The walkthrough:
-1. Open Android Studio and open the `android` folder inside the Hexboard project. Wait for the Gradle sync to finish — there's a progress bar along the bottom, and a notification strip across the top if it wants anything.
-2. In the Project pane on the left, navigate to `app/src/test/java/tech/flintcraft/hexboard/` and open `KeyLayoutValidationTest.kt`.
-3. In the narrow gutter immediately left of the code, next to the line declaring `class KeyLayoutValidationTest`, there's a small green triangle. Click it and choose **Run 'KeyLayoutValidationTest'**.
-4. Results appear in a panel at the bottom. Report what you see: all six tests green, a compile error, or a test failure. A test failure names the offending character and its panel, so the message itself tells us what's wrong.
-
-If it reports that it can't find the config file, the likely cause is the `hexboard.repoRoot` system property set in `android/app/build.gradle.kts`; the test also walks up from the working directory as a fallback, so both paths would have to fail.
-
-Nothing blocks this — it can run whenever you next have Android Studio open.
-
-#### [user] Compile the app in Android Studio and look at the QWERTY panel [compile-and-view-panel]
-Filed at the close of 2026-08-21, when [compose-keyboard-renders-config] shipped code that nothing has run. Gradle cannot run on this machine — it needs a loopback connection to its own daemon and every route Claude has is blocked from making one, established across four attempts and recorded in [run-key-config-validator] — so three things are unverified: that the new Kotlin compiles, that Gson parses `key-layout.json` out of the app's assets at runtime, and that the panel draws.
-
-Nothing in the queue already covers this. [run-key-config-validator] runs a unit test against the config and never touches the app; [install-and-enable-on-pixel] does cover a real build, but it is held behind [first-installable-build], so the first compile of this code would otherwise wait on an IME service that has not been written. Checking it now is what stops a broken foundation being built on.
-
-Where it runs, settled on 2026-09-01. The original step 2 said "with any device or emulator selected", which assumed a device target that is not set up. Asked directly, you chose the Pixel 6 over Wi-Fi rather than an emulator or a compile-only Build → Make Project. The compile-only option was the one rejected with a reason worth keeping: it proves the Kotlin compiles and proves nothing about whether Gson finds the config in the assets at runtime or whether the panel draws, which is two thirds of what this item exists to answer.
-
-The pairing in steps 1–4 below is the same pairing as steps 1–2 of [install-and-enable-on-pixel]. Once this item is done, that one starts at its own step 3.
-
-The walkthrough:
-1. On the Pixel 6, check whether **Developer options** is listed under Settings → System. If it is not, go to Settings → About phone and tap **Build number** seven times — a message counts down and then says you are a developer. Look for: Developer options now appearing under Settings → System.
-2. Open Developer options, turn **Wireless debugging** on, then tap its name rather than its toggle to open it. Look for: an entry reading **Pair device with QR code**.
-3. In Android Studio, open the `android` folder inside the Hexboard project and wait for the Gradle sync to finish — a progress bar runs along the bottom. Then open the device dropdown in the top toolbar and choose **Pair Devices Using Wi-Fi**. Look for: a window showing a QR code.
-4. On the phone, tap **Pair device with QR code** and point the camera at that code. Look for: the Pixel 6 appearing by name in Android Studio's device dropdown.
-5. With the Pixel 6 selected in the dropdown, click the green ▶ Run button. Look for: the Build panel along the bottom. A compile error names a file and a line — report that text if it comes.
-6. If it runs, the phone shows the words **Tap the keys** at the top and the QWERTY panel at the bottom: circular keys in zig-zag rows, with the two space bars in the bottom row. Tap a few keys and check that the text at the top matches what you aimed at.
-7. Report three things: whether it compiled, whether the keys drew, and whether the characters that arrived were the right ones.
-
-What step 6 describes was confirmed against `MainActivity.kt` on 2026-09-01 rather than assumed: the screen holds a `Text` reading "Tap the keys" until something is typed, with `KeyboardPanel` beneath it, and each key press appends its output character.
-
-If it compiles but crashes on launch, the likely cause is the config not being found in the assets — the Gradle copy task that puts it there is in `android/app/build.gradle.kts` and the app reads it by the filename `key-layout.json`.
-
-Placed after [run-key-config-validator] in the cleared region because both are Android Studio jobs done in one sitting.
-
-#### [user] Look at the three row-3 arrangements and pick one [row3-space-choice]
-Cleared on 2026-09-01. [row3-space-candidates] shipped on 2026-08-21 and its record says the three arrangements were rendered and confirmed in a browser, so the thing this step looks at exists and has been seen to draw. What the choice rests on is that preview page — `planning/layout-preview.html`, verified on 2026-08-21 — and nothing since then has touched it.
-Split out of [left-space-relocation] on 2026-08-20. This is the deciding step, and it is genuinely yours: the trade-off is between a matched-looking pair and equal thumb reach, which is a judgment about how the keyboard feels rather than anything that can be computed.
-
-The walkthrough:
-1. Open `planning/layout-preview.html` by double-clicking it — it is a plain page and needs no server. Look for three rows stacked down the page, each labelled with its column numbers.
-2. Compare them with your thumbs where they would actually sit holding a phone. The current arrangement is the 4-and-6 row; the other two are the candidates.
-3. Say which you want: 2-and-6 (matched height, off-centre by one) or 3-and-6 (even reach, spaces at different heights) — or that today's 4-and-6 is fine after all, which is a real answer and closes the whole thread.
-
-Your choice releases [left-space-relocation], which applies it to the config.
-
---- Cleared to run above this line ---
 
 #### Register Hexboard as an Android input method [first-installable-build]
 Blocked by: [compose-keyboard-renders-config]
@@ -362,16 +219,16 @@ Held below the line against [spec-principles-rework], which rebalances the Princ
 
 > Captured ideas and tasks not yet fully processed. The next /plan session goes through these with you and decides each one's fate — keep it (move it up to Processed) or drop it. Each is filed as its own `#### ` heading, so the list shows up in an editor's outline.
 
-#### Last session advises processing repo-go-public next [forward-advisory]
-Filed at the close of 2026-09-02, replacing the spent advisory of the day before, which pointed at the same item and has done its job.
+#### Last session advises processing qwerty-letter-slot-count next [forward-advisory]
+Filed at the close of 2026-09-02, replacing the advisory of earlier the same day, which pointed at [repo-go-public] and has done its job — that item closed on finding the repository already public.
 
-**Read this before starting a run, because the ordering is now wrong by [repo-go-public]'s own recorded reasoning.** That item sits first in the cleared region and is marked `Runs alone`, so a run reaches it and stops there having built nothing else. Its own prose records why it was placed where it is: it goes after items that correct text it publishes, because flipping the repository public publishes whatever those items have not yet fixed. Two cleared items now do exactly that and both sit behind it — [spec-principles-rework], which rebalances SPEC's principles and strips machinery out of them, and [claude-md-phase-stale], which corrects a CLAUDE.md line still telling every reader the project has no implementation. Neither existed when the placement was decided on 2026-08-14.
+**Read this before starting a run.** [language-starter-layouts] is now the only item above the cleared-to-run line, and it cannot be built: its slot budget is wrong by four. The QWERTY panel's rows 0–2 hold 30 slots, but backspace, cursor-left, cursor-right and enter occupy four of them, so there are 26 letter positions rather than the 30 the item assumes, and Russian would need six letters behind long-presses instead of two. A run that starts now halts on that item having built nothing.
 
-So the recommendation is to move [repo-go-public] below those two before running anything, which restores the rule the item already states rather than inventing a new one. That is a planning decision rather than something a run should do for itself, which is why it is here.
+So the recommendation is to process [qwerty-letter-slot-count] first, which is the capture recording the finding and the three routes out of it — more long-press pairings, moving the four special keys, or accepting that some alphabets do not fit the panel as it stands. None is chosen, and the choice reaches SPEC's layout-per-language principle, because the overflow rule is written to bind every language rather than only Russian. [language-starter-layouts]'s own file list and landing observation both still assume the wrong figure, so they need rewriting alongside whatever is decided.
 
-[repo-go-public] itself is unchanged and still irreversible in the way that matters: once the history is public it can be cloned, and making the repository private again un-exposes nothing. Whoever runs it must say plainly what becomes readable and stop for an explicit yes in the same session. The three limitations recorded on it — a personal address in commit metadata and in file content, a reworded candid line, and the FAQ in every commit so far — all stay readable in history afterwards and were each consciously accepted.
+The overlap scan found one other thing worth knowing at the same session. [left-space-relocation] exists only to apply a row-3 space bar move that is no longer happening: [row3-space-choice] was walked through on 2026-09-02 and the user kept today's arrangement, on the reasoning that thumbs sit near the middle of the screen in portrait rather than at the edges. That item's own text says it is deleted rather than built in exactly this case, and deleting it is the user's call.
 
-The overlap scan was run over the unprocessed work and found nothing bearing on [repo-go-public]. Everything waiting there is held by an open blocker: the predictive text engine, the clipboard, voice input, the personal voice model, the layout picker, the Russian native-reader check, the language list, and speech-output correction. The conflict this advisory names is inside the cleared region, not in Unprocessed.
+Nothing else waiting in Unprocessed bears on the item at the top of the queue. Two of the captures filed on 2026-09-02 are about how this method's walkthroughs are written rather than about the keyboard, and [claude-md-phase-ran] corrects a sentence that a build in the same session made stale.
 
 #### Let a user choose which layout variant they are typing on [layout-switching]
 Blocked by: [first-installable-build]
@@ -559,4 +416,87 @@ It is AI, and the check changed the shape of the feature. Gboard's on-device rec
 Three routes are visible and none is chosen: rely on the platform recogniser and add only punctuation and capitalisation; bias recognition toward the user's saved words and contacts, if the on-device API permits biasing at all, which was not researched; or correct the transcript against the saved-word list the predictive engine already holds. Which of them are open depends on what the comparison finds.
 
 Cites research: `workshop/resources/research/gboard-speech-correction.md`, which carries the sources and states plainly that the architecture papers are from 2019 and 2020 — sound on where correction happens, and not a description of what Gboard ships today.
+
+#### QWERTY panel has 26 letter positions, not 30 — the overflow rule needs redesigning [qwerty-letter-slot-count]
+Found on 2026-09-02 while building [language-starter-layouts], which halted on it. That item states that the QWERTY panel gives 30 letter slots, so Russian's 32 letters fit once two move behind a long-press. Rows 0–2 do hold 30 slots, but four are already occupied by non-letter keys, counted from `resources/key-layout.json`: backspace at row 1 col 9, and cursor-left, cursor-right and enter at row 2 cols 0, 8 and 9. English fills the remaining 26 with its 26 letters exactly.
+
+So the slot budget the overflow rule was derived from is wrong by four, and Russian would need six letters behind long-presses rather than two. That matters beyond Russian: the overflow rule is written to bind every later language, and `workshop/resources/research/cyrillic-overflow-and-slot-budget.md` computes its budget from the same figure.
+
+Three routes are visible and none is chosen here. Add four more long-press pairings, which compounds a judgment that already needs a Russian reader's check in [russian-layout-check]. Move the four special keys for layouts that need the room, which reaches geometry and the row-3 arrangement [row3-space-choice] is deciding, and row 3 is currently full. Or accept that some alphabets do not fit the panel as it stands, which is a change to what SPEC's layout-per-language principle promises.
+
+Two options the original item already refused, and they stay refused: widening the rows, because more keys per row means smaller keys and larger keys are the point; and spilling onto the RARE panel, because a letter is not rare in its own language.
+
+[language-starter-layouts] cannot be built until this is settled, and its file list and observation both assume the 30 figure. That ordering is recorded here only — a build may not edit another item's prose — so the next planning session should write it onto [language-starter-layouts] as well.
+
+#### Backspace does not repeat while held down [backspace-key-repeat]
+Captured by you on 2026-09-02, from the first time the app was run on the Pixel 6 during [compile-and-view-panel]. Holding the delete key deletes one character and then stops; every other keyboard deletes continuously while the key is held, so the absence reads as the keyboard being broken rather than as a missing feature.
+
+Everything else in that first run was right: the app compiled, the keys drew in their zig-zag rows, and multi-touch worked.
+
+What it needs is a decision rather than only code: whether a held key repeats at all is a per-key property — backspace and the cursor keys want it, a letter almost certainly does not, since a letter repeating on a long press collides with the long-press accent menu the layout already uses. So the design question is which keys repeat, after what delay, and at what rate, and whether that is stated in the layout config or in the code that resolves a press.
+
+It lands in `KeyboardPanel.kt`, which holds the board-level tap detector, and it therefore meets [key-press-feedback] and [panel-switch-gestures] — both held against [compile-and-view-panel] and both editing that same file. A press that becomes a repeat must not also be read as a panel swipe, and a repeating key should keep its highlight for as long as it repeats rather than flashing once.
+
+Filed rather than fixed on the spot because it was found mid-run and is not needed to finish the item that found it.
+
+#### Split the board into two halves on wider screens [split-layout-wide-screens]
+Captured by you on 2026-09-02, immediately after choosing to keep the space bars at columns 4 and 6 in [row3-space-choice]. The two decisions belong together and the connection is the point: your reason for keeping today's arrangement is that in normal portrait handling the thumbs sit naturally near the middle of the screen, so the space keys do not need moving outward. On a wider screen that stops being true — the thumbs move to the edges and the middle becomes the part neither can reach.
+
+**Your proposal: split the board into two halves on wide screens.** Your observation is that the layout has a clean enough middle to split at, and that splitting naturally brings the space keys back under the thumbs in that case, which is the same problem [row3-space-choice] settled for portrait, answered for the case where it actually bites.
+
+What this does not do, and it matters for SPEC's inviolable geometry: a split separates the halves, it does not rearrange keys within them or change the zag rule, the circle size, or nearest-centre routing. Each half keeps its own columns. So this is a question about where the board is drawn rather than about the key inventory, which puts it in the code that lays the panel out rather than in a layout config.
+
+What is not settled, and none of it is a desk decision: at what width the split appears, whether it is automatic or a setting, how wide the gap is, and what happens to the two space bars — whether each half keeps one, which is the arrangement that most obviously puts one under each thumb.
+
+Interacts with [key-press-feedback] and [panel-switch-gestures], both of which edit the same panel code and are held against [compile-and-view-panel], now done. A horizontal swipe crossing the gap between two halves is a case that gesture work will have to answer.
+
+#### Deprecated `srcDir` call in the app's Gradle build file [assets-srcdir-deprecation]
+Noticed on 2026-09-02 during [run-key-config-validator], in the same Build panel output as the error that halted the sync, and filed rather than fixed because it stops nothing today.
+
+The warning: `'fun srcDir(srcDir: Any): Any' is deprecated. Use 'directories' mutable set instead`. It is on `sourceSets["main"].assets.srcDir(generatedAssetsDir)`, the line that puts `key-layout.json` into the app's assets so the app can read the key inventory at runtime.
+
+Why it is worth filing rather than leaving. This is the same API whose Provider-taking overload became a hard error in the plugin version now in use, which is what stopped the build in that session. A deprecation on the surviving overload is the same thing happening again more slowly, and the failure lands the next time the Android Gradle Plugin is upgraded — which is to say, at a moment chosen by somebody else.
+
+Two routes are visible and neither is chosen here. Move to the `directories` mutable set the warning names, which is the small change. Or wire the copy task's output through the Variant API — `sources.assets.addGeneratedSourceDirectory` — which is what the error message recommended and which restores the task-dependency wiring that the plain-File fix gives up; that route needs the copy task to expose a `DirectoryProperty` output, so it is more than a line.
+
+Whichever is taken, the observation is the same: the app still finds `key-layout.json` in its assets at runtime on the Pixel 6, which is exactly what [compile-and-view-panel] established on the same day and what a regression here would break.
+
+Files: `android/app/build.gradle.kts`.
+
+#### Install-on-Pixel walkthrough rewritten from what the first real run taught [install-walkthrough-refresh]
+Filed on 2026-09-02, from driving [compile-and-view-panel] to the end on the Pixel 6. [install-and-enable-on-pixel] shares its opening steps with that item and was written before anybody had done them, so three things in it are now known to be wrong or missing.
+
+The pairing is already done. Its steps 1 and 2 turn on wireless debugging and pair the phone over Wi-Fi; the Pixel 6 was showing in Android Studio's device dropdown before either was needed, so the item should open by checking for the phone in that dropdown and skip the pairing where it is there.
+
+Two things that stopped the drive are absent from it, and both look like the app being broken when they are not. The device dropdown greys the phone out whenever the selected run configuration is a unit test rather than `app`, which reads as the phone having dropped off. And any change to a Gradle file leaves the Run button disabled until the project is synced, announced only by a banner that an open dropdown can hide — so a step that says "click Run" fails with nothing visibly wrong.
+
+The sync step also needs naming properly: `File → Sync Project with Gradle Files` is a menu item that can be found by reading, where the toolbar button is an icon and the banner link disappears.
+
+This is the item's walkthrough only. What [install-and-enable-on-pixel] is for — building the APK, installing it, and switching Hexboard on as a keyboard — is unchanged, and it stays held behind [first-installable-build].
+
+Related: [android-studio-step-authoring], filed in the same pass, which is the general version of the same lesson.
+
+#### Android Studio steps should name something visible, not a keyboard shortcut [android-studio-step-authoring]
+Filed on 2026-09-02, from driving two Android Studio items in one session. It is a rule about how steps are written rather than work on the keyboard, so where it belongs is itself part of the decision — `CLAUDE.md` is the likely home, since it governs how Claude works on this project rather than what the product is.
+
+What happened. A step said to press Shift twice to open the search box and type the test's name. Nothing opened, and the reported symptom was "I did it but nothing much seemed to happen" — the failure of a double keypress is silent and leaves nothing on screen to react to. Re-issued as a click path down the Project pane's tree — expand `kotlin+java`, then the entry suffixed `(test)` — it worked first time, with each expansion confirming itself.
+
+The rule that follows: a step names something on screen that can be clicked, and a menu path where a menu will do, rather than a keyboard shortcut. A shortcut that fails produces no evidence, so there is nothing for the person following it to report and nothing for the person writing it to diagnose. The same session saw this twice — the sync was given as `File → Sync Project with Gradle Files` only after the toolbar button and the banner link had both been offered and neither found.
+
+The one thing to weigh before adopting it wholesale: shortcuts are faster once known, and a rule written too strictly would ban naming one at all. The useful form is probably that the click path is the step and a shortcut rides alongside it as an aside, never as the instruction.
+
+This generalises a fix filed the same day for one item, [install-walkthrough-refresh].
+
+#### CLAUDE.md's phase line says the Kotlin has never run, and it has [claude-md-phase-ran]
+Filed at the close of 2026-09-02, from a stale sentence this same session created. [claude-md-phase-stale] replaced "extended planning, no implementation" with wording saying that Android implementation has begun and that none of it has been compiled or run on a device, naming [compile-and-view-panel] as the item that would change that. Later in the same session [compile-and-view-panel] was driven to its end: the app compiled, installed on the Pixel 6, drew its keys, and typed the characters it was aimed at.
+
+So the second half of that sentence is now false, and it points at an item that has since been done. It is the first thing a fresh session reads about the state of the code, which is exactly why the previous version was worth correcting.
+
+The build: replace the has-not-been-compiled clause in `CLAUDE.md`'s project-rules section with what is now true — the app has been built and run on a Pixel 6, the QWERTY panel draws from the config, and taps land on the keys they were aimed at — and drop the reference to [compile-and-view-panel]. What should survive from the old wording is the caution it carried in both versions: very little of the app exists, so designing before coding still holds.
+
+Worth deciding in the same pass rather than guessing here: whether a line naming what has been seen to run should exist at all, given that it needs rewriting every time something new runs. The alternative is a phase line that says only what phase the project is in and leaves the state of the code to `LOG/`.
+
+Why this was not simply fixed when it was noticed: the session that made a choice is not the session that certifies it, and a build does not write project rules twice in the session that wrote them once.
+
+Files: `CLAUDE.md`.
 

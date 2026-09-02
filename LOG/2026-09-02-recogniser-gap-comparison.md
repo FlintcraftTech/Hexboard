@@ -1,4 +1,4 @@
-# [HASH] — The dictation comparison split off as user work, with what each possible result would mean written into it
+# 73231d1 — The dictation comparison split off as user work, with what each possible result would mean written into it
 
 Split from [ondevice-recogniser-test] because only the user has the phone and only a person can speak. Beyond that, the two established impossibilities stand: there is no `adb` on this machine and Gradle cannot run here, both by attempt rather than assumption and both recorded on earlier items.
 

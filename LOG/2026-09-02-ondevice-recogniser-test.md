@@ -1,4 +1,4 @@
-# [HASH] — A dictation test filed onto the existing app rather than waiting for the keyboard, so the recogniser question can be answered early
+# 73231d1 — A dictation test filed onto the existing app rather than waiting for the keyboard, so the recogniser question can be answered early
 
 The measurement that decides whether correcting dictated speech is worth designing at all. If Android's public on-device recogniser is the same engine Gboard uses, Hexboard starts at Gboard's recognition quality for nothing; if it is not, the gap is inside recognition where no transcript-level correction reaches.
 

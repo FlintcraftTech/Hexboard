@@ -1,4 +1,4 @@
-# [HASH] — Which languages follow Russian held against the Russian check, because the bottleneck is finding a reader rather than counting speakers
+# 73231d1 — Which languages follow Russian held against the Russian check, because the bottleneck is finding a reader rather than counting speakers
 
 Half of this was already answered and is in SPEC: layouts are added as they are asked for, which the user settled when they replaced the editor with copied standards. What stayed open was only whether there is a first batch beyond Russian.
 

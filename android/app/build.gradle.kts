@@ -6,7 +6,10 @@ plugins {
 // resources/key-layout.json is the single source of truth for the key inventory.
 // It is copied into the app's assets at build time so no second copy is checked in.
 val keyLayoutConfig = rootProject.file("../resources/key-layout.json")
-val generatedAssetsDir = layout.buildDirectory.dir("generated/keyLayoutAssets")
+// Resolved to a plain File here rather than left as a Provider: the Android
+// SourceSet API rejects Provider instances, so assets.srcDir() below needs a
+// real directory.
+val generatedAssetsDir = layout.buildDirectory.dir("generated/keyLayoutAssets").get().asFile
 
 val copyKeyLayoutConfig by tasks.registering(Copy::class) {
     description = "Copies resources/key-layout.json into the app's assets."
@@ -21,9 +24,7 @@ tasks.named("preBuild") {
 android {
     namespace = "tech.flintcraft.hexboard"
     compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
+        version = release(37)
     }
 
     defaultConfig {

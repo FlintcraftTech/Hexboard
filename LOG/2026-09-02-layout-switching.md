@@ -1,4 +1,4 @@
-# [HASH] — The picker's ordering settled as curated rather than counted, telemetry rejected outright, and the hold moved onto an honest blocker
+# 73231d1 — The picker's ordering settled as curated rather than counted, telemetry rejected outright, and the hold moved onto an honest blocker
 
 The user's design for the picker was layouts chosen by language and then by popularity, with a link to whoever made each one. Popularity had to be read from something, and Claude put three candidates: nothing automated, a GitHub signal, or usage telemetry from the app. Telemetry is the only true measure of popularity and it lost outright — it would have been the first thing in Hexboard to report what a user does back to a server, against the posture of every other feature in the project. The user took Claude's recommendation of a curated position set in the repository. Nothing counts anything, and no red flag arose from any of it as a result.
 

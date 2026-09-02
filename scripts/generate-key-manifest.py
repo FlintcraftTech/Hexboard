@@ -26,11 +26,32 @@ DEFAULT_CONFIG = ROOT / "resources" / "key-layout.json"
 def header(config, config_path):
     return (
         "<!-- GENERATED FILE — DO NOT HAND-EDIT.\n"
-        "     Layout: {} ({}).\n"
+        "     Layout: {} ({}), language {}.\n"
         "     Generated from {} by scripts/generate-key-manifest.py.\n"
         "     Edit the JSON and re-run the script; any edit made here will be "
-        "overwritten. -->".format(config["name"], config["id"], config_path)
+        "overwritten. -->".format(
+            config["name"], config["id"], config["language"], config_path
+        )
     )
+
+
+def validate(config, config_path):
+    """Check the fields the layout picker reads before anything is generated."""
+    language = config.get("language")
+    if not isinstance(language, str) or not language.strip():
+        raise SystemExit(
+            "{}: language is required and must be a non-empty BCP 47 tag "
+            "(for example \"en\" or \"ru\").".format(config_path)
+        )
+    if "order" in config and (
+        isinstance(config["order"], bool) or not isinstance(config["order"], int)
+    ):
+        raise SystemExit(
+            "{}: order must be a whole number giving this layout's position "
+            "within its language. Leave it out to sort this layout last.".format(
+                config_path
+            )
+        )
 
 EMPTY = "·"
 
@@ -206,6 +227,8 @@ def main():
         config_rel = config_path.relative_to(ROOT).as_posix()
     except ValueError:
         config_rel = config_path.as_posix()
+
+    validate(config, config_rel)
 
     manifest = ROOT / config["generates"]
     manifest_rel = config["generates"]

@@ -1,4 +1,4 @@
-# [HASH] — Language and ordering fields split out ahead of any layout being written, and the creator field dropped hours after it was designed
+# 73231d1 — Language and ordering fields split out ahead of any layout being written, and the creator field dropped hours after it was designed
 
 The layout picker groups layouts by language and orders them within a language, and the config could express neither: schemaVersion 2 carries `id`, `name`, `isDefault` and `generates`, with the language only implied by the id reading `qwerty-en`, which is a convention rather than data. The reason to split this out and place it first is ordering: any layout written before these fields exist has to be edited afterwards.
 

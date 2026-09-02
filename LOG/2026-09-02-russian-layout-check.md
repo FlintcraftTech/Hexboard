@@ -1,4 +1,4 @@
-# [HASH] — A native-reader check filed as the one thing standing between the Russian layout and shipping
+# 73231d1 — A native-reader check filed as the one thing standing between the Russian layout and shipping
 
 The Russian layout's rows are copied from the published standard and are checkable against sources, so they are not the risk. Two things in it are Claude's own reading and are copied from nowhere: that the hard sign Ъ belongs behind a long-press on the soft sign Ь, and that Щ belongs behind Ш. Both are plausible pairings from the shape of the writing system, and plausible is precisely the failure this project keeps guarding against, because a shipped layout is copied rather than read and an error in it propagates.
 

@@ -1,4 +1,4 @@
-# [HASH] — Russian settled as the first copied layout, with the overflow rule derived from what phone keyboards already do about Ё
+# 73231d1 — Russian settled as the first copied layout, with the overflow rule derived from what phone keyboards already do about Ё
 
 The user's proposal was to research the standard keyboard layouts for common languages and copy them rather than build a tool for authoring layouts. Claude's objection to authoring — that a layout for a language nobody here reads is a confident guess that looks correct — does not apply to transcribing a published standard, so the objection dissolved rather than being overruled. What replaced it is a narrower check: two things in the Russian layout are Claude's own reading and are not copied from anywhere, and those are what [russian-layout-check] exists for.
 
