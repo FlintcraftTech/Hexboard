@@ -1,4 +1,4 @@
-# [HASH] — Installing Hexboard on the Pixel 6 and switching it on as a keyboard
+# 4249e87 — Installing Hexboard on the Pixel 6 and switching it on as a keyboard
 
 Walk-through record for [install-and-enable-on-pixel], closed 2026-09-03 14:14. Opened as the drive started so nothing is lost if the session ends mid-way, and appended step by step. This session ran across 2026-09-02 and 2026-09-03.
 

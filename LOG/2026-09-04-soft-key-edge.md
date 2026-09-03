@@ -1,0 +1,19 @@
+# [HASH] — [soft-key-edge] created from the user's complaint that the keys look small: a quarter of every key is drawn invisible, and the fix is a fade rather than a bigger disc
+
+Recorded 2026-09-04 at 17:00. This session ran across 2026-09-03 and 2026-09-04.
+
+Raised by the user from using the keyboard rather than looking at it. Their account: the circles appear a little small still, but enlarging them would make the board look too crowded; the problem is *perceived* key size, which lowers press confidence and so slows typing; and a soft edge might make it as clear as possible that there is no hard circular boundary, just a soft circular target.
+
+Three measurements turned that into something buildable. `KeyGeometry.VISIBLE_INSET = 3f` shaves 3dp off every key's radius before it is drawn; solving `solveRadius` for the Pixel 6's 411dp width gives a touch radius of about 22dp, so the drawn circle is about 19dp — roughly 86% of the radius and about 74% of the area. Neighbouring centres sit about 46dp apart, so at 19dp radius the visible gap is 8dp and taking the inset to zero would leave about 2dp: the crowding prediction is arithmetic, not a hunch. And `KeyboardPanel` draws a 1.5dp border in a *lighter* colour than the fill, so the boundary today is emphasised twice — once where the fill stops and once by a brighter ring drawn exactly there. Any soft edge has to remove the border, or the border reinstates what the fade exists to dissolve.
+
+A defect surfaced alongside it and is fixed in the same change: `VISIBLE_INSET` is absolute where the gap, the vertical step and the label size are all derived from the radius, so the give-away is a larger share of a smaller key — worse on the eleven-wide Russian layout, and at `MIN_RADIUS = 12` down to about 56% of the touch area. Expressing the edge as fractions of the radius removes that by construction.
+
+**The wedge was questioned rather than waved through, as SPEC requires.** The wedge is a claim about corners, and a radial fade has none, so the claim is untouched; beyond that a radial gradient is a centre-emphasising cue and aiming centrally is the behaviour the wedge predicts, so the expectation is that it helps. The opposite risk is recorded rather than dismissed: fade too far and there is nothing definite to aim at.
+
+**How the falloff was settled is a decision about the method as much as the design, and it was the user's.** A comparison page was built in the session scratchpad to let them judge two variants by eye, and could not be got in front of them — the attempt to render it stalled on a permission prompt at a machine they were away from. They then directed that small visual adjustments of this kind are made during the build rather than pinned in advance, as they do in another of their projects. So the item carries the decision — soft edge, border removed — as settled, and the two fractions as tunable constants with a conservative starting point of solid to 55% and transparent at 100%, the more generous 45%/118% named as the other end to try, both theirs to move once seen.
+
+**Queue changes:** [soft-key-edge] created and cleared to run, placed immediately before [row-tint] with the reason written on both: the tint's one-fifth was chosen against a flat disc with a bright border, so it wants re-judging once the fill fades at the edge. SPEC's bullet about the visible circle being intentionally smaller than the touch target — the sentence this made wrong — now says a key is drawn as a soft-edged circle with no border, as wide as it is tappable.
+
+**Work processed:** [soft-key-edge] kept into Processed, cleared to run. It was raised fresh in conversation and written once as a work item rather than filed as a capture first.
+
+**Advisory:** not needed — the close's recommendation names no single item to start from.
