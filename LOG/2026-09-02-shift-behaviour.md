@@ -1,4 +1,4 @@
-# [HASH] — Shift given the prototype's three-state cycle, and the invisible-state defect separated from it
+# 37384e4 — Shift given the prototype's three-state cycle, and the invisible-state defect separated from it
 
 Nothing had ever decided what shift does. The build of [first-installable-build] chose the simplest thing that gives capitals at all — a flag that uppercases the next character and clears — because the item left shift to the service and no document said otherwise.
 

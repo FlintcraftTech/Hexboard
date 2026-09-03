@@ -1,4 +1,4 @@
-# [HASH] — The layout picker held against the Gradle change that puts the configs in the app, after the code showed only one of its two open questions ever needed a keyboard
+# 37384e4 — The layout picker held against the Gradle change that puts the configs in the app, after the code showed only one of its two open questions ever needed a keyboard
 
 Two questions kept this in Unprocessed, both recorded as wanting a running keyboard: how the app enumerates available layouts, and where it remembers the choice. Reading the code showed that only one of them did.
 

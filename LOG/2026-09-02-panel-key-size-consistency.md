@@ -1,4 +1,4 @@
-# [HASH] — All three panels of a layout made to share one key size, after a misread scope produced an answer the user reversed
+# 37384e4 — All three panels of a layout made to share one key size, after a misread scope produced an answer the user reversed
 
 On the Russian layout QWERTY divides the board's width by eleven while RARE and SYMBOLS divide it by ten, so swiping between panels makes every key about ten per cent larger or smaller and moves every centre. It appears only on layouts whose panels differ in width, which today means Russian alone.
 

@@ -1,4 +1,4 @@
-# [HASH] — Two undeclared AndroidX imports made explicit rather than left conditional on what the next build says
+# 37384e4 — Two undeclared AndroidX imports made explicit rather than left conditional on what the next build says
 
 As filed, this item was a wager: add the dependencies if the Android Studio run fails on unresolved references, delete the item if it succeeds. Claude recommended against that and the user agreed.
 

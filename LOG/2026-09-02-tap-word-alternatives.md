@@ -1,4 +1,4 @@
-# [HASH] — Tapping a finished word to see alternatives filed as a gap the predictive engine cannot cover
+# 37384e4 — Tapping a finished word to see alternatives filed as a gap the predictive engine cannot cover
 
 Captured from the user's own observation: they tapped a mistyped word on their phone and Gboard offered the right one from its suggestion bar. Hexboard has no equivalent, and the gap is structural rather than an oversight.
 

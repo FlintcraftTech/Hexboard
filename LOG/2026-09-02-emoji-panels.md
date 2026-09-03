@@ -1,4 +1,4 @@
-# [HASH] — Emoji panels filed at last, after the platform turned out to sell its emoji list only bundled with its own user interface
+# 37384e4 — Emoji panels filed at last, after the platform turned out to sell its emoji list only bundled with its own user interface
 
 Found by the rescan mid-session, while the clipboard's route in was being settled: a grep of the Kotlin found no vertical swipe and no emoji panel anywhere. SPEC has promised five emoji panels reached by a downward swipe throughout, and no queue item had ever covered them — the feature dying in SPEC, which is the case the seeding rule exists for. The user's steer on where it sits: it is needed, and the earlier it is taken up the longer there is to resolve it.
 

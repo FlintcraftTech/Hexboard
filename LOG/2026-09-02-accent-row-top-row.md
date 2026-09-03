@@ -1,4 +1,4 @@
-# [HASH] — The top-row accent overlap answered by the row above the keys, which restores the bar the prototype clamped into
+# 37384e4 — The top-row accent overlap answered by the row above the keys, which restores the bar the prototype clamped into
 
 Holding a top-row letter draws its accent alternatives over the keys either side of it. The cause is exact: the accent row is drawn inside the board's bounds and clamped to the top edge, which is what `hexboard17.html` does — but the prototype had a bar above its keys to clamp *into*, and the board had nothing above row 0.
 

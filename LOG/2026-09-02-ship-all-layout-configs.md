@@ -1,4 +1,4 @@
-# [HASH] — The Gradle copy task made to ship every layout config, filtered so the manifests and images stay out of the app
+# 37384e4 — The Gradle copy task made to ship every layout config, filtered so the manifests and images stay out of the app
 
 Read from the build file rather than trusted from the capture: `CopyKeyLayoutConfig` takes a single `RegularFileProperty` pointed at `resources/key-layout.json` and writes one hard-coded name into the generated assets directory. The output side needs nothing, [assets-srcdir-deprecation] having made it a `DirectoryProperty` the same morning. So the Russian layout built that day exists in the repository and cannot reach the phone.
 

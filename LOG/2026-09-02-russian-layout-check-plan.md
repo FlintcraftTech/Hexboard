@@ -1,4 +1,4 @@
-# [HASH] — The Russian reader check dated to 2026-10-02, because what holds it is outside the project and no queue item can produce it
+# 37384e4 — The Russian reader check dated to 2026-10-02, because what holds it is outside the project and no queue item can produce it
 
 [language-starter-layouts] shipped that morning and its record says built *and confirmed*, so nothing in the queue held this any longer. The walkthrough's first step was tried rather than assumed: `planning/layout-preview.html` carries the Russian board, so opening the file shows what the reader is meant to look at.
 

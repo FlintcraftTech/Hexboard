@@ -1,4 +1,4 @@
-# [HASH] — Voice input designed out to a buildable item: the microphone at the right end of a new row above the keys, released by lifting off the screen
+# 37384e4 — Voice input designed out to a buildable item: the microphone at the right end of a new row above the keys, released by lifting off the screen
 
 This was the last of the big undesigned features to have a stated reason for sitting in Unprocessed, and the reason was one question: where the microphone control lives. The answer settles the file list, because a key declared in the layout config reaches `resources/key-layout.json`, the manifest rules and every language's layout, while a board control reaches none of them.
 

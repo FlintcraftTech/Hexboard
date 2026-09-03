@@ -1,4 +1,4 @@
-# [HASH] — The clipboard screen given a route in, a shape and a deletion gesture, all three settled by the user in one exchange
+# 37384e4 — The clipboard screen given a route in, a shape and a deletion gesture, all three settled by the user in one exchange
 
 Everything about what the clipboard *holds* was settled on 2026-09-01 — the hour-or-twenty retention rule, the five-minute class for password-field and source-marked-sensitive clips, no clear-all, the flag cleared by informed consent. What kept this in Unprocessed was that there was no clipboard screen to add to and no settled panel structure to reach it from. Both of those changed during this session.
 

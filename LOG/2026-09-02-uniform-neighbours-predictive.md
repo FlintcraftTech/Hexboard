@@ -1,4 +1,4 @@
-# [HASH] — Why the board's routing must never produce a nothing-tap, recorded on the engine that makes it true
+# 37384e4 — Why the board's routing must never produce a nothing-tap, recorded on the engine that makes it true
 
 The user asked whether the touch targets should be circles that kiss, on the ground that a hexagonal cell has corners that could be pressed by accident, and said plainly that finding corners smuggled back in was not what they expected. Then they asked a second question — whether a wrong keystroke is harder to correct than a missing one — and that second question answers the first, from this engine rather than from geometry.
 

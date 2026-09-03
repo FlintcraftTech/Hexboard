@@ -1,4 +1,4 @@
-# [HASH] — A row above the keys split into its own item once a second feature needed it, reversing a recommendation made an hour earlier
+# 37384e4 — A row above the keys split into its own item once a second feature needed it, reversing a recommendation made an hour earlier
 
 The board gains a row above the keys, one vertical step tall, holding nothing. Three later features each add their own control to it: the microphone at its right end, the clipboard button at its left, and predictive text's candidates in the middle.
 

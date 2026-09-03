@@ -1,4 +1,4 @@
-# [HASH] — An observation about Gboard correcting a dictated homophone, and why it narrows this item rather than settling it
+# 37384e4 — An observation about Gboard correcting a dictated homophone, and why it narrows this item rather than settling it
 
 The user dictated a passage, switched to typing by hand, and later noticed "rose" where they had meant "rows". Tapping the word offered "rows" — a homophone correction on text dictated during a session that had since become an ordinary typing session with the microphone off. Their question: does Gboard tag which words arrived by voice and keep that tag afterwards, or would it have offered the same correction on typed text?
 

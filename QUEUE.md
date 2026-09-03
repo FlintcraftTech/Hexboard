@@ -4,28 +4,6 @@
 
 > Vetted work, ready to build — worked top to bottom. Each piece of work is one item: a `#### ` heading naming it, a `[slug]` at the end of that heading line, and a short rationale beneath. A leading flavor tag names how it runs — none for a build (Claude edits files), `[audit]` for a review pass, `[user]` for a step only you can do. A security or privacy risk Claude surfaces lives here too, as a work item carrying a `Red flag · State: cleared/uncleared` marker. The line below marks how far down is cleared to build; anything below it is decided but not ready yet.
 
-#### [user] Install Hexboard on the Pixel 6 and switch it on as a keyboard [install-and-enable-on-pixel]
-Lifted on 2026-09-02. [first-installable-build] shipped in the build run earlier the same day, and its LOG entry records it as unconfirmed — nothing has compiled it. Ordinarily a built-but-unverified blocker keeps an item held. It cannot here, because this walkthrough is itself the verification: step 4 is the Android Studio run that compiles the service, and nothing else in the queue would ever confirm it. Held any longer, the item and its blocker wait on each other and the queue has no work at all.
-
-Split out of [first-installable-build] during the /plan session of 2026-08-20. Claude writes the IME service; producing the APK and putting it on the phone is yours, and burying that in the build item's prose would have left it invisible as next-work.
-
-Confirmed by attempt rather than assumed, at the keep-step. There is no `adb` on this machine — not on PATH, and no Android SDK platform-tools directory in either of the two places it installs to — so Claude has no route to a device even if one were connected. And Gradle cannot run here at all: it needs a loopback connection to its own daemon, which every route Claude has is blocked from making, established across four attempts on 2026-08-06 and recorded in [run-key-config-validator]. So Claude cannot build the APK either. Android Studio has neither restriction and does both in one click.
-
-**Walkthrough rewritten on 2026-09-02 from what the first real run taught** (the drive of [compile-and-view-panel] the same day). The phone was already paired before that run started, so pairing is now the exception rather than the opening; the two things that actually stalled the drive — a greyed-out device caused by the wrong run configuration, and a Run button disabled by a pending sync hidden behind a dropdown — are steps now; and every step names something to click or a menu path, never a keyboard shortcut, since a shortcut that fails leaves nothing on screen to report.
-
-The walkthrough:
-1. In Android Studio, open the `android` folder inside the Hexboard project and wait for the sync. Look for: the progress bar along the bottom finishing, and the Sync tab there reporting **finished** with a green tick. If instead a banner across the top of the editor reads **Sync Now**, click it — or use the menu **File → Sync Project with Gradle Files** — and wait for that tick.
-2. In the top toolbar, open the run-configuration dropdown (the one left of the device name) and make sure it reads **app**, not a test name. Look for: the device dropdown beside it showing **Google Pixel 6** in normal text. Greyed out means the run configuration is still a test; missing altogether means the phone is not paired — go to step 3, otherwise skip to step 4.
-3. Only if the phone is missing: on the Pixel 6, open Settings → System → Developer options → **Wireless debugging**, turn it on, tap its name to open it, and tap **Pair device with QR code**. In Android Studio, open the device dropdown and choose **Pair Devices Using Wi-Fi**, then point the phone's camera at the code. Look for: the Pixel 6 appearing by name in the device dropdown.
-4. With the Pixel 6 selected, click the green ▶ **Run** button. If it is greyed out, a sync is pending — **File → Sync Project with Gradle Files**, wait for the tick, then click Run. Look for: the Run panel along the bottom reading **Install successfully finished**. An error there is a build failure, not a phone problem; report the text.
-5. On the phone, open Settings → System → Languages & input → On-screen keyboard → **Manage on-screen keyboards**, and switch **Hexboard** on. Look for: Android's warning that a keyboard can collect what you type — expected for any keyboard, and you have to accept it to continue.
-6. Open anything with a text field and tap into it, then tap the small keyboard icon at the bottom right of the navigation bar and choose **Hexboard**. Look for: circular keys in zig-zag rows.
-7. Report three things: whether it appears at all, whether keys respond to a tap, and whether the characters that arrive in the text field are the ones you aimed at.
-
-Once this is done, [split-layout-wide-screens] returns for design by itself — it waits on seeing the keyboard in landscape on this phone. This run is also where [assets-srcdir-deprecation]'s Gradle change is first seen to sync and the app still found its config, so report the Build panel if the sync complains. Those orderings are written on both items.
-
-If step 6 shows no keyboard icon, the service is registered but crashing on first show; the likely cause is the Compose lifecycle-owner trap named in [first-installable-build], and the Run panel's log will say so.
-
 --- Cleared to run above this line ---
 
 #### Row above the keys, holding the keyboard's own controls [suggestion-strip]
@@ -433,10 +411,16 @@ Rests on: `onEvaluateInputViewShown()`'s default behaviour, read from Android's 
 
 > Captured ideas and tasks not yet fully processed. The next /plan session goes through these with you and decides each one's fate — keep it (move it up to Processed) or drop it. Each is filed as its own `#### ` heading, so the list shows up in an editor's outline.
 
-#### Last session advises processing install-and-enable-on-pixel next [forward-advisory]
-Filed at the close of the planning session of 2026-09-02, third of the day. [install-and-enable-on-pixel] is the only item cleared to run, and it is a `[user]` walkthrough — an Android Studio session on the Pixel 6 that compiles and installs the keyboard. Everything else in Processed is held below the line, and every one of those holds terminates at that run: fourteen items wait on it directly, or on [suggestion-strip] and [recogniser-gap-comparison], which wait on it themselves. Nine builds from the run of 2026-09-02 are still recorded as unconfirmed, and this walkthrough is what confirms them. A /next run reaching the queue before this walkthrough is driven would find one item, walk it, and stop.
+#### Last session advises processing the install-blocked work next [forward-advisory]
+Filed at the close of 2026-09-03. It replaces the previous advisory, which pointed at [install-and-enable-on-pixel]; that item was walked through to its end this session and is spent.
 
-The overlap scan found nothing blocking it. Eight entries sit in Unprocessed and each is bowed out behind an open blocker of its own, so none would be offered at a planning opening and none contradicts or invalidates this work. Two of them — [status-lines-after-install] and [split-layout-wide-screens] — are downstream of this run rather than in tension with it: the first turns over the phase line and README once the keyboard is switched on, and the second returns for design once the board has been seen in landscape.
+**The queue's shape right now.** Processed holds thirteen items and every one sits below the cleared-to-run line. Nothing is cleared, so a /next run would find no work and stop without building anything. Thirteen of those items name [install-and-enable-on-pixel] as their blocker, and that item shipped — the keyboard compiles, installs, registers as an input method, draws, and types what it is aimed at. So the holds are spent and the work is liftable, but lifting is a planning decision and nothing does it by itself.
+
+**Which of them are genuinely ready, and which are not.** Six were held only to stop further changes stacking on files nothing had compiled — [suggestion-strip], [shift-behaviour], [row-tint], [panel-key-size-consistency], [emoji-panels], [ship-all-layout-configs] and [declare-savedstate-viewmodel-deps]. That reason has gone. Three were held because they need the keyboard on the phone and now have it: [recogniser-gap-comparison], [verify-a11y-ondevice] and [physical-keyboard-handover], all of them yours to run. [status-lines-after-install] describes two sentences that became false the moment the keyboard switched on, so it is now true rather than pending.
+
+**The overlap scan found real overlap, which is why this is not simply "lift them all".** Six captures were filed this session from watching the keyboard run, and three of them bear directly on items about to be lifted. [rare-panel-eleven-wide] corrects a factual claim inside [panel-key-size-consistency] and makes it a live defect on the English layout rather than a Russian-only one. [uppercase-labels-vs-shift-state] finds an undecided question underneath [shift-behaviour], which is written as though it were settled and would have to invent an answer. And [board-under-navigation-bar] edits the same file as [suggestion-strip], [shift-behaviour] and [row-tint], and is arguably more urgent than any of them, since it makes the bottom row of keys partly unusable. Processing those three captures alongside the items they touch is what stops the wrong thing being built first.
+
+The remaining captures from this session are [install-walkthrough-settings-path], [drive-sync-locks-gradle-build] and [symbols-panel-empty-slots]. The middle one will recur at every build until something is decided about it.
 
 #### Let a user choose which layout variant they are typing on [layout-switching]
 Blocked by: [ship-all-layout-configs]
@@ -610,4 +594,74 @@ Captured by you on 2026-09-02, from something you noticed on your own phone: you
 Not designed enough to build, which is why it stays in Unprocessed: what a build would change cannot be stated until the source of the alternatives is chosen, and that choice wants the strip in existence and the predictive engine's shape settled.
 
 [speech-output-correction] and [uniform-neighbours-predictive] both bear on this and neither contains it. Those orderings are written on the first of them.
+
+#### Settings path in the install walkthrough does not match the Pixel 6 [install-walkthrough-settings-path]
+Captured by you on 2026-09-03, mid-drive: step 5 of [install-and-enable-on-pixel] gives Settings → System → Languages & input → On-screen keyboard → Manage on-screen keyboards, and that path is not what the phone has. You found the screen yourself and switched Hexboard on, so the step's outcome was reached despite its directions.
+
+The destination screen is titled **Keyboard apps**, read off the screenshot you sent. Which path actually reaches it was not recorded, so the correction cannot be written from what this session knows — the route you took is the missing fact.
+
+The likely fix is not a corrected path but a different kind of instruction. Android moves this screen between versions, so any menu path written down goes stale on the next one; the Settings app's own search box does not. A step that says to search Settings for "keyboard" and open **Keyboard apps** names something stable and something to look for, and it survives the version this was written against being replaced.
+
+The same fault probably reaches [verify-a11y-ondevice] and [physical-keyboard-handover], which both send you into phone Settings, and [physical-keyboard-handover] names Settings → Connected devices in its step 2. Nothing has driven either, so neither path has been tested against the handset.
+
+Rewriting a queue item's steps is planning work rather than a build, which is why this is filed rather than fixed here — the same routing [install-walkthrough-refresh] took on 2026-09-02.
+
+#### Google Drive syncing locks Gradle's output and fails the build [drive-sync-locks-gradle-build]
+The project folder lives inside `My Drive`, so Google Drive syncs everything Gradle writes under `android/app/build/` while Gradle is still writing it. The first Run of 2026-09-03 failed with five errors, all `java.nio.file.AccessDeniedException` raised from `Files.deleteIfExists` against `android/app/build/intermediates/incremental/debug/` — Gradle unable to delete its own output because something else held it open.
+
+Deleting the build folder and pausing Drive syncing got the install through, so the workaround is known and cheap. What is not known is the cause: Drive is the likeliest holder and Windows Defender is the other candidate, and neither was proved. Pausing Drive is what changed between the failed run and the successful one, which is evidence and not a demonstration — the folder had also just been deleted.
+
+This will recur at every build, so a walkthrough step that says to pause Drive before running is the smallest fix, and it costs one step in every item that compiles. The larger fix is moving the project out of `My Drive` entirely, which is a bigger decision than a build obstacle warrants deciding here — it changes where the repository lives and what backs it up.
+
+Raised on 2026-09-03 during the drive of [install-and-enable-on-pixel], where it cost the first Run attempt.
+
+#### Bottom row of keys is drawn underneath Android's navigation bar [board-under-navigation-bar]
+Raised by you on 2026-09-03, from the first time Hexboard drew as a real keyboard: the board extends below the bottom bar, so row 3 sits under the system navigation buttons.
+
+**What the screenshot shows.** Row 3 — shift, `?`, `,`, `!`, the two space bars, `'`, `"`, `.`, `-` — is drawn across the same band as Android's back, home and recents buttons. The lower part of each of those circles is behind the navigation bar, and the space bars are the keys worst affected because they sit in the middle where the three system buttons are.
+
+**Why it is worse than a cosmetic overlap.** The navigation bar takes the touches in its own region, so a tap aimed at the lower half of a row 3 key reaches the system rather than the keyboard. That makes the bottom row partly unusable rather than partly hidden, and it hits the space bars — the most-pressed keys on the board.
+
+**Where the fix lives.** The input view does not account for the navigation bar's window insets. The keyboard's view needs to be laid out above that inset rather than behind it, which is `KeyboardPanel.kt` or the view `HexboardImeService` hosts, not any layout config — this is geometry, which SPEC keeps in code. Whether the reserved space comes out of the board's height or is added below it is the design question, and it interacts with [suggestion-strip], which adds height at the top of the same view.
+
+Not seen before now because nothing had ever drawn the board as an input method: `MainActivity`'s test screen is an ordinary activity and gets the insets an activity gets. This is exactly the class of fault the install run existed to find.
+
+Reasoned from the screenshot alone. Nothing in the Kotlin was read for this, so where the inset should be applied is a starting point rather than a diagnosis.
+
+#### Symbols panel's empty slots read as a gap when you swipe into it [symbols-panel-empty-slots]
+Raised by you on 2026-09-03, from the first swipe between panels on the real keyboard: the next panel does not run continuously from the last one.
+
+**What it actually is: the config's own empty slots, not a rendering fault.** `resources/key-layout.json` gives the symbols panel 30 keys across four rows of ten columns, and they are not evenly spread. Row 0 has keys at columns 0, 2, 4, 6, 7, 8, 9 and nothing at 1, 3, 5. Row 1 skips 2, 4 and 6. Row 3 skips 0, 2 and 4. So the panel's left half is largely empty while its right half is solid, and a swipe that brings it in shows blank board where keys are expected. The pager was checked and is not the cause — `HorizontalPager` in `KeyboardPanel.kt` sets no `pageSpacing`, so pages abut with nothing between them.
+
+**SPEC already says what to do about this**, which is why the fix is a design conversation rather than a defect report. Its manifest rules hold that empty slots are opportunities rather than acceptable gaps: a freed slot gets filled with a character that has no other home, agreed first. Sixteen slots on the symbols panel currently have no character in them.
+
+So the work is choosing what goes in them — and the choice is yours under that rule, not something a build decides. `resources/key-manifest.md` is the generated view of what is where and is the place to read what the three panels already carry before deciding what is missing.
+
+Read from `resources/key-layout.json` and `KeyboardPanel.kt` on 2026-09-03. What the panel looks like once filled has not been previewed; `planning/layout-preview.html` is the fixture that would show it.
+
+#### English already has the panel key-size mismatch that [panel-key-size-consistency] says is Russian-only [rare-panel-eleven-wide]
+A correction to a queued item's prose, found on 2026-09-03 while looking into why a swipe between panels looked discontinuous.
+
+[panel-key-size-consistency] states that panels differing in width "appears only on layouts whose panels differ in width, which today means Russian alone". That is false. In `resources/key-layout.json`, the English RARE panel's row 2 runs from column 1 to column 10, so the panel is eleven columns wide, while QWERTY and SYMBOLS are ten. `KeyboardPanel` solves each panel's radius from its own widest row, so RARE's keys are already drawn about ten per cent smaller than QWERTY's on the default layout, and every swipe between them resizes the keys.
+
+**What this changes about that item.** Nothing about what it builds — the fix is the same shared radius solved from the widest panel across the layout. What changes is its urgency and its evidence: it is a live defect on the shipping layout rather than a consequence of a language nobody has installed, and it can be seen on the phone today rather than reasoned about.
+
+The sentence should be corrected when that item is next opened, and the correction noted rather than made silently — the claim was reasoned from the Russian layout's arithmetic on 2026-09-02 without the English config being checked against it.
+
+Read from `resources/key-layout.json` on 2026-09-03, not run.
+
+#### Key labels are stored as capitals, so they cannot follow the shift state [uppercase-labels-vs-shift-state]
+Found on 2026-09-03 while looking at the keyboard running on the phone: every letter draws as a capital while the characters arriving in the field are lowercase.
+
+**It is the config, and it is deliberate.** `resources/key-layout.json` gives each letter key a `label` and an `output` separately — `label: "Q"`, `output: "q"`. So the capital is what the config says to draw, not a rendering fault, and the lowercase output is correct.
+
+**But it contradicts a queued item.** [shift-behaviour] says every letter label "draws in uppercase while either state is on", which only means something if labels are lowercase when shift is off. As the config stands there is one label per key and it is already a capital, so there is nothing for the shift state to change. That item is written as though the question were settled, and it is not.
+
+**The undecided thing, stated so the next planning session has it in one place.** Either the board shows capitals always and the shift state is signalled by the shift key's own lighting alone — which is what the config already does and what several phone keyboards do — or the label follows the state, in which case the config's `label` field becomes the shifted form and an unshifted form has to come from somewhere. The second is what [shift-behaviour] currently assumes without saying so.
+
+This bears on SPEC too: SPEC says every letter "draws as a capital" whichever shift state is on, and says nothing about the resting state. That sentence is compatible with either answer, which is how the gap survived.
+
+[shift-behaviour] should not be built before this is settled, since it would have to invent the answer. That ordering should be written on both entries when this is processed.
+
+Read from `resources/key-layout.json`, `KeyboardPanel.kt` and SPEC.md on 2026-09-03, and seen on the Pixel 6 the same day.
 

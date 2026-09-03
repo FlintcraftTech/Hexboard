@@ -1,4 +1,4 @@
-# [HASH] — A physical-keyboard test filed after the standard turned out to be Android's and already inherited
+# 37384e4 — A physical-keyboard test filed after the standard turned out to be Android's and already inherited
 
 The user asked whether interactivity with wireless or wired keyboards needs testing at all, and what the standard even is — guessing it might be about the keyboard going away when typing starts elsewhere.
 
