@@ -1,4 +1,4 @@
-# [HASH] — [drive-sync-locks-gradle-build] answered by moving Gradle's output to a short path outside Drive, which addresses three suspects at once — the third brought over from another project by the user
+# 3838e52 — [drive-sync-locks-gradle-build] answered by moving Gradle's output to a short path outside Drive, which addresses three suspects at once — the third brought over from another project by the user
 
 Recorded 2026-09-04 at 17:00. This session ran across 2026-09-03 and 2026-09-04.
 

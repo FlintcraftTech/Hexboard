@@ -1,4 +1,4 @@
-# [HASH] — [install-walkthrough-settings-path] fixed where it was live and split where it was not: two walkthroughs rewritten to search Settings, the standing rule filed and held because the search itself is unverified
+# 3838e52 — [install-walkthrough-settings-path] fixed where it was live and split where it was not: two walkthroughs rewritten to search Settings, the standing rule filed and held because the search itself is unverified
 
 Recorded 2026-09-04 at 17:00. This session ran across 2026-09-03 and 2026-09-04.
 

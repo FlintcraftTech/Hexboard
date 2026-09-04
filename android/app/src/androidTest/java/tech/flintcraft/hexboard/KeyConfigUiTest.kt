@@ -91,7 +91,9 @@ class KeyConfigUiTest {
             // 1. A node with the key's label sits where the geometry puts this slot.
             val label = accessibilityLabel(key)
             val nodes = compose.onAllNodesWithContentDescription(label).fetchSemanticsNodes()
-            val tolerance = KeyGeometry.visibleRadius(radius) * density
+            // How far a node's centre may sit from the slot's own centre before it counts as
+            // the wrong slot: the solid part of the key, which is well inside a neighbour.
+            val tolerance = KeyGeometry.solidRadius(radius) * density
             val atSlot = nodes.any { node ->
                 val c = node.boundsInRoot.center
                 abs(c.x - centre.x * density) < tolerance && abs(c.y - centre.y * density) < tolerance

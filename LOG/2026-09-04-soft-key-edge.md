@@ -1,4 +1,4 @@
-# [HASH] — [soft-key-edge] created from the user's complaint that the keys look small: a quarter of every key is drawn invisible, and the fix is a fade rather than a bigger disc
+# 3838e52 — [soft-key-edge] created from the user's complaint that the keys look small: a quarter of every key is drawn invisible, and the fix is a fade rather than a bigger disc
 
 Recorded 2026-09-04 at 17:00. This session ran across 2026-09-03 and 2026-09-04.
 

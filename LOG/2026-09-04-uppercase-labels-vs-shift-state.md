@@ -1,4 +1,4 @@
-# [HASH] — [uppercase-labels-vs-shift-state] answered by the prototype, which had already decided it: labels rest lowercase and rise to capitals with the shift state, needing no config change
+# 3838e52 — [uppercase-labels-vs-shift-state] answered by the prototype, which had already decided it: labels rest lowercase and rise to capitals with the shift state, needing no config change
 
 Recorded 2026-09-04 at 17:00. This session ran across 2026-09-03 and 2026-09-04.
 

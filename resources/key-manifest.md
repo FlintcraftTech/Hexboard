@@ -33,7 +33,7 @@ Three rows, ten keys each.
 
 - **row0** (cols 0–9): `~` `` ` `` `|` `<` `>` `¬` `∞` `√` `∑` `π` — `{` `}` `[` `]` `\` were moved from here to SYMBOLS.
 - **row1** (cols 0–9): `«` `»` `°` `€` `£` `¥` `©` `®` `§` `¶`
-- **row2** (cols 1–10): `™` `…` `–` `—` `×` `÷` `±` `≠` `≤` `≥` — Offset +1 to align with the QWERTY middle row; col 10 is visible on the half-snap.
+- **row2** (cols 0–9): `™` `…` `–` `—` `×` `÷` `±` `≠` `≤` `≥` — Was offset +1 into cols 1-10, carried over from the prototype, whose board could half-snap sideways so a key past the right edge stayed reachable. Hexboard's board does not, so the eleventh column was an artefact that cost the whole panel about nine per cent of its key size.
 
 ## Panel 1 — QWERTY
 

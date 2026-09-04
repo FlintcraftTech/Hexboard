@@ -1,4 +1,4 @@
-# [HASH] — [board-under-navigation-bar] diagnosed to edge-to-edge enforcement at targetSdk 36, and fixed with a padding that is correct whether or not the diagnosis is
+# 3838e52 — [board-under-navigation-bar] diagnosed to edge-to-edge enforcement at targetSdk 36, and fixed with a padding that is correct whether or not the diagnosis is
 
 Recorded 2026-09-04 at 17:00. This session ran across 2026-09-03 and 2026-09-04.
 

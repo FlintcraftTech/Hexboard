@@ -27,12 +27,28 @@ object KeyGeometry {
     const val EDGE = 6f
 
     /**
-     * How much smaller the drawn circle is than the touch target, per side.
+     * Where a key's fill stops being solid and where it has faded to nothing, as fractions
+     * of the touch radius.
      *
-     * SPEC: the visible circle is intentionally smaller than the touch target — a bigger
-     * targeting zone, and less crowded aesthetics.
+     * SPEC: a key is drawn as a soft-edged circle with no border — solid through the middle,
+     * fading to nothing at the edge of the area it accepts. So a key is drawn as wide as it
+     * is tappable rather than sitting well inside it, and there is no hard boundary to aim
+     * within, only a soft target to aim at.
+     *
+     * They are fractions of the radius rather than absolute dp so the edge stays in
+     * proportion on a narrow key. The absolute 3dp inset they replaced gave away a larger
+     * share of a smaller key — worse on an eleven-wide layout, and down to about 56% of the
+     * touch area at [MIN_RADIUS].
+     *
+     * These two are tunable constants rather than decisions: whether the edge is soft at all
+     * is the decision, and how steep the fade is is a curve to judge on the phone. This is
+     * the conservative starting point — it lights more area than the old 3dp disc while
+     * putting nothing new into the gaps, so it cannot read as more crowded than before. The
+     * generous end worth trying is solid to 0.45 and transparent at about 1.18, where
+     * neighbouring fades just meet.
      */
-    const val VISIBLE_INSET = 3f
+    const val SOLID_FRACTION = 0.55f
+    const val FADE_FRACTION = 1.0f
 
     /** Bounds on the solved radius, so a very narrow or very wide screen still reads. */
     const val MIN_RADIUS = 12f
@@ -44,6 +60,27 @@ object KeyGeometry {
     /** Fraction of the visible circle a label fills: large keys sit back a little. */
     const val LABEL_FRACTION = 0.90f
     const val LARGE_LABEL_FRACTION = 0.78f
+
+    /**
+     * How far an odd row's resting fill travels toward the pressed colour.
+     *
+     * The rows are still the QWERTY rows and only zigzag, and people read left to right, so
+     * the row is the unit that carries recognition — QWERTYUIOP is a string almost everyone
+     * knows on sight. Banding says *this is the keyboard you already use*, which is what
+     * SPEC's familiarity principle is defended by. It runs across rows rather than columns
+     * because nobody reads a keyboard downwards.
+     *
+     * A fifth of the way, so the tint introduces no new colour and cannot clash with the
+     * theme, and its distance from a pressed key is measurable rather than a matter of
+     * taste: a press travels the whole way, so a pressed key stays four-fifths brighter than
+     * its unpressed neighbours even in a tinted row. The figure is the smallest step
+     * expected to read as deliberate rather than as a rendering artefact, and it is one
+     * constant, adjustable once it has been seen on a real screen.
+     */
+    const val ROW_TINT = 0.2f
+
+    /** How far this row's resting fill sits along the line from the fill to the lit colour. */
+    fun rowTint(row: Int): Float = if (row % 2 == 0) 0f else ROW_TINT
 
     /** A point on the board, in dp from the board's top-left corner. */
     data class Point(val x: Float, val y: Float)
@@ -94,8 +131,23 @@ object KeyGeometry {
         )
     }
 
-    /** The radius of the circle that is actually drawn — smaller than the touch target. */
-    fun visibleRadius(radius: Float): Float = radius - VISIBLE_INSET
+    /** Where the key's fill is still fully solid — the part with a definite edge to aim at. */
+    fun solidRadius(radius: Float): Float = radius * SOLID_FRACTION
+
+    /** Where the fill has faded to nothing: the outer extent of what is drawn at all. */
+    fun fadeRadius(radius: Float): Float = radius * FADE_FRACTION
+
+    /**
+     * How far right to shift a panel narrower than its layout's widest, so it sits centred.
+     *
+     * All three letter panels of a layout draw at one key size — the largest that fits the
+     * widest of them — so a narrower panel does not fill the board's width. Centring is what
+     * it does with the difference: half of it on each side. Spreading the keys to fill the
+     * width instead was refused, because that breaks the hexagonal packing SPEC calls
+     * inviolable. Zero when this panel is the widest.
+     */
+    fun centringIndent(radius: Float, cols: Int, widestCols: Int): Float =
+        ((boardWidth(radius, widestCols) - boardWidth(radius, cols)) / 2f).coerceAtLeast(0f)
 
     /** Board width for a panel `cols` columns wide, including both edge margins. */
     fun boardWidth(radius: Float, cols: Int = PANEL_COLS): Float =
@@ -113,13 +165,14 @@ object KeyGeometry {
     /**
      * Label size for a key, in dp.
      *
-     * Sized against the visible circle rather than the touch target, so the glyph fits
-     * what the eye sees. Capitals are scaled down per SPEC.
+     * Sized against the solid part of the key rather than the touch target or the fade, so
+     * a glyph sits inside the definite middle of the circle rather than out on the soft
+     * edge where the fill is already going. Capitals are scaled down per SPEC.
      */
     fun labelSize(radius: Float, large: Boolean, label: String): Float {
         val fraction = if (large) LARGE_LABEL_FRACTION else LABEL_FRACTION
         val capsScale = if (isUppercase(label)) UPPERCASE_SCALE else 1f
-        return visibleRadius(radius) * fraction * capsScale
+        return solidRadius(radius) * fraction * capsScale
     }
 
     /** True when the label is a capital letter — the case the uppercase scale is for. */
@@ -132,6 +185,14 @@ object KeyGeometry {
      * SPEC's intended routing. Every point on the board belongs to exactly one key, so
      * there are no gaps between circles and no z-order tie-breaks to get wrong. Returns
      * -1 when there are no centres at all.
+     *
+     * **Why full coverage matters, and not merely that it holds.** A tap that lands nowhere
+     * is a deletion — a character the user meant to type and did not get. The planned
+     * predictive engine weights a substitution by which keys neighbour which, so it can
+     * repair a wrong letter; it cannot repair a letter that was never entered. Dead space
+     * between circles would therefore produce the one failure that engine cannot fix, which
+     * is the reason to route by nearest centre rather than by whichever circle contains the
+     * point.
      */
     fun nearestCentre(centres: List<Point>, x: Float, y: Float): Int {
         var best = -1

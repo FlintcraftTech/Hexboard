@@ -27,7 +27,7 @@
       "rows": [
         { "index": 0, "colMin": 0, "colMax": 9, "note": "`{` `}` `[` `]` `\\` were moved from here to SYMBOLS." },
         { "index": 1, "colMin": 0, "colMax": 9 },
-        { "index": 2, "colMin": 1, "colMax": 10, "note": "Offset +1 to align with the QWERTY middle row; col 10 is visible on the half-snap." }
+        { "index": 2, "colMin": 0, "colMax": 9, "note": "Was offset +1 into cols 1-10, carried over from the prototype, whose board could half-snap sideways so a key past the right edge stayed reachable. Hexboard's board does not, so the eleventh column was an artefact that cost the whole panel about nine per cent of its key size." }
       ],
       "emptySlots": [],
       "keys": [
@@ -53,16 +53,16 @@
         { "row": 1, "col": 8, "label": "§", "output": "§", "action": "insert", "kind": "rare" },
         { "row": 1, "col": 9, "label": "¶", "output": "¶", "action": "insert", "kind": "rare" },
 
-        { "row": 2, "col": 1, "label": "™", "output": "™", "action": "insert", "kind": "rare" },
-        { "row": 2, "col": 2, "label": "…", "output": "…", "action": "insert", "kind": "rare" },
-        { "row": 2, "col": 3, "label": "–", "output": "–", "action": "insert", "kind": "rare" },
-        { "row": 2, "col": 4, "label": "—", "output": "—", "action": "insert", "kind": "rare" },
-        { "row": 2, "col": 5, "label": "×", "output": "×", "action": "insert", "kind": "rare" },
-        { "row": 2, "col": 6, "label": "÷", "output": "÷", "action": "insert", "kind": "rare" },
-        { "row": 2, "col": 7, "label": "±", "output": "±", "action": "insert", "kind": "rare" },
-        { "row": 2, "col": 8, "label": "≠", "output": "≠", "action": "insert", "kind": "rare" },
-        { "row": 2, "col": 9, "label": "≤", "output": "≤", "action": "insert", "kind": "rare" },
-        { "row": 2, "col": 10, "label": "≥", "output": "≥", "action": "insert", "kind": "rare" }
+        { "row": 2, "col": 0, "label": "™", "output": "™", "action": "insert", "kind": "rare" },
+        { "row": 2, "col": 1, "label": "…", "output": "…", "action": "insert", "kind": "rare" },
+        { "row": 2, "col": 2, "label": "–", "output": "–", "action": "insert", "kind": "rare" },
+        { "row": 2, "col": 3, "label": "—", "output": "—", "action": "insert", "kind": "rare" },
+        { "row": 2, "col": 4, "label": "×", "output": "×", "action": "insert", "kind": "rare" },
+        { "row": 2, "col": 5, "label": "÷", "output": "÷", "action": "insert", "kind": "rare" },
+        { "row": 2, "col": 6, "label": "±", "output": "±", "action": "insert", "kind": "rare" },
+        { "row": 2, "col": 7, "label": "≠", "output": "≠", "action": "insert", "kind": "rare" },
+        { "row": 2, "col": 8, "label": "≤", "output": "≤", "action": "insert", "kind": "rare" },
+        { "row": 2, "col": 9, "label": "≥", "output": "≥", "action": "insert", "kind": "rare" }
       ]
     },
     {

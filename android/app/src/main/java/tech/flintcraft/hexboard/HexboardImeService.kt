@@ -1,10 +1,13 @@
 package tech.flintcraft.hexboard
 
 import android.inputmethodservice.InputMethodService
+import android.os.SystemClock
 import android.view.KeyEvent
 import android.view.View
+import android.view.ViewConfiguration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -54,14 +57,24 @@ class HexboardImeService : InputMethodService(),
     /** The key config, read once per service instance. */
     private lateinit var keyLayout: KeyLayout
 
-    /** One-shot shift: the next inserted character is uppercased, then shift clears. */
-    private var shifted by mutableStateOf(false)
+    /** Unicode's emoji list, laid out across the five panels, read once per service instance. */
+    private var emojiPanels: List<List<EmojiCatalogue.EmojiKey>> = emptyList()
+
+    /**
+     * The shift key's three states, as the prototype defines them: one tap gives shift, a
+     * second tap inside the double-tap window gives caps lock, and a further tap clears both.
+     */
+    private var shiftState by mutableStateOf(ShiftState.OFF)
+
+    /** When the shift key was last tapped, for telling a double tap from two single ones. */
+    private var lastShiftTap = 0L
 
     override fun onCreate() {
         super.onCreate()
         savedStateController.performRestore(null)
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
         keyLayout = KeyLayoutLoader.fromAssets(this)
+        emojiPanels = EmojiCatalogue.fromAssets(this)
     }
 
     override fun onCreateInputView(): View {
@@ -73,9 +86,20 @@ class HexboardImeService : InputMethodService(),
             HexboardTheme {
                 HexboardBoard(
                     layout = keyLayout,
+                    shiftState = shiftState,
+                    emojiPanels = emojiPanels,
+                    onEmoji = { characters ->
+                        currentInputConnection?.commitText(characters, 1)
+                    },
+                    // The background is applied before the padding so it fills the
+                    // navigation bar's band too, rather than leaving a bare strip there.
+                    // navigationBarsPadding() lifts the bottom key row clear of the
+                    // navigation bar, which otherwise takes the touches aimed at it; the
+                    // inset is zero where there is no bar, so no height is spent then.
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color(0xFF0D0D12)),
+                        .background(Color(0xFF0D0D12))
+                        .navigationBarsPadding(),
                     onKey = ::handleKey
                 )
             }
@@ -92,7 +116,8 @@ class HexboardImeService : InputMethodService(),
 
     override fun onStartInputView(info: android.view.inputmethod.EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
-        shifted = false
+        shiftState = ShiftState.OFF
+        lastShiftTap = 0L
         lifecycleRegistry.currentState = Lifecycle.State.RESUMED
     }
 
@@ -122,14 +147,66 @@ class HexboardImeService : InputMethodService(),
         when (key.action) {
             Key.ACTION_INSERT -> {
                 val text = key.output ?: return
-                connection.commitText(if (shifted) text.uppercase() else text, 1)
-                shifted = false
+                connection.commitText(shiftState.applyTo(text), 1)
+                shiftState = shiftState.afterInsert()
             }
             Key.ACTION_BACKSPACE -> sendDownUpKeyEvents(KeyEvent.KEYCODE_DEL)
             Key.ACTION_ENTER -> sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER)
             Key.ACTION_CURSOR_LEFT -> sendDownUpKeyEvents(KeyEvent.KEYCODE_DPAD_LEFT)
             Key.ACTION_CURSOR_RIGHT -> sendDownUpKeyEvents(KeyEvent.KEYCODE_DPAD_RIGHT)
-            Key.ACTION_SHIFT -> shifted = !shifted
+            Key.ACTION_SHIFT -> cycleShift()
         }
     }
+
+    /**
+     * The prototype's three-state cycle on the shift key.
+     *
+     * A tap from off gives shift. A second tap inside the double-tap window gives caps lock.
+     * A tap from anywhere else clears both. The window is the phone's own
+     * [ViewConfiguration.getDoubleTapTimeout] rather than the prototype's hard-coded 320 ms:
+     * this project has twice preferred the system's value to a number of its own, and SPEC's
+     * rule that holds and repeats follow the phone's settings comes from the same instinct.
+     */
+    private fun cycleShift() {
+        val now = SystemClock.uptimeMillis()
+        shiftState = shiftState.next(
+            sinceLastTapMs = now - lastShiftTap,
+            doubleTapWindowMs = ViewConfiguration.getDoubleTapTimeout().toLong()
+        )
+        lastShiftTap = now
+    }
+}
+
+/**
+ * Off, one-shot shift, or caps lock — what the shift key cycles between.
+ *
+ * The three rules below are the whole of the behaviour, kept here as pure functions so they
+ * can be checked without a running input method: the service holds the state and the clock,
+ * and decides nothing else itself.
+ */
+enum class ShiftState {
+    OFF,
+    SHIFT,
+    CAPS;
+
+    /** True while letters draw as capitals and an inserted character is uppercased. */
+    val isOn: Boolean get() = this != OFF
+
+    /**
+     * Where a tap on the shift key leads, given how long ago the last one was.
+     *
+     * The prototype's cycle: one tap gives shift, a second inside the double-tap window gives
+     * caps lock, and a tap from anywhere else clears both.
+     */
+    fun next(sinceLastTapMs: Long, doubleTapWindowMs: Long): ShiftState = when {
+        this == SHIFT && sinceLastTapMs < doubleTapWindowMs -> CAPS
+        this == OFF -> SHIFT
+        else -> OFF
+    }
+
+    /** What this state does to a character on its way into the field. */
+    fun applyTo(text: String): String = if (isOn) text.uppercase() else text
+
+    /** Shift is one-shot and clears on the first character; caps lock holds. */
+    fun afterInsert(): ShiftState = if (this == SHIFT) OFF else this
 }

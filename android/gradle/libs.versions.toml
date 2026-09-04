@@ -9,6 +9,7 @@ activityCompose = "1.13.0"
 kotlin = "2.2.10"
 composeBom = "2026.02.01"
 gson = "2.13.2"
+savedstate = "1.5.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -17,6 +18,18 @@ androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "j
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+# HexboardImeService imports these directly — it is its own lifecycle, view-model and
+# saved-state owner, which Compose inside an InputMethodService has no default for. They do
+# arrive transitively through Compose UI and Activity, but relying on that holds only while
+# those keep exposing them as API rather than implementation, and a routine version bump can
+# withdraw it. Declaring what you import costs nothing in the packaged app, since the
+# artifacts ship either way. The base savedstate artifact is the one wanted: SavedStateRegistry,
+# its controller and owner, and setViewTreeSavedStateRegistryOwner all live there rather than
+# in savedstate-ktx. lifecycle-viewmodel rides the lifecycle version already here — same group,
+# same release train — while savedstate needs a version of its own, the Compose bill of
+# materials reaching only androidx.compose artifacts.
+androidx-savedstate = { group = "androidx.savedstate", name = "savedstate", version.ref = "savedstate" }
+androidx-lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "lifecycleRuntimeKtx" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }

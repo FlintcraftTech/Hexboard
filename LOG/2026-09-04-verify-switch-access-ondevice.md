@@ -1,4 +1,4 @@
-# [HASH] — [verify-switch-access-ondevice] split out of the TalkBack item after the obvious way to drive it turned out to hide the board, and given the two questions only a keyboard raises
+# 3838e52 — [verify-switch-access-ondevice] split out of the TalkBack item after the obvious way to drive it turned out to hide the board, and given the two questions only a keyboard raises
 
 Recorded 2026-09-04 at 17:00. This session ran across 2026-09-03 and 2026-09-04.
 

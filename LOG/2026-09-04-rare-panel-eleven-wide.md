@@ -1,4 +1,4 @@
-# [HASH] — [rare-panel-eleven-wide] confirmed and found to correct two claims rather than one, with the eleventh column traced to a prototype affordance this project never reproduced
+# 3838e52 — [rare-panel-eleven-wide] confirmed and found to correct two claims rather than one, with the eleventh column traced to a prototype affordance this project never reproduced
 
 Recorded 2026-09-04 at 17:00. This session ran across 2026-09-03 and 2026-09-04.
 

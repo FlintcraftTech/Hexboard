@@ -56,6 +56,16 @@ which is where key data lived before the config existed — and it is kept as pr
 a future contributor-facing editor, since the drag-and-drop half of that job is already
 worked out here.
 
+## Building the Android app
+
+The app in `android/` builds with Android Studio and needs no setup beyond opening it. One
+optional setting: adding a `hexboard.buildDir` line to `android/local.properties` — for
+example `hexboard.buildDir=C:/builds/hexboard` — puts Gradle's build output at that path
+instead of inside the project, which is worth doing where the project folder sits in a
+synced drive or deep enough to run into Windows' path length limit. `local.properties` is
+never checked in, so the setting stays on your own machine, and leaving the line out builds
+exactly as before.
+
 ## The planning record is public on purpose
 
 [`LOG/`](LOG/) and [`QUEUE.md`](QUEUE.md) are the working record of how this project is
@@ -87,3 +97,33 @@ The licence text in [LICENSE](LICENSE) is the authoritative version; this summar
 The Russian layout in `resources/key-layout-ru.json` is transcribed from the layout and
 popup data of [FlorisBoard](https://github.com/florisboard/florisboard), which is licensed
 under the Apache License, Version 2.0. The file names the two source files it was read from.
+
+`resources/emoji-test.txt` is Unicode's own published emoji list, redistributed unmodified,
+and the emoji panels are filled from it. It carries Unicode's copyright notice in its own
+header. The Unicode License v3 permits redistribution on the condition that its copyright and
+permission notice appear either with the file or in the documentation, so:
+
+> Copyright © 1991-2024 Unicode, Inc. All rights reserved.
+>
+> Permission is hereby granted, free of charge, to any person obtaining a copy of data files
+> and any associated documentation (the "Data Files") or Unicode software and any associated
+> documentation (the "Software") to deal in the Data Files or Software without restriction,
+> including without limitation the rights to use, copy, modify, merge, publish, distribute,
+> and/or sell copies of the Data Files or Software, and to permit persons to whom the Data
+> Files or Software are furnished to do so, provided that either (a) this copyright and
+> permission notice appear with all copies of the Data Files or Software, or (b) this
+> copyright and permission notice appear in associated Documentation.
+>
+> THE DATA FILES AND SOFTWARE ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+> PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS. IN NO EVENT SHALL THE
+> COPYRIGHT HOLDER OR HOLDERS INCLUDED IN THIS NOTICE BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL
+> INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
+> DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
+> ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THE DATA FILES OR SOFTWARE.
+>
+> Except as contained in this notice, the name of a copyright holder shall not be used in
+> advertising or otherwise to promote the sale, use or other dealings in these Data Files or
+> Software without prior written authorization of the copyright holder.
+
+The full terms are at [unicode.org/license.txt](https://www.unicode.org/license.txt).
