@@ -1,4 +1,4 @@
-# [HASH] — Build run of 2026-09-04: eleven items shipped uncompiled, four user items addressed, seven captures filed
+# 987cb5c — Build run of 2026-09-04: eleven items shipped uncompiled, four user items addressed, seven captures filed
 
 Written 2026-09-04 at 16:05. This is the chat-level record for the /next run of 2026-09-04, which wrote eleven entries of its own; what belongs to no single work item is here.
 

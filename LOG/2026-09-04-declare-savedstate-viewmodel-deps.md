@@ -1,4 +1,4 @@
-# [HASH] — savedstate and lifecycle-viewmodel declared outright rather than inherited transitively
+# 987cb5c — savedstate and lifecycle-viewmodel declared outright rather than inherited transitively
 
 Written 2026-09-04 at 16:00.
 

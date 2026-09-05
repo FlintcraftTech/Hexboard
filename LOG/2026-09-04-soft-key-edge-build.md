@@ -1,4 +1,4 @@
-# [HASH] — Keys drawn as a radial fade to their whole touch target, with the border removed
+# 987cb5c — Keys drawn as a radial fade to their whole touch target, with the border removed
 
 Written 2026-09-04 at 15:56. The planning record that designed this work is `2026-09-04-soft-key-edge.md`; this is the build.
 

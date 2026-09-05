@@ -1,0 +1,13 @@
+# [HASH] — SPEC's requirement that a native reader confirm each layout before it ships was removed on the user's judgement, and replaced by [layout-error-report]
+
+The user's words: the confirmation requirement is "not realistic, needs dropping — we setup easy bug reporting instead". The record had predicted this in advance rather than contradicting it. [language-list-choice] was held against [russian-layout-check] on exactly the ground that the reader check is the bottleneck, scaling with whether a reader of the language can be found rather than with how many people speak it, and [russian-layout-check] had sat dated a month out because no Russian typist was to hand.
+
+What the requirement was guarding turns out to survive the swap. Layouts are not invented here — each is transcribed from FlorisBoard's own files, already in use by speakers of that language — so the risk is a bad transcription rather than a bad design: a letter in the wrong slot, which a user notices at once and a report fixes in one line. The cost, stated rather than glossed: the first user of each new layout becomes the person who finds the errors.
+
+The user's wider aim was to catch complaints before they become Play Store reviews, accepting the email volume and expecting to add agent screening later. Two things were said back rather than agreed with. Google's in-app review guidance forbids asking any question before or while showing the rating prompt, so a mood check that routes unhappy users to a form is the version that gets you in trouble; a standing report entry attached to no prompt is not. And email is the wrong channel for the report itself, because free text loses the facts that make a layout bug one line to fix — so the report composes them and the person sends it from their own mail app. The general funnel is filed separately as [feedback-funnel-before-store]; this item is the narrow piece the SPEC change needed.
+
+The red flag is Claude's and is cleared by design rather than assurance: the report is built from five fixed fields with no path from the text field into it, nothing is sent by the app, the composed text is shown before it goes, and the address lives in gitignored `android/local.properties` — checked with `git check-ignore` — rather than in this public repository.
+
+**Queue changes:** [layout-error-report] created and cleared to run, carrying a cleared red flag; [feedback-funnel-before-store] created as a capture behind it; SPEC's layout principle rewritten to drop the confirmation requirement and name the report route.
+
+**Work processed:** kept — [layout-error-report]. Filed — [feedback-funnel-before-store].

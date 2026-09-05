@@ -1,0 +1,11 @@
+# [HASH] — [walkthrough-steps-quote-screen-text] cleared without waiting to share an edit with its sibling, and a method report considered and declined
+
+A step asked the user to report what "the availability line" said. The phrase came from a queue item's own wording and named nothing on his screen, so he asked what an availability line was; `MainActivity.kt` carries one line reading either "On-device recognition: available" or "On-device recognition: not available on this phone". The half that carries the weight is not the quoting but the reading-from-source: a quoted string composed from memory reads exactly like one read from the code, and the person following the step is the one person who cannot check the translation.
+
+The item's own worry was that building it separately from [settings-steps-name-a-search] means editing the same paragraph of `CLAUDE.md` twice for one instinct. That was accepted deliberately: this rule rests on nothing unverified, where that one rests on a Settings-search route nobody has tried and now sits behind two further items. Holding a sound rule behind an unsound one to save a small second edit is the wrong trade, and the sentence is worded generally enough that the Settings rule will read as a narrowing of it.
+
+**A method report was considered and declined, and the check is why.** The obvious move was to report this to the plugin's own project as a missing rule. It is not missing: the method's read-back checklist already asks whether any step uses a term naming nothing on the user's own screen, and "the availability line" is exactly that. The method also already says that checklist has no enforcement and warns against describing it as enforcing anything — so a report would either claim a gap that does not exist or restate something already written down. The one genuinely additive half is "read from the source rather than recalled", since a remembered quotation passes the existing check; that was judged too thin to send on its own, and the user was told he might weigh it differently.
+
+**Queue changes:** [walkthrough-steps-quote-screen-text] rewritten and moved into Processed, cleared to run; [settings-steps-name-a-search] gained the reasoning for the second edit.
+
+**Work processed:** kept — [walkthrough-steps-quote-screen-text].

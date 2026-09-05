@@ -1,4 +1,4 @@
-# [HASH] — Five emoji panels built on Unicode's own bundled list, licence read first
+# 987cb5c — Five emoji panels built on Unicode's own bundled list, licence read first
 
 Written 2026-09-04 at 16:03.
 

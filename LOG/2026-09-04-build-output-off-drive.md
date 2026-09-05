@@ -1,4 +1,4 @@
-# [HASH] — Gradle's build output made relocatable per machine, and pointed off Drive here
+# 987cb5c — Gradle's build output made relocatable per machine, and pointed off Drive here
 
 Written 2026-09-04 at 15:52.
 

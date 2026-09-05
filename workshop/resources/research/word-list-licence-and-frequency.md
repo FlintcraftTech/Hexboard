@@ -47,13 +47,28 @@ derived from OpenSubtitles, which carries its own terms. A permissive licence on
 a repository that ships derived data is not the same as a permissive licence on
 the data, and this is the shape that catches people.
 
+**The Leipzig check was attempted on 2026-09-04 and could not be completed, which
+is a result worth recording rather than a gap.** Leipzig's own download and
+frequency-dictionary pages both sit behind an Anubis proof-of-work bot challenge,
+so neither could be read from here. Secondary sources agree on CC BY 4.0 for the
+downloadable word lists, with CC BY 3.0 named for the printed Frequency
+Dictionaries series — consistent with what this file already said, and still
+second-hand. So the licence is better attested than it was and is **not** read off
+Leipzig's own terms, and an item that bundles Leipzig data still carries an
+unverified rest.
+
+**What follows for the engine, decided on 2026-09-04.** The first version uses
+SCOWL's own size levels as the tie-break and bundles no second source, so nothing
+depends on the unread licence. A real frequency table becomes a later question
+with its own item, and whoever takes it up needs a route past the bot challenge —
+a browser, or the corpora download form — rather than a plain fetch.
+
 ## What this does not settle
 
 Whether SCOWL's size levels are a good enough frequency proxy for tie-breaking —
 that needs the engine to exist and be tried against real typing. Whether the
 en_GB variant or the -ise/-ize split matters for this project. And the exact
-Leipzig licence, which is reported second-hand here rather than read off Leipzig's
-own terms; check that before relying on it.
+Leipzig licence, still unread at source for the reason above.
 
 ## Frame assessment
 

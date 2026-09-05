@@ -1,4 +1,4 @@
-# [HASH] — RARE's row 2 moved to columns 0-9, making all three English panels ten wide
+# 987cb5c — RARE's row 2 moved to columns 0-9, making all three English panels ten wide
 
 Written 2026-09-04 at 15:59.
 

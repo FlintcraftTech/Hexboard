@@ -1,4 +1,4 @@
-# [HASH] — Every key-layout config now copied into the app, so a further language is one new file
+# 987cb5c — Every key-layout config now copied into the app, so a further language is one new file
 
 Written 2026-09-04 at 15:55.
 

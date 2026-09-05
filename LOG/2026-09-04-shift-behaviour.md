@@ -1,4 +1,4 @@
-# [HASH] — Shift became a three-state cycle, and letters now rest in lowercase
+# 987cb5c — Shift became a three-state cycle, and letters now rest in lowercase
 
 Written 2026-09-04 at 16:01.
 

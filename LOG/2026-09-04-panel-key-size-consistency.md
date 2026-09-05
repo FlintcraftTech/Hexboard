@@ -1,4 +1,4 @@
-# [HASH] — One key size across a layout's three panels, narrower panels centred
+# 987cb5c — One key size across a layout's three panels, narrower panels centred
 
 Written 2026-09-04 at 15:58.
 

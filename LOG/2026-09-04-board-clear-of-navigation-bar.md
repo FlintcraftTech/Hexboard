@@ -1,4 +1,4 @@
-# [HASH] — Input view padded by the navigation-bar inset, so row 3 stops sharing a band with the system buttons
+# 987cb5c — Input view padded by the navigation-bar inset, so row 3 stops sharing a band with the system buttons
 
 Written 2026-09-04 at 15:53.
 

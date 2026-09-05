@@ -1,4 +1,4 @@
-# [HASH] — Row above the keys built and shipped empty, its height derived from the key radius
+# 987cb5c — Row above the keys built and shipped empty, its height derived from the key radius
 
 Written 2026-09-04 at 15:54.
 
