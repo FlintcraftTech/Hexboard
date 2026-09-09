@@ -1,4 +1,4 @@
-# [HASH] — [prompter-elicits-natural-speech] filed as the `[user]` trial the prompter page exists for
+# 5f9d97e — [prompter-elicits-natural-speech] filed as the `[user]` trial the prompter page exists for
 
 Split out of [rsvp-dictation-prompter] on 2026-09-05; that item's record for the same date carries the reasoning.
 

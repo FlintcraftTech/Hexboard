@@ -1,4 +1,4 @@
-# [HASH] — [emoji-parse-guard] created so a changed Unicode format fails loudly instead of emptying the panels
+# 5f9d97e — [emoji-parse-guard] created so a changed Unicode format fails loudly instead of emptying the panels
 
 Split out of [emoji-data-refresh] on 2026-09-05 when its recurring half became a cycle; that item's record for the same date carries the reasoning.
 

@@ -1,4 +1,4 @@
-# [HASH] — [tap-word-alternatives] designed out around homophones derived from CMUdict, after research closed the two obvious routes
+# 5f9d97e — [tap-word-alternatives] designed out around homophones derived from CMUdict, after research closed the two obvious routes
 
 The item had one open half — where the alternatives come from — and it could not be designed at a desk. The research settled it in three findings, filed as `word-alternative-sources.md`.
 

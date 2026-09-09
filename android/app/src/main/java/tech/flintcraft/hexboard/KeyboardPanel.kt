@@ -33,6 +33,7 @@ import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.input.pointer.changedToDownIgnoreConsumed
 import androidx.compose.ui.input.pointer.changedToUpIgnoreConsumed
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
@@ -92,8 +93,24 @@ fun HexboardBoard(
         // smaller keys, per SPEC — this shares a radius only between the three panels within
         // one layout.
         val widestCols = remember(panels) { panels.maxOf { it.maxCol + 1 } }
-        val radius = remember(widestCols, maxWidth) {
-            KeyGeometry.solveRadius(maxWidth.value, widestCols)
+        // The tallest thing the board has to hold, in rows. The emoji panels are five rows
+        // where a letter panel is four, so they set the height once they exist.
+        val tallestRows = remember(panels, emojiPanels.isEmpty()) {
+            val letters = panels.maxOf { it.rowCount }
+            if (emojiPanels.isEmpty()) letters else maxOf(letters, EmojiCatalogue.ROWS)
+        }
+        // The screen's height rather than this view's: an input method's view wraps its own
+        // content vertically, so the constraint here would be whatever the board asked for
+        // and could never bound it.
+        val screenHeight = LocalConfiguration.current.screenHeightDp.toFloat()
+        val radius = remember(widestCols, maxWidth, screenHeight, tallestRows) {
+            KeyGeometry.solveRadius(
+                widthDp = maxWidth.value,
+                cols = widestCols,
+                availableHeightDp = screenHeight,
+                rowCount = tallestRows,
+                stripDp = ::stripHeight
+            )
         }
         // The tallest thing the vertical track has to hold. The emoji panels are five rows
         // where a letter panel is four, so once they exist they set the height — the board
@@ -720,8 +737,8 @@ internal fun accessibilityLabel(key: Key): String = when {
     else -> key.label
 }
 
-/** Fill, border, label colour for a key, and the lighter shade it lightens to when pressed. */
-private data class KeyColors(val fill: Color, val border: Color, val text: Color) {
+/** Fill and label colour for a key, and the lighter shade it lightens to when pressed. */
+private data class KeyColors(val fill: Color, val text: Color) {
     val lit: Color get() = lerp(fill, Color.White, 0.35f)
 }
 
@@ -730,10 +747,9 @@ private data class KeyColors(val fill: Color, val border: Color, val text: Color
  * a key looks the same on screen as it does in planning.
  */
 private fun colorsFor(kind: String): KeyColors = when (kind) {
-    Key.KIND_SPECIAL -> KeyColors(Color(0xFF16182A), Color(0xFF2C3358), Color(0xFF79A0FF))
-    Key.KIND_SPACE -> KeyColors(Color(0xFF06311D), Color(0xFF0A6D44), Color(0xFF38D286))
-    Key.KIND_PUNCTUATION -> KeyColors(Color(0xFF252530), Color(0xFF404055), Color(0xFFC7C7E7))
-    Key.KIND_SYMBOL, Key.KIND_RARE ->
-        KeyColors(Color(0xFF1B1D28), Color(0xFF2C2F44), Color(0xFFA0A6D3))
-    else -> KeyColors(Color(0xFF2A2A38), Color(0xFF484858), Color(0xFFE2E2F2))
+    Key.KIND_SPECIAL -> KeyColors(Color(0xFF16182A), Color(0xFF79A0FF))
+    Key.KIND_SPACE -> KeyColors(Color(0xFF06311D), Color(0xFF38D286))
+    Key.KIND_PUNCTUATION -> KeyColors(Color(0xFF252530), Color(0xFFC7C7E7))
+    Key.KIND_SYMBOL, Key.KIND_RARE -> KeyColors(Color(0xFF1B1D28), Color(0xFFA0A6D3))
+    else -> KeyColors(Color(0xFF2A2A38), Color(0xFFE2E2F2))
 }

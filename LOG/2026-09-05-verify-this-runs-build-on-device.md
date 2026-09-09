@@ -1,4 +1,4 @@
-# [HASH] — [verify-this-runs-build-on-device] cleared with its bundled step split and a key-size judgement added, and the three accessibility items given the blocker that was only ever stated in prose
+# 5f9d97e — [verify-this-runs-build-on-device] cleared with its bundled step split and a key-size judgement added, and the three accessibility items given the blocker that was only ever stated in prose
 
 Processed first on the previous session's advice, which was right for a reason worth keeping: every other item in the cleared region was one of three `[user]` checks the user had deferred during the build run of 2026-09-04, all for the same reason — that run's work is not on the phone. A /next run would have presented three items whose answer was already "not yet".
 

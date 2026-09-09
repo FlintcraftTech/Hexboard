@@ -1,3 +1,8 @@
+// Imported rather than written as java.util.Properties, because inside a build script `java`
+// names the Java plugin's extension rather than the package, so the qualified form does not
+// resolve. That is what failed the sync of 2026-09-09.
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -9,17 +14,26 @@ plugins {
 // which is gitignored, so it never reaches anyone who clones this — moves the output somewhere
 // short and unsynced. Absent or unreadable, Gradle's default is left alone, so a fresh clone
 // builds unchanged.
-run {
+val localSettings = Properties().apply {
     val localProperties = rootProject.file("local.properties")
     if (localProperties.isFile) {
-        val configured = java.util.Properties().apply {
-            localProperties.inputStream().use { load(it) }
-        }.getProperty("hexboard.buildDir")?.trim()
-        if (!configured.isNullOrEmpty()) {
-            layout.buildDirectory.set(File(configured))
-        }
+        localProperties.inputStream().use { load(it) }
     }
 }
+
+run {
+    val configured = localSettings.getProperty("hexboard.buildDir")?.trim()
+    if (!configured.isNullOrEmpty()) {
+        layout.buildDirectory.set(File(configured))
+    }
+}
+
+// Where a problem report is sent. Read from the same gitignored local.properties, because
+// this repository is public and a personal contact address must not be committed to it.
+// Absent, the build config field is empty and the app's "Report a problem" entry does not
+// appear at all — so a fresh clone builds and runs with the feature simply not there,
+// rather than offering a route that goes nowhere.
+val reportAddress: String = localSettings.getProperty("hexboard.reportAddress")?.trim().orEmpty()
 
 // The key-layout configs in resources/ are the single source of truth for the key inventory.
 // They are copied into the app's assets at build time so no second copy is checked in — every
@@ -48,22 +62,37 @@ abstract class CopyKeyLayoutConfig : DefaultTask() {
         val target = outputDir.get().asFile
         target.mkdirs()
         val source = configDir.get().asFile
-        val configs = source.listFiles { file ->
-            file.isFile && file.name.startsWith("key-layout") && file.name.endsWith(".json")
-        }.orEmpty() + listOfNotNull(
-            // Unicode's published emoji list, which fills the emoji panels. Data rather than
-            // config, and named exactly, so it travels with the configs without widening the
-            // filter that keeps the manifests and images out.
-            source.resolve("emoji-test.txt").takeIf { it.isFile }
-        )
+
+        // Built as a list rather than by adding an array to a list. `listFiles` returns an
+        // array, `orEmpty()` hands back an out-projected one, and neither `plus` overload
+        // then resolves — which is what failed the sync of 2026-09-09.
+        val configs = mutableListOf<File>()
+
+        source.listFiles()?.forEach { file ->
+            if (file.isFile && file.name.startsWith("key-layout") && file.name.endsWith(".json")) {
+                configs += file
+            }
+        }
+
+        // Two data files travel with the configs, each named exactly so the filter that keeps
+        // the generated manifests and the images out is not widened to admit them: Unicode's
+        // published emoji list, which fills the emoji panels, and the English word list the
+        // correction engine compares finished words against.
+        listOf("emoji-test.txt", "wordlist-en.txt").forEach { name ->
+            val data = source.resolve(name)
+            if (data.isFile) {
+                configs += data
+            }
+        }
+
         // The generated assets directory is flat, so each config keeps its own filename and
         // that is what distinguishes one layout from another at runtime.
-        configs.forEach { it.copyTo(File(target, it.name), overwrite = true) }
+        configs.forEach { file -> file.copyTo(File(target, file.name), overwrite = true) }
     }
 }
 
 val copyKeyLayoutConfig = tasks.register<CopyKeyLayoutConfig>("copyKeyLayoutConfig") {
-    description = "Copies every resources/key-layout*.json, and Unicode's emoji-test.txt, into the app's assets."
+    description = "Copies every resources/key-layout*.json, Unicode's emoji-test.txt and the generated wordlist-en.txt into the app's assets."
     configDir.set(rootProject.file("../resources"))
 }
 
@@ -90,6 +119,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "REPORT_ADDRESS", "\"$reportAddress\"")
     }
 
     buildTypes {
@@ -107,6 +138,9 @@ android {
     }
     buildFeatures {
         compose = true
+        // For REPORT_ADDRESS above. Off by default in this plugin version, so the generated
+        // BuildConfig class does not exist unless this is switched on.
+        buildConfig = true
     }
 
     testOptions {

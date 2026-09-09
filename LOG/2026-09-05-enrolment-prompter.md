@@ -1,4 +1,4 @@
-# [HASH] — [enrolment-prompter] filed as what the user had actually been proposing
+# 5f9d97e — [enrolment-prompter] filed as what the user had actually been proposing
 
 Split out of [rsvp-dictation-prompter] on 2026-09-05 when the user said the prompter was for training the speech model rather than for dictation tests; that item's record for the same date carries the reasoning.
 

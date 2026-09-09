@@ -1,4 +1,4 @@
-# [HASH] — [emoji-data-refresh] deleted into the project's first cycle, and a standing parse guard split out of it
+# 5f9d97e — [emoji-data-refresh] deleted into the project's first cycle, and a standing parse guard split out of it
 
 The bundled `emoji-test.txt` is pinned at Unicode 16.0, dated 2024-08-14 in its own header, and nothing said when or how it gets replaced. [emoji-panels] named the refresh as an accepted cost when bundling Unicode's list was chosen, but that item shipped and left the queue, so the obligation survived only in a log entry nobody reads on a schedule. The item's own three options were a cycle, a dated capture each time a release lands, or whoever notices — and it was blunt that today's answer was the third, chosen by nobody.
 

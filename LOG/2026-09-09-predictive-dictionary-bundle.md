@@ -1,0 +1,19 @@
+# [HASH] — [predictive-dictionary-bundle] 104,494 words from SCOWL, and the item's own reason for refusing a name filter turned out to be half wrong
+
+This session ran across 2026-09-05 and 2026-09-09.
+
+SPEC's correction engine compares a finished word against a dictionary, and the dictionary had to come from somewhere with a licence permitting redistribution inside a public repository and with proper nouns separable — because a word corrected into somebody's name is the most irritating failure autocorrect has. SCOWL answers both, and the research finding of 2026-09-01 established it. What the build added was the generator, the generated list, the Kotlin that reads it, the Gradle line that ships it and SCOWL's notice in README.
+
+The list is generated once by hand and committed, rather than fetched at build time: a build-time download makes every build depend on a network and on somebody else's server staying up. `scripts/generate-word-list.py` takes SCOWL's `words` and `contractions` categories in English, American and British spellings at size level 60 and below, and leaves out `upper` and `proper-names`. Contractions are in because *don't* and *I'm* must not be corrected. Both national spellings are in so the keyboard never corrects *colour* to *color*. Each word carries the lowest SCOWL level it appears at, which is a coarse commonness ranking and is what breaks ties — SCOWL ships no frequency data, and the item had already decided against bundling a second source on an unread licence.
+
+**Level 60 was chosen here rather than by the item, and the reasoning is worth keeping.** SCOWL's own "large" size. Higher levels add obscure words the engine could then correct *toward*; lower levels leave ordinary words out, and a word missing from the list is one the engine feels free to change. It is a command-line argument, so regenerating at another level is one command.
+
+**The item's recorded refusal turned out to rest on a premise that fails in both directions, which is why this build halted.** It refused writing any proper-noun filter, on the ground that SCOWL's categories already separate names and a filter would be guessing where the data knows. Reading the generated list showed otherwise: ten American place-name possessives — *Bloomington's*, *Napa's*, *Riverside's* and the rest — sit in `american-words.50`, the ordinary-words file, not in `proper-names`. And in the other direction the pronoun *I* sits in `english-upper.10`, filed alongside *American*, *England* and *John*, so excluding names excluded it. A dictionary without *I* leaves the engine free to change a typed *I* into something else, which is close to the worst single word to get wrong.
+
+The user approved two narrow backstops *behind* SCOWL's categories rather than in place of them, and the distinction is written into the script so nobody later reads it as the filter the item refused. An entry whose first letter is a capital followed by a lowercase letter is dropped — a shape, not a judgment about what a name is, and in a list built from lowercase categories nothing else takes that shape. Checked against the generated list, it removes exactly those ten and leaves `I'd`, `I'll`, `I'm`, `I've`, `OK` and its forms alone. And *I* is added back by name, as the one word in English this applies to.
+
+One gap found and left: lowercase *ok* is absent at level 60. Filed as [word-list-size-level], because the real question is how the level gets chosen and that wants the engine working and tried against real typing — which the research finding already named as unsettled.
+
+**Files touched:** `scripts/generate-word-list.py`, `resources/wordlist-en.txt`, `android/app/src/main/java/tech/flintcraft/hexboard/WordList.kt`, `android/app/build.gradle.kts`, `README.md`, `android/app/src/test/java/tech/flintcraft/hexboard/WordListTest.kt`.
+
+**Routed to Captures:** [word-list-size-level].

@@ -1,4 +1,4 @@
-# [HASH] — [symbols-panel-empty-slots] filled with ten characters, after the item's own arithmetic turned out to be wrong
+# 5f9d97e — [symbols-panel-empty-slots] filled with ten characters, after the item's own arithmetic turned out to be wrong
 
 The item said the symbols panel carries thirty keys *and* sixteen empty slots, which cannot both be true of a forty-position panel, and it enumerated nine of the empties while missing row 2 column 5. Counted from the config: ten, and all on the left half, which is why swiping into the panel looks like arriving at something half-built.
 

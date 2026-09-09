@@ -30,15 +30,20 @@ in what the software does with the tap.
 
 ## Status
 
-In development, and honestly early. There is **no working keyboard yet** — the Android
-app is a fresh Kotlin / Jetpack Compose build that doesn't type anything so far. There's
-nothing to install.
+In development, and honestly early — but it builds, installs, and types. Hexboard runs on
+a Pixel 6 as a registered input method: you can switch to it as the phone's keyboard and
+write with it. What is not there yet is most of what makes a keyboard comfortable —
+predictive text, clipboard history and voice input are all designed and none of them is
+built.
+
+There is **no packaged release to download**. You build it from source with Android Studio;
+see below.
 
 ## Try the prototype
 
 `hexboard17.html` is a browser prototype. Download or clone the repo and open that file in
-any browser — no build step, no dependencies. It's the only part of Hexboard you can
-actually type on today.
+any browser — no build step, no dependencies. It is the frozen reference for what the
+design intends, and the quickest way to see the idea without building anything.
 
 It demonstrates the layout, the swipe gestures between panels, and the full key inventory:
 three letter panels (RARE / QWERTY / SYMBOLS) reached by swiping horizontally, emoji
@@ -47,14 +52,6 @@ panels by swiping down, and long-press accents on letters that need them.
 The prototype is **frozen** — a reference for what the design intends, not the product and
 not a maintained app. The real key data now lives in
 [`resources/key-layout.json`](resources/key-layout.json), which the Android build reads.
-
-One more page is kept in the repo without being maintained.
-[`planning/hexboard-editor.html`](planning/hexboard-editor.html) is a prototype-era layout
-editor: keys are dragged between slots on the real zag geometry, with the structural keys
-locked. It is superseded — it exports JavaScript fragments for pasting into the prototype,
-which is where key data lived before the config existed — and it is kept as prior art for
-a future contributor-facing editor, since the drag-and-drop half of that job is already
-worked out here.
 
 ## Building the Android app
 
@@ -97,6 +94,28 @@ The licence text in [LICENSE](LICENSE) is the authoritative version; this summar
 The Russian layout in `resources/key-layout-ru.json` is transcribed from the layout and
 popup data of [FlorisBoard](https://github.com/florisboard/florisboard), which is licensed
 under the Apache License, Version 2.0. The file names the two source files it was read from.
+
+`resources/wordlist-en.txt` is generated from [SCOWL](http://wordlist.aspell.net/) — the
+Spell Checking Oriented Word Lists — release 2020.12.07, by
+`scripts/generate-word-list.py`. It is the word list the correction engine compares
+finished words against. SCOWL's licence permits redistribution of the lists and of output
+created from them, on the condition that its copyright and permission notice travel with
+derived works, so:
+
+> The collective work is Copyright 2000-2018 by Kevin Atkinson.
+>
+> Permission to use, copy, modify, distribute and sell these word lists, the associated
+> scripts, the output created from the scripts, and its documentation for any purpose is
+> hereby granted without fee, provided that the above copyright notice appears in all
+> copies and that both that copyright notice and this permission notice appear in
+> supporting documentation. Kevin Atkinson makes no representations about the suitability
+> of this array for any purpose. It is provided "as is" without express or implied
+> warranty.
+
+SCOWL's own `Copyright` file credits the further public-domain and permissively licensed
+sources its levels are drawn from, including the 12Dicts package, the ENABLE word list,
+WordNet and the VarCon package; it ships with the SCOWL distribution and is the
+authoritative statement.
 
 `resources/emoji-test.txt` is Unicode's own published emoji list, redistributed unmodified,
 and the emoji panels are filled from it. It carries Unicode's copyright notice in its own

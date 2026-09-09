@@ -1,4 +1,4 @@
-# [HASH] — [uniform-neighbours-predictive] designed out after its own stated reason for waiting turned out to have expired, and split into two buildable foundations plus a held engine and a saved-word capture
+# 5f9d97e — [uniform-neighbours-predictive] designed out after its own stated reason for waiting turned out to have expired, and split into two buildable foundations plus a held engine and a saved-word capture
 
 The item had sat in Unprocessed saying it could not be designed because SPEC held predictive text "until after the first working model". That condition was met on 2026-09-03, when the install run put Hexboard on the Pixel 6 as a switched-on keyboard — and the planning session of 2026-09-03 to 2026-09-04 had looked straight at this item and written into it that the install "changes nothing about readiness". Nobody had read the deferral against its own condition. The user decided to design it now.
 

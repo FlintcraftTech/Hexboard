@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hexboard — phrase prompter</title>
+<!--
+  A throwaway trial instrument, not a feature.
+
+  It exists to settle one claim before anything is built on it: that showing a passage one
+  phrase at a time, at the speaker's own pace, with no sight of what is coming, produces
+  ordinary hesitant speech rather than reading-aloud voice. If people slip into reading
+  voice anyway, the idea dies here for an evening's work instead of after being built into
+  an enrolment flow.
+
+  Three things the design turns on, and each was a correction to something simpler:
+
+    - one piece at a time, large, so there is no scanning and — the load-bearing part —
+      no seeing ahead. Foreknowledge is removed by construction rather than by asking
+      someone not to read ahead;
+    - PHRASES rather than single words. One word at a time is its own unusual act and
+      elicits its own stilted delivery, which is a different unnatural speech rather than
+      the natural speech wanted;
+    - the SPEAKER sets the pace. Not a forced march like Spreeder's, which makes the
+      speaker chase the prompt and would fail worst for slower readers.
+
+  The passages live in the block below rather than in a JSON file beside this one,
+  because a page opened by double-clicking cannot fetch a sibling file — browsers refuse
+  it. Edit PASSAGES and reload. Nothing is stored and no network request is made.
+
+  Whether the idea works is not this page's question — that needs a person to speak into
+  it. This page only has to work.
+-->
+<style>
+  :root {
+    color-scheme: dark;
+    --ink: #f2f3f7;
+    --ground: #0d0d12;
+    --quiet: #7c8098;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4vmin 6vmin;
+    text-align: center;
+  }
+  #phrase {
+    font-size: clamp(2.5rem, 8vw, 7rem);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    max-width: 20ch;
+  }
+  #phrase.ended {
+    font-size: clamp(1.5rem, 4vw, 3rem);
+    font-weight: 500;
+    color: var(--quiet);
+    max-width: 26ch;
+  }
+  footer {
+    padding: 3vmin;
+    text-align: center;
+    font-size: 0.95rem;
+    color: var(--quiet);
+  }
+</style>
+</head>
+<body>
+
+<script>
+// ── PASSAGES ────────────────────────────────────────────────────────────────
+// Each passage is an array of phrases, as authored. A phrase is the unit a person
+// speaks in — not a word, and not a whole sentence.
+//
+// The set is deliberately larger than one sitting needs: repeated runs must not teach
+// the content, which would reintroduce foreknowledge on a slower clock. Add more.
+const PASSAGES = [
+  [
+    "The kettle had been boiling",
+    "for what felt like a very long time",
+    "before anyone thought to check",
+    "whether it had been switched off at the wall.",
+    "It had not.",
+    "There was a small pool of water",
+    "spreading quietly across the counter",
+    "and nobody wanted to be the one",
+    "who admitted to noticing it first."
+  ],
+  [
+    "Every year the same argument",
+    "about where the tent should go.",
+    "One half of the family insists",
+    "on the flat ground near the river,",
+    "which floods.",
+    "The other half wants the slope,",
+    "which is dry",
+    "and which everyone slides down",
+    "in the middle of the night."
+  ],
+  [
+    "The bus was late again,",
+    "which nobody minded very much,",
+    "because the shelter had been rebuilt",
+    "over the summer",
+    "and it now had a roof",
+    "that actually kept the rain off.",
+    "Someone had left a paperback",
+    "on the bench",
+    "with a note saying take me."
+  ],
+  [
+    "He claimed to have read the instructions",
+    "from beginning to end,",
+    "twice,",
+    "and yet here we were",
+    "with four screws left over",
+    "and a shelf",
+    "that would hold nothing heavier",
+    "than an apology."
+  ],
+  [
+    "There is a particular kind of silence",
+    "that settles over a room",
+    "when the music stops",
+    "and nobody has decided yet",
+    "whether the evening is over.",
+    "Someone will reach for their coat.",
+    "Someone else will put the kettle on.",
+    "Both of them will be right."
+  ]
+];
+// ── end PASSAGES ────────────────────────────────────────────────────────────
+
+const END_TEXT = "End of passage — tap or press space for another.";
+
+let order = [];       // indices of passages, in the order they will be used
+let current = null;   // the passage being shown
+let position = 0;     // which phrase of it
+let ended = false;    // showing the end-of-passage line
+
+const phraseEl = document.createElement("div");
+phraseEl.id = "phrase";
+const main = document.createElement("main");
+main.appendChild(phraseEl);
+document.body.appendChild(main);
+
+const footer = document.createElement("footer");
+footer.textContent = "Tap anywhere, or press space, for the next phrase.";
+document.body.appendChild(footer);
+
+/**
+ * The next passage, never the one just finished.
+ *
+ * A shuffled queue rather than a random pick: random repeats, and a repeat is the one
+ * thing this must not do — a passage seen before is a passage partly known in advance,
+ * which is the foreknowledge the whole design removes.
+ */
+function nextPassage() {
+  if (order.length === 0) {
+    const indices = PASSAGES.map((_, i) => i);
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    // Where the reshuffled queue would open on the passage just finished, move it back.
+    if (PASSAGES.length > 1 && current && PASSAGES[indices[0]] === current) {
+      [indices[0], indices[indices.length - 1]] = [indices[indices.length - 1], indices[0]];
+    }
+    order = indices;
+  }
+  return PASSAGES[order.shift()];
+}
+
+function show(text, isEnd) {
+  phraseEl.textContent = text;
+  phraseEl.className = isEnd ? "ended" : "";
+}
+
+function advance() {
+  if (current === null || ended) {
+    current = nextPassage();
+    position = 0;
+    ended = false;
+    show(current[0], false);
+    return;
+  }
+  position += 1;
+  if (position >= current.length) {
+    ended = true;
+    show(END_TEXT, true);
+    return;
+  }
+  show(current[position], false);
+}
+
+document.addEventListener("click", advance);
+document.addEventListener("keydown", function (event) {
+  if (event.code === "Space" || event.key === " " || event.key === "Enter") {
+    event.preventDefault();
+    advance();
+  }
+});
+
+if (PASSAGES.length === 0) {
+  show("No passages. Add some to the PASSAGES block in this file.", true);
+} else {
+  advance();
+}
+</script>
+
+</body>
+</html>

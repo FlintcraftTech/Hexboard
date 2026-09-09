@@ -1,4 +1,4 @@
-# [HASH] — [remove-superseded-editor-page] created after the rescan found a file kept for a reason that had since been deleted
+# 5f9d97e — [remove-superseded-editor-page] created after the rescan found a file kept for a reason that had since been deleted
 
 Surfaced by this session's rescan and processed with the user rather than filed. The first framing was wrong and is worth recording as wrong: the page looked like a leftover nobody had noticed. It was the opposite — on 2026-08-21 `hexboard-editor.html` was deliberately moved from the repository root into `planning/` with `git mv`, README gained a paragraph describing it, and that session's record states plainly that deletion lost, on the ground that its drag-and-drop interaction design is the expensive half of the future work it was kept for.
 

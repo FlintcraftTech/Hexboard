@@ -1,4 +1,4 @@
-# [HASH] — SPEC's requirement that a native reader confirm each layout before it ships was removed on the user's judgement, and replaced by [layout-error-report]
+# 5f9d97e — SPEC's requirement that a native reader confirm each layout before it ships was removed on the user's judgement, and replaced by [layout-error-report]
 
 The user's words: the confirmation requirement is "not realistic, needs dropping — we setup easy bug reporting instead". The record had predicted this in advance rather than contradicting it. [language-list-choice] was held against [russian-layout-check] on exactly the ground that the reader check is the bottleneck, scaling with whether a reader of the language can be found rather than with how many people speak it, and [russian-layout-check] had sat dated a month out because no Russian typist was to hand.
 

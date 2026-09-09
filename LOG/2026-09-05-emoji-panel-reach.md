@@ -1,4 +1,4 @@
-# [HASH] — [emoji-panel-reach] answered with a browser costing one emoji slot, after one of its three feared costs turned out not to exist
+# 5f9d97e — [emoji-panel-reach] answered with a browser costing one emoji slot, after one of its three feared costs turned out not to exist
 
 Five panels of fifty reach 250 of Unicode 16.0's 3,781 emoji; the other 3,531 are in the bundled file and on no panel. Not a defect in the build, which did what its item said and used the arrangement its reference names — but a user wanting the 251st has no route at all.
 

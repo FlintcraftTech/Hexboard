@@ -1,4 +1,4 @@
-# [HASH] — [split-layout-wide-screens] designed out, and found not to solve the landscape problem it was filed for
+# 5f9d97e — [split-layout-wide-screens] designed out, and found not to solve the landscape problem it was filed for
 
 Three of the item's four open questions turned out to be desk answers. The space bars need no rule: ten columns splitting 0–4 and 5–9 put the column-4 bar in the left half and the column-6 one in the right, forced by where they already sit. An odd column count — the Russian board is eleven wide — takes the extra column on the left. The gap is a proportion of the solved radius, like the key gap and the strip height, rather than a fixed dp value that drifts on a board that is not ten wide.
 

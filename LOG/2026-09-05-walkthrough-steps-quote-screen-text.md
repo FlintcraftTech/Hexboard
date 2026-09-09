@@ -1,4 +1,4 @@
-# [HASH] — [walkthrough-steps-quote-screen-text] cleared without waiting to share an edit with its sibling, and a method report considered and declined
+# 5f9d97e — [walkthrough-steps-quote-screen-text] cleared without waiting to share an edit with its sibling, and a method report considered and declined
 
 A step asked the user to report what "the availability line" said. The phrase came from a queue item's own wording and named nothing on his screen, so he asked what an availability line was; `MainActivity.kt` carries one line reading either "On-device recognition: available" or "On-device recognition: not available on this phone". The half that carries the weight is not the quoting but the reading-from-source: a quoted string composed from memory reads exactly like one read from the code, and the person following the step is the one person who cannot check the translation.
 

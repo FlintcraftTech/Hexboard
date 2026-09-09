@@ -30,13 +30,34 @@ class ShippedConfigsTest {
     private val shipped: List<String> by lazy { assets.list("")?.toList().orEmpty() }
 
     @Test
-    fun bothLayoutConfigsAreShipped() {
-        listOf("key-layout.json", "key-layout-ru.json").forEach { name ->
+    fun everyLayoutConfigIsShipped() {
+        EXPECTED.forEach { name ->
             assertTrue(
                 "$name is not among the app's assets. Shipped: ${shipped.sorted()}",
                 name in shipped
             )
         }
+    }
+
+    @Test
+    fun everyShippedConfigNamesItsLanguageAndItsPositionWithinIt() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val problems = LayoutCatalogue.assetNames(context).mapNotNull { name ->
+            val layout = KeyLayoutLoader.fromAssets(context, name)
+            when {
+                layout.id.isBlank() -> "$name carries no id."
+                layout.language.isBlank() ->
+                    "$name carries no language, so the picker cannot group it."
+                layout.order == null ->
+                    "$name carries no order, so its position within its language is undefined."
+                else -> null
+            }
+        }
+        assertTrue(
+            "Shipped configs the layout picker cannot place:\n" +
+                problems.joinToString("\n") { "  - $it" },
+            problems.isEmpty()
+        )
     }
 
     @Test
@@ -75,4 +96,20 @@ class ShippedConfigsTest {
 
     private fun String.isImage(): Boolean =
         listOf(".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg").any { endsWith(it, true) }
+
+    private companion object {
+        /**
+         * The layouts Hexboard ships. Named rather than discovered, because what this asserts
+         * is that each one *arrived* — a discovered list would pass with every config missing.
+         */
+        val EXPECTED = listOf(
+            "key-layout.json",
+            "key-layout-ru.json",
+            "key-layout-fr.json",
+            "key-layout-de.json",
+            "key-layout-es.json",
+            "key-layout-pt.json",
+            "key-layout-it.json"
+        )
+    }
 }

@@ -6,7 +6,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onAllNodes
+// onAllNodes is a member of the test rule rather than a free function, so there is nothing at
+// that name to import — unlike onNodeWithTag below, which is an extension. The stray import is
+// what failed the instrumented compile of 2026-09-09.
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.height

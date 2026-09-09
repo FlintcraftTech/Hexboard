@@ -41,14 +41,33 @@ object KeyGeometry {
      * touch area at [MIN_RADIUS].
      *
      * These two are tunable constants rather than decisions: whether the edge is soft at all
-     * is the decision, and how steep the fade is is a curve to judge on the phone. This is
-     * the conservative starting point — it lights more area than the old 3dp disc while
-     * putting nothing new into the gaps, so it cannot read as more crowded than before. The
-     * generous end worth trying is solid to 0.45 and transparent at about 1.18, where
-     * neighbouring fades just meet.
+     * is the decision, and how steep the fade is is a curve to judge on the phone.
+     *
+     * The first pass at these values was solid to 0.55 and transparent at 1.0, and it read
+     * as a shrinkage: the hard disc it replaced was `radius - 3dp`, which is 0.86 of the
+     * touch radius at the 22dp the Pixel 6 solves, so the part of a key that looks
+     * definitely there fell by nearly a third — and labels, sized against the solid radius,
+     * shrank with it. Stopping the fade at 1.0 also put nothing into the space between
+     * keys, which is what the soft edge was for.
+     *
+     * So: solid to 0.75, most of the way back to the old disc while staying clear of an
+     * edge so late it reads as hard again, and faded to nothing at 1.045.
+     *
+     * **Where 1.045 comes from, and why it is a ceiling rather than a taste.** Every one of
+     * a key's six neighbours sits exactly one vertical step away — `2 * radius +
+     * gap(radius)` — and the gap is `max(1.5, radius * 0.09)`. At any solved radius at or
+     * above about 16.7dp the gap is 0.09 of the radius, so neighbouring centres are 2.09
+     * radii apart and half that distance is 1.045: adjacent fades meet exactly and there is
+     * no dead space between them. Below 16.7dp the 1.5dp floor takes over and the centres
+     * sit proportionally further apart, so the fades fall a little short of meeting rather
+     * than running into each other. There is no radius at which they overlap.
+     *
+     * A comment here previously named 1.18 as the point where neighbouring fades just meet.
+     * That figure is wrong — at 1.18 radii they overlap substantially — and it is corrected
+     * with the arithmetic beside it rather than merely replaced.
      */
-    const val SOLID_FRACTION = 0.55f
-    const val FADE_FRACTION = 1.0f
+    const val SOLID_FRACTION = 0.75f
+    const val FADE_FRACTION = 1.045f
 
     /** Bounds on the solved radius, so a very narrow or very wide screen still reads. */
     const val MIN_RADIUS = 12f
@@ -121,6 +140,57 @@ object KeyGeometry {
         return r.coerceIn(MIN_RADIUS, MAX_RADIUS)
     }
 
+    /**
+     * The share of the screen's height a keyboard may take.
+     *
+     * A proportion rather than a number of dp, which is how every other size in this file is
+     * derived, and a half is the share a phone keyboard conventionally takes rather than a
+     * figure invented here.
+     */
+    const val MAX_HEIGHT_SHARE = 0.5f
+
+    /**
+     * The largest radius that fits `cols` columns into `widthDp` **and** keeps the board
+     * within its share of `availableHeightDp`.
+     *
+     * Without the height limit the width alone decides, and on a phone turned sideways the
+     * width is wide enough to hit [MAX_RADIUS]: four rows at 34dp plus the strip above them
+     * comes to about 394dp on a screen about 411dp tall, which is a screenful of keyboard
+     * with a sliver of text field above it.
+     *
+     * The smaller of the two answers wins, floored at [MIN_RADIUS] as ever. In portrait the
+     * height constraint should never bind — the board there comes to roughly 259dp on a
+     * screen around 915dp tall, well inside half — and a fix that quietly shrank the keys
+     * everyone already uses would be a worse defect than the one it repairs.
+     *
+     * @param stripDp the height of anything drawn above the keys, since it is part of what
+     *   has to fit. Passed rather than computed here because the strip belongs to the board
+     *   rather than to the geometry.
+     */
+    fun solveRadius(
+        widthDp: Float,
+        cols: Int,
+        availableHeightDp: Float,
+        rowCount: Int,
+        stripDp: (Float) -> Float
+    ): Float {
+        val fromWidth = solveRadius(widthDp, cols)
+        if (availableHeightDp <= 0f || rowCount <= 0) return fromWidth
+        val ceiling = availableHeightDp * MAX_HEIGHT_SHARE
+        if (boardHeight(rowCount, fromWidth) + stripDp(fromWidth) <= ceiling) return fromWidth
+
+        // Board height grows monotonically with the radius, so the largest radius that fits
+        // is found by walking down from the width's answer. A twentieth of a dp is finer
+        // than any screen can show and bounds the loop at a few hundred steps.
+        var radius = fromWidth
+        while (radius > MIN_RADIUS &&
+            boardHeight(rowCount, radius) + stripDp(radius) > ceiling
+        ) {
+            radius -= 0.05f
+        }
+        return radius.coerceAtLeast(MIN_RADIUS)
+    }
+
     /** The centre of the touch target for a key at this row and column. */
     fun centre(row: Int, col: Int, radius: Float): Point {
         val vs = verticalStep(radius)
@@ -136,6 +206,79 @@ object KeyGeometry {
 
     /** Where the fill has faded to nothing: the outer extent of what is drawn at all. */
     fun fadeRadius(radius: Float): Float = radius * FADE_FRACTION
+
+    /**
+     * One position on a panel, for the purpose of working out what neighbours what.
+     *
+     * [participates] is false for a key that is not a candidate in a mis-tap: it gets no
+     * neighbours of its own and appears in nobody else's list, while keeping its index so
+     * the returned table lines up with the panel's own key list.
+     */
+    data class Slot(val row: Int, val col: Int, val participates: Boolean = true)
+
+    /**
+     * For each key on one panel, the keys that sit next to it.
+     *
+     * This is the table the planned predictive engine measures with: SPEC says a
+     * substitution of a key for one of its six neighbours is a near-miss and any other
+     * substitution is a real difference, and nothing else in the app knows which keys touch
+     * which. It cannot be read out of the config, which carries `row` and `col` and no
+     * geometry at all — which key touches which depends on the zag parity, and the zag is
+     * the perceptual wedge and lives here.
+     *
+     * **How a neighbour is found.** In the hexagonal packing every one of a key's six
+     * neighbours sits exactly one vertical step away — see [horizontalStep] for why the
+     * diagonal ones come out at the same distance as the vertical ones. So a key's
+     * neighbours are the keys on the same panel whose centre lies one vertical step from
+     * its own. The tolerance exists because the centres are computed in floating point,
+     * not because the spacing is approximate.
+     *
+     * **The result is scale-free.** Every distance in this file is a multiple of the
+     * radius, so the same table comes out at any solved radius and the caller may pass
+     * whichever one it happens to have.
+     *
+     * Three things settled about the model, recorded here because they look like gaps:
+     *
+     *  - a key at a panel's edge has fewer than six neighbours, and that is correct. Six is
+     *    what an interior key happens to have; the measure needs a neighbour set, not a set
+     *    of a particular size.
+     *  - the space keys take no part. A tap that lands on a space ends the word, and ending
+     *    the word is the correction moment itself, so a space is never something the user
+     *    might have meant instead of a letter.
+     *  - a set never spans two panels. A mis-tap cannot cross a swipe boundary, so this
+     *    takes one panel's keys and knows nothing of the others.
+     */
+    fun neighbourTable(slots: List<Slot>, radius: Float = 22f): List<List<Int>> {
+        val step = verticalStep(radius)
+        val tolerance = step * 0.01f
+        val centres = slots.map { centre(it.row, it.col, radius) }
+        return slots.indices.map { index ->
+            if (!slots[index].participates) return@map emptyList()
+            val from = centres[index]
+            slots.indices.filter { other ->
+                other != index && slots[other].participates &&
+                    kotlin.math.abs(distance(from, centres[other]) - step) <= tolerance
+            }
+        }
+    }
+
+    /** Straight-line distance between two board points, in dp. */
+    fun distance(a: Point, b: Point): Float {
+        val dx = a.x - b.x
+        val dy = a.y - b.y
+        return sqrt(dx * dx + dy * dy)
+    }
+
+    /**
+     * The panel's keys as [Slot]s, with the space keys marked as taking no part.
+     *
+     * Kept beside [neighbourTable] because the exclusion is part of the model rather than
+     * part of the config: `key-layout.json` says a key's kind is `space`, and what that
+     * means for mis-tap distance is decided here.
+     */
+    fun slotsFor(panel: Panel): List<Slot> = panel.allKeys.map { key ->
+        Slot(row = key.row, col = key.col, participates = key.kind != Key.KIND_SPACE)
+    }
 
     /**
      * How far right to shift a panel narrower than its layout's widest, so it sits centred.

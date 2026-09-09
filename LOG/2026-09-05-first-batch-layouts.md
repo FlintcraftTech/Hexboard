@@ -1,4 +1,4 @@
-# [HASH] — [first-batch-layouts] created with the five the user chose: French, German, Spanish, Portuguese, Italian
+# 5f9d97e — [first-batch-layouts] created with the five the user chose: French, German, Spanish, Portuguese, Italian
 
 Chosen by the user on 2026-09-05 from the plan settled the same day; [language-list-choice]'s record carries that reasoning. The alternative offered was picking by where Android users are rather than by what the config model supports, which would put Hindi near the top — a Devanagari job of its own rather than a transcription. He took the five.
 

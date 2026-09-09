@@ -1,4 +1,4 @@
-# [HASH] — [predictive-saved-words] split out as a capture, carrying the red flag on a consent footing rather than a designed-out one
+# 5f9d97e — [predictive-saved-words] split out as a capture, carrying the red flag on a consent footing rather than a designed-out one
 
 Split out of [uniform-neighbours-predictive] on 2026-09-05, being the one part of the engine that stores anything. That item's record for the same date carries the wider reasoning.
 

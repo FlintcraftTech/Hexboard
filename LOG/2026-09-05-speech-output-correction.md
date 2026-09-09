@@ -1,4 +1,4 @@
-# [HASH] — [speech-output-correction] narrowed from a correction stage to a flag on the recognition request, after its blocker came back saying there is no accuracy gap
+# 5f9d97e — [speech-output-correction] narrowed from a correction stage to a flag on the recognition request, after its blocker came back saying there is no accuracy gap
 
 [recogniser-gap-comparison] was driven on 2026-09-04 and found the two recognisers basically identical, the single difference being that Gboard adds punctuation. That removes the recognition-quality half of this item entirely — the gap it was written to close does not exist on read speech — and leaves formatting.
 

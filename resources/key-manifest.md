@@ -50,27 +50,12 @@ Non-output keys on this panel: `⌫` backspace, `⇤` cursor-left, `⇥` cursor-
 
 Left block (cols 0–6) is punctuation; right block (cols 7–9) is numpad plus math.
 
-`·` marks an intentionally empty slot.
+- **row0** (cols 0–9): `[` `“` `@` `”` `#` `½` `$` `1` `2` `3`
+- **row1** (cols 0–9): `\` `*` `‘` `(` `’` `)` `•` `4` `5` `6`
+- **row2** (cols 0–9): `%` `/` `^` `{` `&` `≈` `_` `7` `8` `9`
+- **row3** (cols 0–9): `¢` `]` `←` `}` `→` `:` `;` `0` `=` `+`
 
-- **row0** (cols 0–9): `[` `·` `@` `·` `#` `·` `$` `1` `2` `3`
-- **row1** (cols 0–9): `\` `*` `·` `(` `·` `)` `·` `4` `5` `6`
-- **row2** (cols 0–9): `%` `/` `^` `{` `&` `·` `_` `7` `8` `9`
-- **row3** (cols 0–9): `·` `]` `·` `}` `·` `:` `;` `0` `=` `+`
-
-Freed slots filled with `[` `]` `{` `}` `\`, moved here from RARE for closer access. Removed from SYMBOLS, and now only on QWERTY row3: `?` `!` `'` `"` `-`.
-
-Why each empty slot is empty:
-
-- row0 col1 — Spacing gap in the punctuation block — keeps the sparse left-hand symbols from reading as a dense grid. An opportunity slot per manifest rule 4.
-- row0 col3 — Spacing gap in the punctuation block. An opportunity slot per manifest rule 4.
-- row0 col5 — Spacing gap in the punctuation block. An opportunity slot per manifest rule 4.
-- row1 col2 — Spacing gap in the punctuation block. An opportunity slot per manifest rule 4.
-- row1 col4 — Spacing gap in the punctuation block, keeping `(` and `)` visually paired and separated. An opportunity slot per manifest rule 4.
-- row1 col6 — Spacing gap in the punctuation block. An opportunity slot per manifest rule 4.
-- row2 col5 — Spacing gap in the punctuation block. An opportunity slot per manifest rule 4.
-- row3 col0 — Spacing gap on the bottom zag row. An opportunity slot per manifest rule 4.
-- row3 col2 — Spacing gap on the bottom zag row, keeping `]` and `}` visually paired and separated. An opportunity slot per manifest rule 4.
-- row3 col4 — Spacing gap on the bottom zag row. An opportunity slot per manifest rule 4.
+Freed slots filled with `[` `]` `{` `}` `\`, moved here from RARE for closer access. Removed from SYMBOLS, and now only on QWERTY row3: `?` `!` `'` `"` `-`. The panel's last ten empty positions were filled on 2026-09-05 with `“` `”` `‘` `’` `½` `•` `≈` `¢` `←` `→` — the only free slots the English layout had, so the next character after these evicts something. The four curly quotes lead because a keyboard offering only straight quotes is one people work around every day; the bullet because there was no way to start a list; the two arrows because the layout had none anywhere; and ½, ¢ and ≈ as the remaining most-wanted singles. The gaps alternate with filled positions on every row, so no two of these are adjacent and the quotes are grouped by region rather than side by side.
 
 ## Long-press map — letters
 

@@ -1,4 +1,4 @@
-# [HASH] — [dead-key-border-colour] cleared, with the one live border in the same file explicitly protected
+# 5f9d97e — [dead-key-border-colour] cleared, with the one live border in the same file explicitly protected
 
 Confirmed by grep rather than taken from the item: `KeyColors` declares a `border` colour, `colorsFor` supplies one for all five key kinds, and nothing reads any of them since [soft-key-edge] removed the border from every key.
 

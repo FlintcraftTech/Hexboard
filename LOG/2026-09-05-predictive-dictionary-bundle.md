@@ -1,4 +1,4 @@
-# [HASH] — [predictive-dictionary-bundle] created to ship SCOWL with the proper names left out, and with no frequency table at all
+# 5f9d97e — [predictive-dictionary-bundle] created to ship SCOWL with the proper names left out, and with no frequency table at all
 
 The second buildable foundation of the predictive engine, split out of [uniform-neighbours-predictive] on 2026-09-05; that item's record for the same date carries the reasoning.
 

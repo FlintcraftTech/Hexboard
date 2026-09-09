@@ -1,4 +1,4 @@
-# [HASH] — [rsvp-dictation-prompter] designed out as a page, then reframed when the user said what he had actually meant it for
+# 5f9d97e — [rsvp-dictation-prompter] designed out as a page, then reframed when the user said what he had actually meant it for
 
 Designed first as a testing instrument: a page in `planning/` beside `layout-preview.html`, showing one phrase at a time and advancing on the speaker's own key press. That home answered all three of the item's undesigned questions at once — passages authored with their phrase breaks in them, so nothing computes a split; the button press, because detecting the end of a spoken phrase needs the recogniser a page does not have; and a rotating set that grows rather than needing a size now. The argument for the page over the app was that the prompter has to work while dictating into Gboard too, since comparing two recognisers is the point, and anything inside Hexboard can only prompt for Hexboard.
 

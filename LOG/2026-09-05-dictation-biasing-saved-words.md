@@ -1,4 +1,4 @@
-# [HASH] — [dictation-biasing-saved-words] split out once the on-device API turned out to permit biasing at all
+# 5f9d97e — [dictation-biasing-saved-words] split out once the on-device API turned out to permit biasing at all
 
 Split out of [speech-output-correction] on 2026-09-05; that item's record for the same date carries the reasoning.
 

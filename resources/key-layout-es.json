@@ -1,0 +1,1067 @@
+{
+  "schemaVersion": 3,
+  "id": "qwerty-es",
+  "name": "QWERTY (Spanish)",
+  "isDefault": false,
+  "language": "es",
+  "order": 0,
+  "about": "The Spanish layout's key inventory for Hexboard, transcribed from FlorisBoard (Apache 2.0): the letter rows from app/src/main/assets/ime/keyboard/org.florisboard.layouts/layouts/characters/spanish.json and the long-press accents from app/src/main/assets/ime/keyboard/org.florisboard.localization/popupMappings/es.json, both read on 2026-09-05. Spanish is QWERTY with Ñ added to the middle row, which is what makes that row eleven keys wide once backspace is counted; no letter is hidden or dropped to fit ten columns. The RARE and SYMBOLS panels and row 3 of the home panel are copied unchanged from resources/key-layout.json: none of them is language-specific, and the two space bars, the shift key and the common punctuation are Hexboard's own rather than any keyboard's. Geometry is deliberately absent — the zag rule, the circle sizing and the nearest-centre hit-testing live in Kotlin, because they are the perceptual wedge SPEC calls inviolable. resources/key-manifest-es.md is generated from this file by scripts/generate-key-manifest.py and must not be hand-edited.",
+  "generates": "resources/key-manifest-es.md",
+  "manifestRules": [
+    "NO KEY MAY BE LOST. Every output character must appear in this manifest. Before shipping any build, run audit_keys.js and confirm the output set matches exactly.",
+    "NO UNRESOLVED DUPLICATES. Each output character should appear on exactly one panel. Cross-panel duplicates must be resolved before shipping — either remove one instance and fill the vacated slot with something new, or explicitly justify why both are needed (e.g. a convenience copy that is clearly labelled).",
+    "NO SILENT CHANGES. Any key move, addition, or removal must be reflected in this manifest and noted in the commit comment.",
+    "EMPTY SLOTS ARE OPPORTUNITIES, NOT ACCEPTABLE GAPS. If a duplicate is removed, the freed slot must be filled with a character that has no other home, agreed with the user first."
+  ],
+  "rule1Note": "Rule 1 names `audit_keys.js`, which is a browser-prototype script. The wording is kept as written because it describes the prototype. The underlying principle — verify the shipped key set against this manifest before shipping — is what carries over to Android, where the mechanism will be different.",
+  "nonConsumers": [
+    "hexboard17.html — the browser prototype. Frozen: reference only, does not read this config.",
+    "planning/layout-preview.html — the standing layout preview fixture. Does not read this config either; it stays hand-edited per CLAUDE.md."
+  ],
+  "panels": [
+    {
+      "index": 0,
+      "id": "rare",
+      "name": "RARE",
+      "description": "Three rows, ten keys each.",
+      "rows": [
+        {
+          "index": 0,
+          "colMin": 0,
+          "colMax": 9,
+          "note": "`{` `}` `[` `]` `\\` were moved from here to SYMBOLS."
+        },
+        {
+          "index": 1,
+          "colMin": 0,
+          "colMax": 9
+        },
+        {
+          "index": 2,
+          "colMin": 0,
+          "colMax": 9,
+          "note": "Was offset +1 into cols 1-10, carried over from the prototype, whose board could half-snap sideways so a key past the right edge stayed reachable. Hexboard's board does not, so the eleventh column was an artefact that cost the whole panel about nine per cent of its key size."
+        }
+      ],
+      "emptySlots": [],
+      "keys": [
+        {
+          "row": 0,
+          "col": 0,
+          "label": "~",
+          "output": "~",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 0,
+          "col": 1,
+          "label": "`",
+          "output": "`",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 0,
+          "col": 2,
+          "label": "|",
+          "output": "|",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 0,
+          "col": 3,
+          "label": "<",
+          "output": "<",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 0,
+          "col": 4,
+          "label": ">",
+          "output": ">",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 0,
+          "col": 5,
+          "label": "¬",
+          "output": "¬",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 0,
+          "col": 6,
+          "label": "∞",
+          "output": "∞",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 0,
+          "col": 7,
+          "label": "√",
+          "output": "√",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 0,
+          "col": 8,
+          "label": "∑",
+          "output": "∑",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 0,
+          "col": 9,
+          "label": "π",
+          "output": "π",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 1,
+          "col": 0,
+          "label": "«",
+          "output": "«",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 1,
+          "col": 1,
+          "label": "»",
+          "output": "»",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 1,
+          "col": 2,
+          "label": "°",
+          "output": "°",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 1,
+          "col": 3,
+          "label": "€",
+          "output": "€",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 1,
+          "col": 4,
+          "label": "£",
+          "output": "£",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 1,
+          "col": 5,
+          "label": "¥",
+          "output": "¥",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 1,
+          "col": 6,
+          "label": "©",
+          "output": "©",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 1,
+          "col": 7,
+          "label": "®",
+          "output": "®",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 1,
+          "col": 8,
+          "label": "§",
+          "output": "§",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 1,
+          "col": 9,
+          "label": "¶",
+          "output": "¶",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 2,
+          "col": 0,
+          "label": "™",
+          "output": "™",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 2,
+          "col": 1,
+          "label": "…",
+          "output": "…",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 2,
+          "col": 2,
+          "label": "–",
+          "output": "–",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 2,
+          "col": 3,
+          "label": "—",
+          "output": "—",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 2,
+          "col": 4,
+          "label": "×",
+          "output": "×",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 2,
+          "col": 5,
+          "label": "÷",
+          "output": "÷",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 2,
+          "col": 6,
+          "label": "±",
+          "output": "±",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 2,
+          "col": 7,
+          "label": "≠",
+          "output": "≠",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 2,
+          "col": 8,
+          "label": "≤",
+          "output": "≤",
+          "action": "insert",
+          "kind": "rare"
+        },
+        {
+          "row": 2,
+          "col": 9,
+          "label": "≥",
+          "output": "≥",
+          "action": "insert",
+          "kind": "rare"
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "id": "qwerty",
+      "name": "QWERTY",
+      "description": "The home panel. The middle row is eleven wide because Spanish adds Ñ to it; the other rows keep ten columns. Row 3 carries shift, common punctuation and the two space bars.",
+      "rows": [
+        {
+          "index": 0,
+          "colMin": 0,
+          "colMax": 9,
+          "note": "All insert keys: Q–P."
+        },
+        {
+          "index": 1,
+          "colMin": 0,
+          "colMax": 10,
+          "note": "A–L plus Ñ at cols 0–9, and `⌫` backspace at col 10. Ñ takes the slot backspace holds on the English layout, so backspace moves one column right and this row alone is eleven wide."
+        },
+        {
+          "index": 2,
+          "colMin": 0,
+          "colMax": 9,
+          "note": "`⇤` cursor-left at col 0; Z–M at cols 1–7; `⇥` cursor-right at col 8; `↵` enter at col 9. Unchanged from the English layout."
+        },
+        {
+          "index": 3,
+          "colMin": 0,
+          "colMax": 9,
+          "note": "Full zag row: two space bars, one per thumb."
+        }
+      ],
+      "emptySlots": [],
+      "keys": [
+        {
+          "row": 0,
+          "col": 0,
+          "label": "Q",
+          "output": "q",
+          "action": "insert",
+          "kind": "letter"
+        },
+        {
+          "row": 0,
+          "col": 1,
+          "label": "W",
+          "output": "w",
+          "action": "insert",
+          "kind": "letter"
+        },
+        {
+          "row": 0,
+          "col": 2,
+          "label": "E",
+          "output": "e",
+          "action": "insert",
+          "kind": "letter",
+          "longPress": [
+            "é",
+            "ē",
+            "ę",
+            "ė",
+            "ë",
+            "è",
+            "ê"
+          ]
+        },
+        {
+          "row": 0,
+          "col": 3,
+          "label": "R",
+          "output": "r",
+          "action": "insert",
+          "kind": "letter"
+        },
+        {
+          "row": 0,
+          "col": 4,
+          "label": "T",
+          "output": "t",
+          "action": "insert",
+          "kind": "letter"
+        },
+        {
+          "row": 0,
+          "col": 5,
+          "label": "Y",
+          "output": "y",
+          "action": "insert",
+          "kind": "letter"
+        },
+        {
+          "row": 0,
+          "col": 6,
+          "label": "U",
+          "output": "u",
+          "action": "insert",
+          "kind": "letter",
+          "longPress": [
+            "ú",
+            "ū",
+            "ù",
+            "ü",
+            "û"
+          ]
+        },
+        {
+          "row": 0,
+          "col": 7,
+          "label": "I",
+          "output": "i",
+          "action": "insert",
+          "kind": "letter",
+          "longPress": [
+            "í",
+            "ī",
+            "î",
+            "į",
+            "ì",
+            "ï"
+          ]
+        },
+        {
+          "row": 0,
+          "col": 8,
+          "label": "O",
+          "output": "o",
+          "action": "insert",
+          "kind": "letter",
+          "longPress": [
+            "ó",
+            "º",
+            "ō",
+            "ø",
+            "œ",
+            "õ",
+            "ô",
+            "ö"
+          ]
+        },
+        {
+          "row": 0,
+          "col": 9,
+          "label": "P",
+          "output": "p",
+          "action": "insert",
+          "kind": "letter"
+        },
+        {
+          "row": 1,
+          "col": 0,
+          "label": "A",
+          "output": "a",
+          "action": "insert",
+          "kind": "letter",
+          "longPress": [
+            "á",
+            "å",
+            "ą",
+            "æ",
+            "ā",
+            "ª",
+            "à",
+            "ä"
+          ]
+        },
+        {
+          "row": 1,
+          "col": 1,
+          "label": "S",
+          "output": "s",
+          "action": "insert",
+          "kind": "letter",
+          "longPress": [
+            "ß"
+          ]
+        },
+        {
+          "row": 1,
+          "col": 2,
+          "label": "D",
+          "output": "d",
+          "action": "insert",
+          "kind": "letter"
+        },
+        {
+          "row": 1,
+          "col": 3,
+          "label": "F",
+          "output": "f",
+          "action": "insert",
+          "kind": "letter"
+        },
+        {
+          "row": 1,
+          "col": 4,
+          "label": "G",
+          "output": "g",
+          "action": "insert",
+          "kind": "letter"
+        },
+        {
+          "row": 1,
+          "col": 5,
+          "label": "H",
+          "output": "h",
+          "action": "insert",
+          "kind": "letter"
+        },
+        {
+          "row": 1,
+          "col": 6,
+          "label": "J",
+          "output": "j",
+          "action": "insert",
+          "kind": "letter"
+        },
+        {
+          "row": 1,
+          "col": 7,
+          "label": "K",
+          "output": "k",
+          "action": "insert",
+          "kind": "letter"
+        },
+        {
+          "row": 1,
+          "col": 8,
+          "label": "L",
+          "output": "l",
+          "action": "insert",
+          "kind": "letter"
+        },
+        {
+          "row": 1,
+          "col": 9,
+          "label": "Ñ",
+          "output": "ñ",
+          "action": "insert",
+          "kind": "letter"
+        },
+        {
+          "row": 1,
+          "col": 10,
+          "label": "⌫",
+          "output": null,
+          "action": "backspace",
+          "kind": "special",
+          "large": true
+        },
+        {
+          "row": 2,
+          "col": 0,
+          "label": "⇤",
+          "output": null,
+          "action": "cursorLeft",
+          "kind": "special"
+        },
+        {
+          "row": 2,
+          "col": 1,
+          "label": "Z",
+          "output": "z",
+          "action": "insert",
+          "kind": "letter"
+        },
+        {
+          "row": 2,
+          "col": 2,
+          "label": "X",
+          "output": "x",
+          "action": "insert",
+          "kind": "letter"
+        },
+        {
+          "row": 2,
+          "col": 3,
+          "label": "C",
+          "output": "c",
+          "action": "insert",
+          "kind": "letter",
+          "longPress": [
+            "č",
+            "ç",
+            "ć"
+          ]
+        },
+        {
+          "row": 2,
+          "col": 4,
+          "label": "V",
+          "output": "v",
+          "action": "insert",
+          "kind": "letter"
+        },
+        {
+          "row": 2,
+          "col": 5,
+          "label": "B",
+          "output": "b",
+          "action": "insert",
+          "kind": "letter"
+        },
+        {
+          "row": 2,
+          "col": 6,
+          "label": "N",
+          "output": "n",
+          "action": "insert",
+          "kind": "letter",
+          "longPress": [
+            "ń"
+          ]
+        },
+        {
+          "row": 2,
+          "col": 7,
+          "label": "M",
+          "output": "m",
+          "action": "insert",
+          "kind": "letter"
+        },
+        {
+          "row": 2,
+          "col": 8,
+          "label": "⇥",
+          "output": null,
+          "action": "cursorRight",
+          "kind": "special"
+        },
+        {
+          "row": 2,
+          "col": 9,
+          "label": "↵",
+          "output": "\n",
+          "action": "enter",
+          "kind": "special",
+          "large": true
+        },
+        {
+          "row": 3,
+          "col": 0,
+          "label": "⇧",
+          "output": null,
+          "action": "shift",
+          "kind": "special",
+          "large": true,
+          "id": "shift"
+        },
+        {
+          "row": 3,
+          "col": 1,
+          "label": "?",
+          "output": "?",
+          "action": "insert",
+          "kind": "punctuation",
+          "longPress": [
+            "¿"
+          ]
+        },
+        {
+          "row": 3,
+          "col": 2,
+          "label": ",",
+          "output": ",",
+          "action": "insert",
+          "kind": "punctuation",
+          "longPress": [
+            ";",
+            "…"
+          ]
+        },
+        {
+          "row": 3,
+          "col": 3,
+          "label": "!",
+          "output": "!",
+          "action": "insert",
+          "kind": "punctuation",
+          "longPress": [
+            "¡"
+          ]
+        },
+        {
+          "row": 3,
+          "col": 4,
+          "label": "␣",
+          "output": " ",
+          "action": "insert",
+          "kind": "space",
+          "justification": "Two space bars, one per thumb — a deliberate convenience duplicate within this panel. The pair is the left-thumb key; col 6 is the right-thumb key."
+        },
+        {
+          "row": 3,
+          "col": 5,
+          "label": "'",
+          "output": "'",
+          "action": "insert",
+          "kind": "punctuation",
+          "longPress": [
+            "‘",
+            "’",
+            "`"
+          ]
+        },
+        {
+          "row": 3,
+          "col": 6,
+          "label": "␣",
+          "output": " ",
+          "action": "insert",
+          "kind": "space",
+          "justification": "Two space bars, one per thumb — a deliberate convenience duplicate within this panel. The pair is the right-thumb key; col 4 is the left-thumb key."
+        },
+        {
+          "row": 3,
+          "col": 7,
+          "label": "\"",
+          "output": "\"",
+          "action": "insert",
+          "kind": "punctuation",
+          "longPress": [
+            "“",
+            "”",
+            "«",
+            "»"
+          ]
+        },
+        {
+          "row": 3,
+          "col": 8,
+          "label": ".",
+          "output": ".",
+          "action": "insert",
+          "kind": "punctuation",
+          "longPress": [
+            "…",
+            ":"
+          ]
+        },
+        {
+          "row": 3,
+          "col": 9,
+          "label": "-",
+          "output": "-",
+          "action": "insert",
+          "kind": "punctuation",
+          "longPress": [
+            "–",
+            "—"
+          ]
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "symbols",
+      "name": "SYMBOLS",
+      "description": "Left block (cols 0–6) is punctuation; right block (cols 7–9) is numpad plus math.",
+      "footnote": "Freed slots filled with `[` `]` `{` `}` `\\`, moved here from RARE for closer access. Removed from SYMBOLS, and now only on QWERTY row3: `?` `!` `'` `\"` `-`.",
+      "rows": [
+        {
+          "index": 0,
+          "colMin": 0,
+          "colMax": 9
+        },
+        {
+          "index": 1,
+          "colMin": 0,
+          "colMax": 9
+        },
+        {
+          "index": 2,
+          "colMin": 0,
+          "colMax": 9
+        },
+        {
+          "index": 3,
+          "colMin": 0,
+          "colMax": 9
+        }
+      ],
+      "emptySlots": [
+        {
+          "row": 0,
+          "col": 1,
+          "note": "Spacing gap in the punctuation block — keeps the sparse left-hand symbols from reading as a dense grid. An opportunity slot per manifest rule 4."
+        },
+        {
+          "row": 0,
+          "col": 3,
+          "note": "Spacing gap in the punctuation block. An opportunity slot per manifest rule 4."
+        },
+        {
+          "row": 0,
+          "col": 5,
+          "note": "Spacing gap in the punctuation block. An opportunity slot per manifest rule 4."
+        },
+        {
+          "row": 1,
+          "col": 2,
+          "note": "Spacing gap in the punctuation block. An opportunity slot per manifest rule 4."
+        },
+        {
+          "row": 1,
+          "col": 4,
+          "note": "Spacing gap in the punctuation block, keeping `(` and `)` visually paired and separated. An opportunity slot per manifest rule 4."
+        },
+        {
+          "row": 1,
+          "col": 6,
+          "note": "Spacing gap in the punctuation block. An opportunity slot per manifest rule 4."
+        },
+        {
+          "row": 2,
+          "col": 5,
+          "note": "Spacing gap in the punctuation block. An opportunity slot per manifest rule 4."
+        },
+        {
+          "row": 3,
+          "col": 0,
+          "note": "Spacing gap on the bottom zag row. An opportunity slot per manifest rule 4."
+        },
+        {
+          "row": 3,
+          "col": 2,
+          "note": "Spacing gap on the bottom zag row, keeping `]` and `}` visually paired and separated. An opportunity slot per manifest rule 4."
+        },
+        {
+          "row": 3,
+          "col": 4,
+          "note": "Spacing gap on the bottom zag row. An opportunity slot per manifest rule 4."
+        }
+      ],
+      "keys": [
+        {
+          "row": 0,
+          "col": 0,
+          "label": "[",
+          "output": "[",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 0,
+          "col": 2,
+          "label": "@",
+          "output": "@",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 0,
+          "col": 4,
+          "label": "#",
+          "output": "#",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 0,
+          "col": 6,
+          "label": "$",
+          "output": "$",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 0,
+          "col": 7,
+          "label": "1",
+          "output": "1",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 0,
+          "col": 8,
+          "label": "2",
+          "output": "2",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 0,
+          "col": 9,
+          "label": "3",
+          "output": "3",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 1,
+          "col": 0,
+          "label": "\\",
+          "output": "\\",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 1,
+          "col": 1,
+          "label": "*",
+          "output": "*",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 1,
+          "col": 3,
+          "label": "(",
+          "output": "(",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 1,
+          "col": 5,
+          "label": ")",
+          "output": ")",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 1,
+          "col": 7,
+          "label": "4",
+          "output": "4",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 1,
+          "col": 8,
+          "label": "5",
+          "output": "5",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 1,
+          "col": 9,
+          "label": "6",
+          "output": "6",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 2,
+          "col": 0,
+          "label": "%",
+          "output": "%",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 2,
+          "col": 1,
+          "label": "/",
+          "output": "/",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 2,
+          "col": 2,
+          "label": "^",
+          "output": "^",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 2,
+          "col": 3,
+          "label": "{",
+          "output": "{",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 2,
+          "col": 4,
+          "label": "&",
+          "output": "&",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 2,
+          "col": 6,
+          "label": "_",
+          "output": "_",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 2,
+          "col": 7,
+          "label": "7",
+          "output": "7",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 2,
+          "col": 8,
+          "label": "8",
+          "output": "8",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 2,
+          "col": 9,
+          "label": "9",
+          "output": "9",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 3,
+          "col": 1,
+          "label": "]",
+          "output": "]",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 3,
+          "col": 3,
+          "label": "}",
+          "output": "}",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 3,
+          "col": 5,
+          "label": ":",
+          "output": ":",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 3,
+          "col": 6,
+          "label": ";",
+          "output": ";",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 3,
+          "col": 7,
+          "label": "0",
+          "output": "0",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 3,
+          "col": 8,
+          "label": "=",
+          "output": "=",
+          "action": "insert",
+          "kind": "symbol"
+        },
+        {
+          "row": 3,
+          "col": 9,
+          "label": "+",
+          "output": "+",
+          "action": "insert",
+          "kind": "symbol"
+        }
+      ]
+    }
+  ]
+}

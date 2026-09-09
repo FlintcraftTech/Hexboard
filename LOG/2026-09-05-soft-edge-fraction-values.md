@@ -1,4 +1,4 @@
-# [HASH] — [soft-edge-fraction-values] created from the user's own diagnosis that the gradient had been built inside the old circle rather than around it, with the code's "1.18" figure corrected to 1.045
+# 5f9d97e — [soft-edge-fraction-values] created from the user's own diagnosis that the gradient had been built inside the old circle rather than around it, with the code's "1.18" figure corrected to 1.045
 
 This session ran across 2026-09-04 and 2026-09-05.
 

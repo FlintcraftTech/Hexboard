@@ -4,469 +4,6 @@
 
 > Vetted work, ready to build — worked top to bottom. Each piece of work is one item: a `#### ` heading naming it, a `[slug]` at the end of that heading line, and a short rationale beneath. A leading flavor tag names how it runs — none for a build (Claude edits files), `[audit]` for a review pass, `[user]` for a step only you can do. A security or privacy risk Claude surfaces lives here too, as a work item carrying a `Red flag · State: cleared/uncleared` marker. The line below marks how far down is cleared to build; anything below it is decided but not ready yet.
 
-#### Raise the key's solid fraction and let the fade reach its neighbours [soft-edge-fraction-values]
-The two numbers that decide how much of a key is solid and how far its fade reaches are changed, so a key reads as bigger again and its label grows back with it.
-
-**What was found, and it came from you on 2026-09-04.** Your account of what the soft edge did: the gradient was built inside what was the boundary of the old circles, instead of around them where there is a little space. Reading `KeyGeometry.kt` the same day confirmed it. A key is painted as a radial gradient using two fractions of the touch radius — solid out to `SOLID_FRACTION = 0.55`, faded to nothing at `FADE_FRACTION = 1.0` — so the fade stops exactly at the edge of the touch target and puts nothing into the gap between keys. The old hard-edged disc was `radius - 3dp`, which is 0.86 of the touch radius at the Pixel 6's solved 22dp. So the part of a key that reads as definitely there fell from 0.86 of the radius to 0.55, which is the shrinkage rather than anything about the fade being soft.
-
-**One cause, two complaints.** [soft-key-edge] was built to answer your complaint that the keys look too small, and it made them read smaller. Label size is a fixed fraction of the solid radius, so the glyphs shrank by about a third at the same moment and for the same reason. [label-size-after-soft-edge] reported that half and is merged into this item, its three options carried below.
-
-**The values, chosen rather than compared, on your instruction on 2026-09-04.** You were offered a comparison affordance on the phone — two or three settings to flick between — and chose to have a value picked and shipped with the install instead. Last session had already tried to get a comparison page in front of you and could not, which is recorded on [soft-key-edge].
-
-- `SOLID_FRACTION` 0.55 to **0.75**. The definite part of the key comes back to three quarters of the touch radius, against 0.86 for the old hard disc — most of what was lost, while staying clear of an edge so late it reads as hard again.
-- `FADE_FRACTION` 1.0 to **1.045**. Neighbouring key centres sit 2.09 radii apart, so half that distance is 1.045 radii: adjacent fades meet exactly and there is no visibly dead space between keys, which is what your own diagnosis asked for.
-
-**Why 1.045 can never overlap, which is the part worth writing down.** The gap between touch targets is `max(1.5, radius * 0.09)`, so at any solved radius at or above about 16.7dp the gap is 0.09 of the radius and the centre spacing is exactly 2.09 radii. Below that the floor of 1.5dp takes over and the spacing is proportionally wider, so the fades fall a little short of meeting rather than running into each other. The value is therefore a ceiling at every radius the board can solve.
-
-**What the labels do.** They are sized against the solid radius, so raising it to 0.75 grows every glyph by about a third from where this run left it, landing roughly 13% below the size they were on 2026-09-03. That residual is deliberate: a glyph belongs inside the solid part of the key rather than out on the fade, which is the rule [soft-key-edge] introduced and this item keeps. Raising `LABEL_FRACTION` to close the last 13% would need it above 1.0, which would put glyphs onto the fade.
-
-**A wrong figure in the code, corrected as part of this.** `KeyGeometry.kt`'s own comment names the generous end worth trying as "solid to 0.45 and transparent at about 1.18, where neighbouring fades just meet". At 1.18 radii the fades overlap substantially; they meet at 1.045. The figure was written on 2026-09-04 and would have been trusted by whoever tuned these next, so it is corrected with the arithmetic beside it rather than merely replaced.
-
-**What the build changes.**
-- `android/app/src/main/java/tech/flintcraft/hexboard/KeyGeometry.kt` — `SOLID_FRACTION` becomes 0.75 and `FADE_FRACTION` becomes 1.045; the doc comment's "about 1.18" is replaced by 1.045 with the 2.09-radii spacing and the small-radius floor written out, so the next tuning session has the derivation rather than a number.
-- `android/app/src/test/java/tech/flintcraft/hexboard/KeyEdgeTest.kt` — carries the observation below, added to the assertions already there.
-
-Reads but does not change: `android/app/src/main/java/tech/flintcraft/hexboard/KeyboardPanel.kt`, to confirm the gradient's solid stop is still derived as `SOLID_FRACTION / FADE_FRACTION` and needs no edit of its own.
-
-**The observation that shows it landed:** `KeyEdgeTest` passes with a new assertion that across the whole solvable radius range the drawn fade never exceeds half the distance between neighbouring key centres — so fades meet and never overlap — and that the solid radius is three quarters of the touch radius. The existing assertions that the solid fraction is strictly below the outer one and that the outer one is at least 1.0 both still hold.
-
-**Options already refused, each with what defeated it.** Restoring the old 0.86 solid fraction — that is where the hard edge effectively was, so it reinstates the boundary the fade exists to dissolve. Pushing only the fade outward and leaving the solid fraction alone — the gap is 9% of the radius, so it buys about 1dp and answers neither complaint. Sizing labels against the fade radius rather than the solid one, which is [label-size-after-soft-edge]'s first option — it puts glyphs out over the fading part, which [soft-key-edge] explicitly did not want. Raising `LABEL_FRACTION` to compensate, that item's second option — it would have to exceed 1.0 and lands in the same place. Leaving it alone, that item's third option — defeated by your instruction to pick a value and ship it. Building a comparison affordance to choose between values on the phone — offered and declined by you on 2026-09-04 in favour of shipping one value.
-
-Rests on: `SOLID_FRACTION = 0.55`, `FADE_FRACTION = 1.0`, `LABEL_FRACTION = 0.90` and the `max(1.5, radius * 0.09)` gap rule, all read from `KeyGeometry.kt` on 2026-09-04; the old `VISIBLE_INSET = 3f` and the 22dp radius solved for a 411dp width, both recorded in [soft-key-edge]'s own text; that the centre spacing is `2 * radius + gap` in every direction, which is the hexagonal packing `KeyGeometry` computes and was checked against its own arithmetic on 2026-09-04 rather than run; that neither value has been seen on a screen, which is what [verify-this-runs-build-on-device] is for.
-
-Placed immediately above [verify-this-runs-build-on-device] so it compiles and installs in the same sitting, which is what shipping a picked value rather than comparing values requires. That ordering is written on both items.
-
-#### Work out which keys neighbour which, from the config and the zag rule [predictive-neighbour-table]
-The app learns, for every key on a panel, which keys sit next to it. That table is what the planned autocorrect measures distance with, and nothing computes it today.
-
-**Why it is its own item, and why it can be built before anything else.** [uniform-neighbours-predictive] rests on a claim about geometry: in a hexagonal tessellation each interior key has exactly six equidistant neighbours, so the set of keys a user might have meant is uniform. Nothing in the app knows that set. The item's own note, added 2026-08-07, is that the neighbour sets are derivable from `resources/key-layout.json` but not from it alone — the config carries each key's `row` and `col` and no geometry, while which six keys touch a given key depends on the zag parity that lives in `KeyGeometry.kt`. So this is arithmetic over data the app already has, with no dependency on a dictionary, on the correction behaviour, or on anything being verified on a phone.
-
-**Three questions the parent item said to settle first, all answered on 2026-09-04 and all desk answers.**
-
-- **Keys at a panel's edge have fewer than six neighbours, and that is fine.** A key's neighbours are the keys one step away from it; six is what an interior key happens to have. The distance measure needs a neighbour set, not a set of exactly six, so an edge key simply has a smaller one. Uniformity is a property interior keys have rather than a requirement the measure imposes.
-- **The two space bars in row 3 are excluded from the neighbour model.** A tap that lands on a space ends the word rather than substituting a letter, and ending the word is the correction moment itself, so a space is never one of the things the user might have meant instead. Row 3's space keys are therefore left out of every neighbour set and given none of their own.
-- **Neighbour sets are computed per panel and never span two.** A mis-tap cannot cross a swipe boundary, so a key on QWERTY has no neighbours on RARE or SYMBOLS.
-
-**How the neighbours are found.** Every key's centre is already computed by `KeyGeometry.centre(row, col, radius)`, and in the hexagonal packing the distance from a key to each of its six neighbours is exactly one vertical step — `2 * radius + gap(radius)` — in every direction. So a key's neighbours are the keys on the same panel whose centre lies within a small tolerance of one vertical step away. The tolerance exists because the packing is computed in floating point rather than because the spacing is approximate. The result is scale-free: the same table comes out at any solved radius, since every distance is a multiple of the radius.
-
-**Why this is not a lookup the config could hold**, recorded because putting it in the config is the obvious suggestion. SPEC's key-inventory principle keeps geometry out of the config deliberately — the zag rule is the perceptual wedge and lives in Kotlin — so a neighbour table written into `key-layout.json` would put derived geometry into the one file that is supposed to carry none, and would have to be re-derived by hand for every new language. Computing it at runtime costs a pass over the keys once per layout.
-
-**What the build changes.**
-- `android/app/src/main/java/tech/flintcraft/hexboard/KeyGeometry.kt` — a new function returning, for one panel's keys, each key's neighbour indices: the keys whose centre sits within tolerance of one vertical step away, with row 3's space keys excluded both as neighbours and as holders of a neighbour set.
-- `android/app/src/test/java/tech/flintcraft/hexboard/NeighbourTableTest.kt` — new, carrying the observation below.
-
-Reads but does not change: `resources/key-layout.json` and `resources/key-layout-ru.json` for real key positions to test against, and `android/app/src/main/java/tech/flintcraft/hexboard/KeyLayout.kt` for the shape the keys arrive in.
-
-**The observation that shows it landed:** `NeighbourTableTest` passes, asserting on both shipped configs that a key well inside QWERTY has exactly six neighbours, that a key at the left edge of a row has fewer, that every neighbour relationship is mutual, that neither space key appears in any neighbour set, and that the table computed at a 12dp radius is identical to the one computed at 34dp — the two ends of the solvable range, which is what shows the result is scale-free.
-
-**Options already refused, each with what defeated it.** Writing the neighbour table into `key-layout.json` — puts geometry into the file SPEC keeps geometry out of, and makes every new language a hand-derivation. Hard-coding a table for QWERTY — there are two shipped layouts already and the Russian one is eleven columns wide, so a hard-coded table is wrong for it on the day it is written. Treating adjacency as "row and column differ by at most one" — that is rectangular adjacency and gets the zag wrong, which is the whole thing this project's geometry does differently.
-
-Rests on: `KeyGeometry.centre`, `verticalStep` and the `max(1.5, radius * 0.09)` gap rule, read from `KeyGeometry.kt` on 2026-09-04; that every one of a key's six neighbours sits exactly one vertical step away, checked against that file's own arithmetic on 2026-09-04 rather than run; the config carrying `row` and `col` and no geometry, read from `resources/key-layout.json` on 2026-09-04.
-
-[uniform-neighbours-predictive] is held against this item and [predictive-dictionary-bundle], being the correction engine that uses both. That ordering is written on all three entries.
-
-#### Ship an English word list with the app, with the proper names left out [predictive-dictionary-bundle]
-The word list the planned autocorrect compares finished words against, generated from SCOWL, committed to this repository, copied into the app at build time and readable from Kotlin.
-
-**Why it is its own item.** [uniform-neighbours-predictive] cannot correct anything without a dictionary, and choosing and packaging one is independent of the correction behaviour, of the neighbour geometry and of anything being verified on a phone. It is also the half with a licence question attached, which is a different kind of care from the arithmetic.
-
-**Which list, and why it is already settled.** SCOWL, established in `workshop/resources/research/word-list-licence-and-frequency.md` on 2026-09-01. Its licence is permissive enough to ship inside this repository under PolyForm Noncommercial, and — the part that matters most here — it separates proper names into categories of their own, so SPEC's no-proper-nouns rule is satisfied by leaving those categories out at generation time rather than by writing a filter that guesses at what is a name. That rule exists because a word corrected into a name is the most irritating failure autocorrect has.
-
-**How ties get broken, decided on 2026-09-04, and it is a narrowing.** SCOWL carries no frequency data. What it has is size levels — a coarse commonness ranking, since a word's level reflects how common it is — and the first version uses that and bundles no second source. The research finding named `wordfreq` (CC BY-SA 4.0, ShareAlike raising a question about a repackaged table shipped under a different licence) and the Leipzig Corpora Collection (reported CC BY 4.0) as the real frequency tables. Leipzig was the cleaner of the two on licence grounds and its terms could not be read: on 2026-09-04 both its download page and its frequency-dictionary page turned out to sit behind a proof-of-work bot challenge, so the CC BY 4.0 figure remains second-hand. Rather than bundle data on an unread licence, the first version does without. A real frequency table is a later question with its own item, and whoever takes it up needs a route past that challenge.
-
-**What a build actually produces**, stated because "ship a word list" hides the work. A generation script run once, by hand, producing a plain text file of one word per line that is committed like the emoji data already is — not a build-time download, which would make the build depend on a network and on someone else's server staying up. The script records in the file's own header which SCOWL release and which size level it was generated from, so the list can be regenerated identically.
-
-**What the build changes.**
-- `scripts/generate-word-list.py` — new. Reads a SCOWL distribution, takes the English word files at the chosen size level, leaves out the proper-name categories, and writes the list with a header naming the SCOWL version, the size level and the categories included and excluded.
-- `resources/wordlist-en.txt` — new, generated by that script and committed, alongside the key configs and the emoji data.
-- `android/app/build.gradle.kts` — the existing copy task, which already takes `resources/key-layout*.json` and `emoji-test.txt` into the app's assets, also takes the word list.
-- `android/app/src/main/java/tech/flintcraft/hexboard/WordList.kt` — new. Reads the list from the assets and answers two questions: is this exact word in the list, and what is its size level.
-- `README.md` — the Notices section gains SCOWL's attribution beside the FlorisBoard and Unicode ones already there.
-- `android/app/src/test/java/tech/flintcraft/hexboard/WordListTest.kt` — new, carrying the observation below.
-
-Reads but does not change: `workshop/resources/research/word-list-licence-and-frequency.md`, for the licence terms and the trap it names.
-
-**The observation that shows it landed:** `WordListTest` passes, asserting that the committed list parses, that a sample of ordinary words is present, that a sample of common first names and place names is absent — which is the no-proper-nouns rule made checkable rather than asserted — and that the file's header names a SCOWL version and a size level. Whether the list actually reaches the app's assets is checked by the app running, so it belongs to the next install rather than to this test.
-
-**Options already refused, each with what defeated it.** `hermitdave/FrequencyWords` — presents as MIT, but the MIT licence covers the generator and the data is derived from OpenSubtitles with its own terms; named as a trap in the research finding. `wordfreq` — CC BY-SA, so a filtered repackaged table shipped inside an app under a different licence raises a ShareAlike question that would have to be answered first. Leipzig — the licence could not be read at source, above. Downloading the list at build time — makes every build depend on a network and someone else's uptime. Writing a proper-noun filter — SCOWL already separates them, so a filter would be guessing where the data already knows.
-
-Rests on: SCOWL's licence and its separable proper-name categories, read from its own readme on 2026-09-01; that SCOWL ships no frequency data and that its size levels are a commonness ranking, from the same read; that Leipzig's own terms are unreadable from here behind a bot challenge, attempted 2026-09-04; the existing copy task taking a filtered set of files from `resources/`, read from `android/app/build.gradle.kts` on 2026-09-04.
-
-[uniform-neighbours-predictive] is held against this item and [predictive-neighbour-table], being the correction engine that uses both. That ordering is written on all three entries.
-
-#### Report a wrong key on a layout, from inside the app [layout-error-report]
-Red flag · State: cleared
-A "Report a problem" entry in the app that composes a short report about the layout in use — which layout, which app and Android version, which handset, and whatever the person types about what is wrong — shows it, and hands it to their own mail app to send.
-
-**Why it exists, decided by you on 2026-09-04.** SPEC required each language's layout to be confirmed by someone who reads the language before it ships. You judged that unrealistic, and the record already agreed in advance: [language-list-choice] was held against [russian-layout-check] on exactly the ground that the reader check is the bottleneck, scaling with whether a reader can be found rather than with how many people speak the language, and [russian-layout-check] itself has sat dated a month out because no Russian typist was to hand. Your replacement is easy reporting, and this is it.
-
-**Why the swap is safe, which turns on what the requirement was guarding.** [russian-layout-check] gives the reason for the confirmation rule: a shipped layout gets copied and imitated, so an error propagates rather than sitting still. But layouts are not invented here — each is transcribed from FlorisBoard's own layout and popup files, which are already in use by speakers of that language. So the risk is a bad *transcription*, not a bad *design*: a letter in the wrong slot. That is what a user notices at once and what a report fixes in one line. The cost, stated rather than glossed: the first user of each new layout becomes the person who finds the errors, where a reader would have found them before anyone typed.
-
-**Your wider aim, and the part of it this item is.** You want to catch people before they go to the Play Store and leave a review, accepting that this may mean a lot of email and that screening it is a later problem worth having. That general funnel is filed as [feedback-funnel-before-store]; this item is the narrow piece the SPEC change actually needs, and it is deliberately small because Hexboard has no Play Store listing and no keyboard yet verified on a handset.
-
-**One policy line this stays clear of, read on 2026-09-04.** Google's in-app review guidance forbids asking the user any question before or while presenting the rating prompt — including "are you enjoying the app?" — because filtering for happy reviewers inflates ratings. So a report route must never be attached to a rating flow. This one is not: it is a standing entry that is always there, unattached to any prompt, and it makes no judgment about anyone's mood.
-
-**The privacy risk, raised by Claude and designed out, which is what clears the flag above.** A keyboard that sends reports is one keystroke of carelessness away from being a keyboard that sends your text. Four things answer it, and three are structural rather than promises:
-
-- **The report is built from a fixed list of fields and there is no path from the text field into it.** Nothing from `InputConnection`, the clipboard or any key history is available to the report builder; it takes the layout id, the app version, the Android version, the device model and the person's own typed description, and nothing else exists for it to take.
-- **Nothing is sent by the app.** It opens the person's own mail app with the text prefilled, so they read it and press send themselves. Hexboard makes no network request and needs no internet permission for this.
-- **The composed text is shown before it goes**, so the claim above is checkable by the person making the report rather than taken on trust.
-- **The address is not in the repository.** It is read from `android/local.properties`, which is gitignored, into a build config field; where that field is empty the entry does not appear at all. This repository is public and the scrub rules bar a personal contact detail from a tracked file.
-
-**Why the app rather than the keyboard.** The keyboard surface spends gestures, and horizontal swipe already means "change panel" — the same reasoning that put the layout picker in the app's own settings on 2026-09-01. A report is also not something anyone does mid-sentence.
-
-**What the build changes.**
-- `android/app/src/main/java/tech/flintcraft/hexboard/ProblemReport.kt` — new. Builds the report text from the five fields above and nothing else. A pure function, so what it can and cannot contain is checkable without a running app.
-- `android/app/src/main/java/tech/flintcraft/hexboard/MainActivity.kt` — a "Report a problem" entry: a description box, the composed report shown in full beneath it, and a send button that opens an `ACTION_SENDTO` mail intent with the text prefilled. Hidden entirely when the address is unset.
-- `android/app/build.gradle.kts` — `buildFeatures` gains `buildConfig = true` beside the existing `compose = true`, and an optional `hexboard.reportAddress` is read from `local.properties` into a build config field, defaulting to empty. This is the same pattern `hexboard.buildDir` already uses, added by [build-output-off-drive].
-- `android/app/src/test/java/tech/flintcraft/hexboard/ProblemReportTest.kt` — new, carrying the observation below.
-
-Reads but does not change: `android/app/src/main/java/tech/flintcraft/hexboard/KeyLayout.kt`, for the layout id and language the report names.
-
-**The observation that shows it landed:** `ProblemReportTest` passes, asserting that a composed report contains the layout id, the app version, the Android version and the device model; that it contains the description it was given and no other free text; and that `ProblemReport` exposes no way to pass it text from an input connection or a clipboard — the last being asserted by the function's own signature taking the five fields and nothing else, which is what makes "it cannot carry what you typed" a property of the code rather than a claim about it. Whether the mail app actually opens is a check for the phone and belongs to whoever next installs.
-
-**Options already refused, each with what defeated it.** A rating prompt that asks how it's going and routes unhappy users to a form — prohibited by Google's own guidance, above. Sending the report from the app over the network — needs an internet permission on a keyboard, needs somewhere to send it, and removes the person's own sight of what leaves; the mail intent gives the same reach for none of that. A GitHub issue link — public, and it asks for an account before anyone can report a wrong letter. Including recent text for context — the one thing this must never do. Putting the entry on the keyboard surface — spends a gesture the panels already use.
-
-Rests on: `android/local.properties` being gitignored, checked with `git check-ignore` on 2026-09-04; `buildFeatures` currently declaring only `compose = true`, read from `android/app/build.gradle.kts` on 2026-09-04; Google's in-app review guidance forbidding a pre-screening question in the rating flow, read on 2026-09-04 from its own documentation and secondary summaries; that layouts are transcribed from FlorisBoard rather than designed here, recorded in `workshop/resources/research/open-source-layout-sources.md` on 2026-09-02.
-
-[feedback-funnel-before-store] is the general version of this and is deliberately not built here. [russian-layout-check] and SPEC's layout principle both change with this item; those changes were made in the planning session of 2026-09-04 rather than by a build.
-
-#### Let a user choose which layout variant they are typing on [layout-switching]
-The app's own settings offer the layouts Hexboard ships, grouped by language; the one chosen is what the keyboard draws from then on.
-
-Filed by /rescan on 2026-08-20, from a requirement SPEC created the same day and nothing in the queue held: if one app ships several layouts, the user has to be able to pick theirs. It was named as an accepted cost when the platform decision was made and then not filed, which is how a feature dies in SPEC. **Designed out on 2026-09-04.**
-
-**Where the picker lives** was settled by you on 2026-09-01 and is in SPEC: the app's own settings, not the keyboard surface. The keyboard-surface option — a long-press or a gesture, reachable without leaving what you are typing — lost because horizontal swipe already means "change panel", so the picker would have had to find a gesture the layout has not already spent. Recorded because it is the obvious idea and will otherwise be re-proposed.
-
-**What the picker shows**, settled with you on 2026-09-01 and narrowed on 2026-09-02: layouts grouped by language, ordered within each language by a set position rather than by anything counted. Usage telemetry was the alternative for ordering and lost outright — it is the only true measure of popularity and it would have been the first thing in Hexboard to report what a user does back to a server, against every other feature's posture. Nothing counts anything.
-
-Two things this picker was going to show and now will not, recorded because both were designed and then removed rather than forgotten: a link to whoever made the layout, and layouts the user built on the device sitting alongside the shipped ones. Both went on 2026-09-02 with the layout editor, when you settled that Hexboard ships layouts copied from each language's own standard and nobody builds their own.
-
-**Both open questions closed on 2026-09-04, and neither needed a running keyboard after all.**
-
-- **Enumeration.** `AssetManager.list()` returns the names of every asset at a given path, and [ship-all-layout-configs] made the assets folder hold every `key-layout*.json` rather than one hard-coded file. So the app lists the assets, keeps the ones matching that pattern, and reads each config's `language` and `order` — the two fields [variant-language-fields] added at schema version 3 precisely so a picker could read them. This was the half genuinely waiting on something, and what it was waiting on has shipped.
-- **Where the choice is remembered.** An ordinary stored preference. The settings screen and the input method service are the same application, so both read the same preferences with no cross-process machinery; the service re-reads it when the keyboard is next shown, so a change takes effect without a restart.
-
-**Why it lands right after [layout-error-report], and the ordering matters rather than being tidy.** This picker is what makes the Russian layout reachable at all — the config ships into the assets today and nothing can select it, so it is inert. SPEC no longer holds a layout back for a native reader's confirmation, on your decision of 2026-09-04; what catches an error instead is the in-app report route. So the safety net should land in the same build as the thing that needs it, rather than after it. That is placement and a sentence rather than a `Blocked by:` line, because a hold would push this below the readiness line and out of the run that should build both.
-
-**Why it was not designed out on 2026-09-02, which is a judgment worth keeping.** The picker is only worth having once there is more than one layout *in the app*, and there was one — the Gradle task copied a single hard-coded file. Designing a chooser for a list of one invites decisions that would be revisited the moment the second layout arrived, so the small Gradle change went first. Claude's recommendation, your agreement. That change shipped on 2026-09-04.
-
-**What the build changes.**
-- `android/app/src/main/java/tech/flintcraft/hexboard/LayoutCatalogue.kt` — new. Lists the assets, keeps the `key-layout*.json` entries, reads each one's `id`, `name`, `language` and `order`, and returns them grouped by language and ordered within each group, with a missing `order` sorting last.
-- `android/app/src/main/java/tech/flintcraft/hexboard/LayoutPreference.kt` — new. Reads and writes the chosen layout's `id` in the app's shared preferences, falling back to the config marked `isDefault` where nothing is stored or the stored id no longer exists.
-- `android/app/src/main/java/tech/flintcraft/hexboard/KeyLayout.kt` — the loader takes the asset filename to open rather than assuming `key-layout.json`.
-- `android/app/src/main/java/tech/flintcraft/hexboard/HexboardImeService.kt` — loads the chosen layout when the input view is created, so a change made in the app is in effect the next time the keyboard appears.
-- `android/app/src/main/java/tech/flintcraft/hexboard/MainActivity.kt` — the picker itself: the layouts grouped by language with the current one marked, and a tap storing the choice.
-- `android/app/src/test/java/tech/flintcraft/hexboard/LayoutCatalogueTest.kt` — new, carrying the first half of the observation.
-- `android/app/src/androidTest/java/tech/flintcraft/hexboard/LayoutSwitchingUiTest.kt` — new, carrying the second half.
-
-Reads but does not change: `resources/key-layout.json` and `resources/key-layout-ru.json`, for the fields the catalogue reads; `android/app/build.gradle.kts`, to confirm the copy task already puts both into a flat assets folder.
-
-**The observation that shows it landed:** `LayoutCatalogueTest` passes, asserting that a set of configs is grouped by language, ordered by `order` within a language, that a config with no `order` sorts last, and that a stored id naming a layout that is not present falls back to the default rather than failing. `LayoutSwitchingUiTest` picks the Russian layout in the app, brings the keyboard up and asserts Cyrillic keys are drawn, then picks English again and asserts the Latin ones are back. Nothing here can run either, so running them is Android Studio's, on the Pixel 6.
-
-**Options already refused, each with what defeated it.** A picker on the keyboard surface — horizontal swipe is already spent on panels. Ordering by usage telemetry — the first thing that would report user behaviour to a server. A creator link, and device-made layouts alongside the shipped ones — both went with the layout editor on 2026-09-02. Hard-coding the list of layouts in Kotlin — a further language would then be two changes rather than the one file SPEC promises. Holding this against [layout-error-report] with a `Blocked by:` line — it would drop below the readiness line and out of the run that should build both.
-
-Rests on: `AssetManager.list()` returning the names of all assets at a path, read from Android's class reference on 2026-09-04 and not run; the assets folder being flat with each config keeping its own filename, read from `android/app/build.gradle.kts` on 2026-09-04; `language` and `order` existing at schema version 3, read from `resources/key-layout.json` on 2026-09-04; that the settings screen and the input method service share one preferences store, which follows from their being one application and has not been run.
-
-SPEC's out-of-scope line still lists "IME service polish (settings screen, language switching)" among things deferred for early iterations. That line was not read as holding this back, because the reason to build it now is [layout-error-report] and the Russian layout becoming reachable, not a judgment about which iteration this is. Worth a look next time SPEC is read end to end.
-
-#### Transcribe the first five layouts: French, German, Spanish, Portuguese, Italian [first-batch-layouts]
-Five new layout configs, each transcribed from FlorisBoard's own files, so Hexboard ships seven layouts rather than two.
-
-**Chosen by you on 2026-09-05**, from the plan settled the same day in [language-list-choice]. All five are Latin script, so nothing here touches the geometry, the zag rule, right-to-left text or anything the Russian layout had to solve. The order is deliberate: French and German first because they are genuine key-order changes and therefore the ones that prove the route, then the three that are QWERTY with different long-press accents.
-
-**Two levels of cheapness, found in FlorisBoard's own file listing on 2026-09-05 and worth knowing before starting.** French has `azerty.json` and German has its own file, both real re-orderings of the letters. Portuguese and Italian have **no layout file at all** — they use the shared `qwerty.json` and differ only in their popup mappings, `pt.json` and `it.json`. Spanish has `spanish.json`, which is QWERTY plus Ñ. So three of the five are the same board with different accents, and the work there is the popup mapping rather than the rows.
-
-**Which German file, to be settled by reading rather than guessed.** The listing carries both `german.json` and `qwertz.json`, and which one matches what a German phone keyboard actually shows was not established. Read both, take the one matching, and record in the config's `about` field which file was transcribed — the same discipline [language-starter-layouts] used for Russian.
-
-**Row widths.** Spanish adds Ñ, which makes its middle row eleven keys wide. That case is already solved: SPEC allows rows wider than ten with correspondingly smaller keys, and [language-starter-layouts] shipped an eleven-wide Russian board on exactly that rule. No letter is hidden or dropped to fit ten columns.
-
-**Every letter reachable, visible or by long-press**, per SPEC. For these five that mostly means the accented forms sit under their base letters, which is what the popup mapping files record.
-
-**What the build changes.**
-- `resources/key-layout-fr.json` — new. French, transcribed from FlorisBoard's `azerty.json` with popups from `fr.json`.
-- `resources/key-layout-de.json` — new. German, from whichever of `german.json` and `qwertz.json` matches, with popups from `de.json`.
-- `resources/key-layout-es.json` — new. Spanish, from `spanish.json` with popups from `es.json`, its middle row eleven wide.
-- `resources/key-layout-pt.json` — new. Portuguese: the shared `qwerty.json` rows with popups from `pt.json`.
-- `resources/key-layout-it.json` — new. Italian: the shared `qwerty.json` rows with popups from `it.json`.
-- `resources/key-manifest-fr.md`, `-de.md`, `-es.md`, `-pt.md`, `-it.md` — generated by `scripts/generate-key-manifest.py`, never hand-edited.
-- `android/app/src/androidTest/java/tech/flintcraft/hexboard/ShippedConfigsTest.kt` — extended to cover the five new configs.
-- `android/app/src/test/java/tech/flintcraft/hexboard/KeyLayoutValidationTest.kt` — extended likewise.
-
-Reads but does not change: `resources/key-layout.json` and `resources/key-layout-ru.json` as the shape to follow; `android/app/build.gradle.kts`, to confirm the copy task already takes every `key-layout*.json` and needs no edit — which is what [ship-all-layout-configs] built.
-
-Each config carries `language` as a BCP 47 tag and an integer `order`, both required at schema version 3, and `isDefault` false — English stays the default.
-
-**The observation that shows it landed:** `KeyLayoutValidationTest` and `ShippedConfigsTest` pass over seven configs rather than two, each new one having a non-blank BCP 47 language, an integer order, and its generated manifest present and matching. The generator's own `validate()` refuses a missing or blank language and a non-integer order, so a config that fails those does not reach the assets.
-
-**Options already refused, each with what defeated it.** Picking the batch by where Android users are rather than by what the config model supports — it puts Hindi near the top, which is a Devanagari job of its own rather than a transcription, and was offered and declined on 2026-09-05. Waiting for someone to ask for each of these — the demand-driven policy stands for languages beyond this batch, but with no users there is nobody to ask, which is the reason a first batch exists at all. Hiding letters to fit ten columns — barred by SPEC and already settled against for Russian.
-
-Rests on: FlorisBoard's layout and popup file listing, read on 2026-09-05; its Apache 2.0 licence and the attribution convention, recorded in `workshop/resources/research/open-source-layout-sources.md` on 2026-09-02; `language`, `order` and `isDefault` existing at schema version 3 and the generator validating the first two, read from `resources/key-layout.json` and recorded in [variant-language-fields]; that the copy task already ships every `key-layout*.json`, built by [ship-all-layout-configs] on 2026-09-04 and not yet compiled.
-
-Placed after [layout-switching], because until the picker exists these five ship into the assets and cannot be selected — exactly the state the Russian layout has been in. That ordering is written on both entries. Dictionaries for these languages are not this item's: a layout with no word list is usable and simply offers no correction, which SPEC now states.
-
-#### Bound the board's height so a sideways phone is not all keyboard [landscape-board-height]
-The solved key radius is limited by the available height as well as the width, so the keyboard cannot grow to fill a landscape screen.
-
-**Found on 2026-09-05 while designing [split-layout-wide-screens]**, by arithmetic over `KeyGeometry.kt` rather than by seeing it. `solveRadius` takes a width and a column count and returns the largest radius that fits, capped at `MAX_RADIUS = 34`. Nothing consults the height. On a Pixel 6 turned sideways the width is large enough to hit that cap, and four rows at a 34dp radius give a board about 323dp tall, plus about 71dp for the row above the keys — roughly 394dp of keyboard on a screen about 411dp tall. The text field being typed into would be a sliver.
-
-**Why it is filed apart from the split.** [split-layout-wide-screens] moves the two halves apart horizontally and does nothing about height, so on its own it would deliver thumb-reachable halves on a keyboard that has swallowed the screen. The split is a feature and this is closer to a defect, so bundling them would hold the feature behind the fix. That item is held against this one.
-
-**The fix, and it is a second constraint rather than a new rule.** The radius is solved from the width as it is today, then reduced where necessary so the board plus the row above it fits within **half the available height** — the smaller of the two answers wins, with `MIN_RADIUS` still flooring it. A proportion of the height rather than a fixed number of dp, which is how every other size in this file is derived, and half is the share a phone keyboard conventionally takes rather than a figure invented here.
-
-**What it must not do: change the portrait board.** In portrait the current board comes to roughly 259dp including the strip, against a screen around 915dp tall — well inside half — so the height constraint should never bind there, and the observation below asserts exactly that. A fix that quietly shrinks the keys everyone already uses would be a worse bug than the one it repairs.
-
-**Where the available height comes from.** Compose's `LocalConfiguration` carries the screen size in dp. `KeyboardPanel.kt` already uses `BoxWithConstraints` for width, but an input method's view wraps its own content vertically, so `maxHeight` there is not the screen and cannot be used for this.
-
-**What the build changes.**
-- `android/app/src/main/java/tech/flintcraft/hexboard/KeyGeometry.kt` — the radius solver gains an available height and a row count, and returns the smaller of the width-derived radius and the largest radius whose board plus strip fits half that height, floored at `MIN_RADIUS`. The existing width-only behaviour stays reachable for callers with no height to give.
-- `android/app/src/main/java/tech/flintcraft/hexboard/KeyboardPanel.kt` — `HexboardBoard` reads the screen height from the configuration and passes it, with the row count it already computes.
-- `android/app/src/test/java/tech/flintcraft/hexboard/BoardHeightBoundTest.kt` — new, carrying the observation below.
-
-Reads but does not change: `android/app/src/main/java/tech/flintcraft/hexboard/HexboardImeService.kt`, to confirm nothing else sizes the view.
-
-**The observation that shows it landed:** `BoardHeightBoundTest` passes, asserting that at a portrait viewport of about 411 by 915dp the solved radius is exactly what the width-only solver returns today — so portrait is untouched — and that at a landscape viewport of about 915 by 411dp the board plus strip comes to no more than half the height, and the radius is above `MIN_RADIUS`. Both are arithmetic over `KeyGeometry`, so neither needs a device.
-
-**Options already refused, each with what defeated it.** Lowering `MAX_RADIUS` — it would shrink the keys on large portrait screens, which is the opposite of this project's whole argument. A fixed maximum board height in dp — a bare number with no derivation, and wrong on the next screen size. Letting the keyboard scroll — a keyboard is aimed at from muscle memory, so a board that can be scrolled is a board whose keys are not where they were. Solving the split first and treating height as a later polish — the split does not reduce height at all, which is the finding that produced this item.
-
-Rests on: `solveRadius` taking width and columns only, `MAX_RADIUS = 34`, `MIN_RADIUS = 12`, `gap(radius) = max(1.5, radius * 0.09)` and `boardHeight`'s formula, all read from `KeyGeometry.kt` on 2026-09-05; `stripHeight` being one vertical step floored at 48dp, read from `KeyboardPanel.kt` on 2026-09-05; the Pixel 6's own dimensions of roughly 411 by 915dp, taken from the 411dp width this project has already solved against and recorded in [soft-key-edge]; that Compose exposes the screen size through `LocalConfiguration` in `androidx.compose.ui.platform`, confirmed present in that package's index on 2026-09-05 but with its field names not read at source — to be confirmed at the start of the build, where the compiler settles it in one attempt.
-
-**The whole finding is arithmetic and has not been seen**, which is worth saying plainly: nobody has turned the keyboard sideways. [verify-this-runs-build-on-device] is the first sitting where anyone could, and turning the phone is one gesture — but this item does not wait on it, because the arithmetic is checkable here and a wrong keyboard in landscape is not something to ship while waiting for confirmation.
-
-#### Phrase-at-a-time prompting, tried on a throwaway page before anything is built on it [rsvp-dictation-prompter]
-A page in `planning/` that shows a passage one phrase at a time, large, advancing only when the speaker says so. Its job is to settle whether the idea works before anything is built on it.
-
-Captured by you on 2026-09-04 at 13:02, during the drive of [recogniser-gap-comparison], from noticing that dictation performed far better in the test than it does for you ordinarily. Refined by you at 13:09. **Reframed on 2026-09-05, when you said what you had actually been thinking of: not dictation tests, but the sitting where someone trains the speech model.** The design is unchanged by that; where it eventually belongs is not, and the real destination is now [enrolment-prompter].
-
-**The problem, in your account.** Handed a written passage, you can read ahead, so you know what you are about to say — and knowing that is exactly what removes the hesitation. Your ordinary use runs to at least three corrections per short sentence; the test run was, in your words, "way, way, way, better than normal". You narrate fluently when reading and hesitate constantly when speaking off the cuff, and it is the hesitation a recogniser cannot follow.
-
-**And it bites hardest on enrolment, which is your point.** A model trained on someone reading aloud adapts to their reading voice, which is not the voice they dictate in — so the training would fit the wrong target. There is a fairness problem alongside it: a method that requires fluent reading aloud gives anyone with dyslexia or a reading disability a worse personal model, which is worse than giving them a worse test score.
-
-**The design, and the two refinements are what make it work.**
-
-- **One piece at a time, large, in the manner of Spritz or Spreeder** — no eye scanning, and, the load-bearing part, no seeing ahead. Foreknowledge is removed by construction rather than by asking someone not to read ahead.
-- **Phrases rather than single words.** Your correction at 13:09: one word at a time is its own unusual act and would elicit its own stilted delivery, which is a different unnatural speech rather than the natural speech wanted. A phrase is the unit people speak in.
-- **The speaker sets the pace**, not the display. Also yours at 13:09, and explicitly not Spreeder's forced march, which makes the speaker chase the prompt and would fail worst for the slower readers this is meant to include.
-- **A rotating set** big enough that repeated runs do not teach the content, which would reintroduce foreknowledge on a slower clock.
-
-**Why this is a page rather than the real thing, decided on 2026-09-05.** The claim the whole design rests on — that a phrase-at-a-time, speaker-paced prompt actually produces ordinary hesitant speech — has never been tried by anyone. A page you can open and speak into settles that in an evening. If people slip into reading-aloud voice anyway, the idea dies for a few hours' work rather than after being built into an enrolment flow that is months away, behind [personal-voice-model] and [in-keyboard-voice-input]. **This is deliberately throwaway**: it is a trial instrument, not the feature.
-
-**One practical constraint that decides the file shape.** The page is opened by double-clicking it, with no server, so it cannot fetch a sibling JSON file — browsers refuse that for a local file. The passages therefore live in a block inside the HTML, exactly as `layout-preview.html` carries its `LAYOUTS` block.
-
-**The residual, stated because the design does not remove it.** This is still reading aloud, just without look-ahead. It removes foreknowledge, which is the identified cause, and it does not turn reading into speaking.
-
-**What the build changes.**
-- `planning/dictation-prompter.html` — new. A `PASSAGES` block near the top holding at least three passages, each an array of phrases as authored. The page picks one, shows a single phrase very large and centred with nothing else on screen, and advances on the space bar or a click anywhere. Only the current phrase is ever visible. The end of a passage is announced, and starting again picks a passage other than the one just finished. It stores nothing and makes no network request.
-
-Reads but does not change: `planning/layout-preview.html`, for the shape of an editable data block in a standing fixture.
-
-**The observation that shows it landed:** opening `planning/dictation-prompter.html` by double-clicking shows exactly one phrase and no other passage text; pressing space replaces it with the next phrase and the previous one is no longer on screen; reaching the last phrase says the passage has ended; and starting again offers a different passage from the one just finished. Checked by opening the file, which needs no build and no device. **Whether the idea works is not this item's observation** — that is [prompter-elicits-natural-speech], which needs a person to speak into it.
-
-**Options already refused, each with what defeated it.** One word at a time, as Spritz does — elicits its own word-by-word delivery, your correction of 2026-09-04. A forced advance rate, as Spreeder does — makes the speaker chase the prompt. Building the real thing into the app first — the enrolment session it belongs in does not exist and is not designable, so the trial would wait months to test a claim a page can test now. Detecting the end of a phrase automatically — needs a recogniser, which a page has none of, and it was the harder half. A separate JSON file of passages — a locally opened page cannot fetch one.
-
-Rests on: `planning/` holding standing HTML fixtures with editable data blocks, read from that folder on 2026-09-05; that a locally opened page cannot fetch a sibling file, which is long-standing browser behaviour and is the reason for the embedded block.
-
-[prompter-elicits-natural-speech] is the trial this exists for. [enrolment-prompter] is where the idea goes if the trial passes. Those orderings are written on all three entries.
-
-#### Phase line and README status turn over once the keyboard switches on [status-lines-after-install]
-Three sentences that stopped being true when Hexboard was installed as a working keyboard, in the two documents a newcomer reads first.
-
-Filed by /rescan on 2026-09-02, held against the install that would falsify them, and **released on 2026-09-03** when that install put Hexboard on the Pixel 6 as a switched-on input method. Designed out on 2026-09-05.
-
-**What is false, and since when.** `CLAUDE.md`'s phase paragraph — written on 2026-09-02 by [claude-md-phase-ran] and one build behind by the end of the run that wrote it — says there is no input method service yet, so Hexboard is an app rather than a keyboard. `README.md`'s Status section says there is no working keyboard and nothing to install. Both were true when written. The install of 2026-09-03 registered Hexboard as an input method and typed the keys it was aimed at, recorded in [install-and-enable-on-pixel].
-
-**A third instance the item did not name, found on 2026-09-05.** README's "Try the prototype" section says `hexboard17.html` is the only part of Hexboard you can actually type on today. Same fact, same staleness, same file — and fixing two sentences while a third contradicts them would leave the document arguing with itself.
-
-**One distinction to keep rather than smooth over.** "Nothing to install" is false in one sense and true in another: the project builds from source and runs on a phone, and there is no packaged release to download. A Status section saying there is a working keyboard, without that distinction, sends a reader looking for a download that does not exist. So Status says both things.
-
-**The phase paragraph's closing instruction is reworded, not dropped.** It ends "Very little exists, so keep designing before coding rather than rushing new work into the app" — written when three Kotlin files existed, and now resting on a premise that has gone. The force behind it has not: the design record still runs deliberately ahead of the build, which is how this project works rather than an accident of how little exists. So it is rewritten as intent. Your call, taken on 2026-09-05.
-
-**What the build changes.**
-- `CLAUDE.md` — the phase paragraph in the project rules: Hexboard runs on a Pixel 6 as a registered input method and types what it is aimed at; the feature set is early; the design record deliberately runs ahead of the code, so new work is designed before it is built. No sentence claiming there is no input method service, and no sentence resting on how little exists.
-- `README.md` — the Status section: it builds, installs and types, with predictive text, clipboard history and voice input all still unbuilt, and no packaged release to download. And the "Try the prototype" section: the browser prototype stops being described as the only part you can type on, and is described as what it is — the frozen reference for layout, gestures and key inventory, runnable with no build step.
-
-**The observation that shows it landed:** a grep across `CLAUDE.md` and `README.md` for "no input method service", "no working keyboard", "nothing to install" and "the only part of Hexboard you can actually type on" returns nothing, and `README.md`'s Status section contains both a statement that it builds and runs and a statement that there is no release.
-
-**Options already refused, each with what defeated it.** Fixing only the two sentences the item named — leaves the third contradicting them in the same file. Saying simply that there is a working keyboard — sends a reader looking for a download that does not exist. Dropping the design-before-coding instruction because its premise has gone — the premise has gone and the intent has not, and dropping it would quietly remove a working rule for a wording reason. Waiting until [verify-this-runs-build-on-device] proves the newest eleven items — the claims here rest on the install of 2026-09-03, which is already confirmed, not on anything built since.
-
-Rests on: the install of 2026-09-03 registering Hexboard as an input method and typing correctly, recorded in [install-and-enable-on-pixel]; the three stale sentences, read from `CLAUDE.md` and `README.md` on 2026-09-05; that no packaged release exists, which follows from there being no release process anywhere in the project.
-
-The phase line states the phase, and the phase changed at exactly this point, so it turns over once rather than at every run.
-
-Sits alongside [remove-superseded-editor-page], which removes a different paragraph from the same README section. Neither depends on the other and both may run in either order; whichever runs second should re-read the section rather than assuming its shape. That is written on both entries.
-
-#### Remove the layout editor page, whose reason for being kept was deleted [remove-superseded-editor-page]
-`planning/hexboard-editor.html` and the README paragraph describing it are removed, since the future work they were held for no longer exists.
-
-Found by /rescan on 2026-09-05 and processed with you the same day.
-
-**It was kept deliberately, and deletion was specifically weighed and rejected.** On 2026-08-21 the page was moved from the repository root into `planning/` with `git mv`, and README gained a paragraph describing it. That session's record states plainly that deletion lost, on the ground that "its drag-and-drop interaction design is the expensive half of that future work". The future work it names is [variant-editor].
-
-**[variant-editor] was deleted on 2026-09-02**, when you replaced the contributor-facing editor with layouts copied from each language's own standard. So the one recorded reason for keeping the page went with it, and nobody returned to the keeping decision. That is the same shape as two other things caught this session — a decision resting on a premise the project later removed — and the reason it is worth writing down rather than treating as tidying.
-
-**What is actually at stake, since it is small either way.** This repository is public. A stranger browsing it finds a page titled "HexBoard Layout Editor" with a working drag-and-drop board and an Export button, and a README paragraph saying it is "kept as prior art for a future contributor-facing editor" — a future the project decided against. Against that, keeping the file costs nothing but a stale paragraph, and **git retains the drag-and-drop design either way**, so nothing is lost that anyone could want back.
-
-**What the page actually is**, read on 2026-09-05: 557 lines, tracked in git, drawing the real zag geometry with the structural keys locked, dragging keys between slots, and exporting JavaScript fragments for pasting into the prototype — which is where key data lived before `resources/key-layout.json` existed. It cannot produce a config in any format the project now uses.
-
-**What the build changes.**
-- `planning/hexboard-editor.html` — deleted, with `git rm` so the removal is recorded as a move away rather than an untracked disappearance.
-- `README.md` — the paragraph beginning "One more page is kept in the repo without being maintained" is removed entirely, along with its link. Nothing replaces it: the section's remaining content is about the browser prototype, which is unaffected.
-
-Reads but does not change: `planning/layout-preview.html`, to confirm it is a different page and stays — it is the standing layout-preview fixture `CLAUDE.md` names, and nothing here touches it.
-
-**The observation that shows it landed:** `planning/` contains `layout-preview.html` and `dictation-prompter.html` and no editor page; a grep across the repository for `hexboard-editor` returns only LOG entries and queue prose describing its history, and nothing in `README.md`; and `git log -- planning/hexboard-editor.html` still returns its history, which is what shows the design was archived rather than destroyed.
-
-**Options already refused, each with what defeated it.** Keeping the file and rewriting the README paragraph to say it is prior art with no live successor — offered on 2026-09-05 and not taken: it leaves a public repository advertising a working editor for a cancelled feature, and the paragraph would then exist only to explain why the file exists. Leaving both as they are — README states a plan the project has abandoned, which is the same defect [status-lines-after-install] is fixing elsewhere in the same file. Deleting the file without touching README — leaves a dead link in a public document.
-
-Rests on: the 2026-08-21 keep decision and its stated reason, read from `LOG/index-2026-08.md` and `LOG/2026-08-21-hexboard-editor-status.md` on 2026-09-05; [variant-editor]'s deletion on 2026-09-02, read from `LOG/2026-09-02-variant-editor.md`; the page's own content and its 557 lines, read on 2026-09-05; README's paragraph at the end of its prototype section, read the same day; that git retains a deleted file's history, which is what makes the removal reversible.
-
-Sits alongside [status-lines-after-install], which edits a different part of the same README section. Neither depends on the other and both may run in either order; whichever runs second should re-read the section rather than assuming its shape. That is written on both entries.
-
-#### Symbols panel's empty slots read as a gap when you swipe into it [symbols-panel-empty-slots]
-The English symbols panel's ten empty positions are filled with ten characters Hexboard currently cannot type at all.
-
-Raised by you on 2026-09-03, from the first swipe between panels on the real keyboard: the next panel does not run continuously from the last one. **Designed out on 2026-09-05.**
-
-**What it actually is: the config's own empty slots, not a rendering fault.** The symbols panel is four rows of ten and carries thirty keys, so ten positions are empty — and they are all on the left, which is why swiping into the panel shows blank board where keys are expected. The pager was checked on 2026-09-03 and is not the cause: `HorizontalPager` in `KeyboardPanel.kt` sets no `pageSpacing`, so pages abut with nothing between them.
-
-**A correction to this item's own arithmetic, made on 2026-09-05.** It previously said thirty keys and sixteen empty slots in the same paragraph, which cannot both be true of a forty-position panel, and it enumerated nine of the empties while missing row 2 column 5. Counted from the config: **ten**, at rows and columns (0,1) (0,3) (0,5) (1,2) (1,4) (1,6) (2,5) (3,0) (3,2) (3,4).
-
-**Why this decision matters more than it looks.** The whole English inventory was checked on 2026-09-05: RARE is full at thirty of thirty, and QWERTY has no spare position either. **These ten are the only free slots in the English layout.** Whatever goes here is what Hexboard has room for, and the next character after that evicts something.
-
-**Every printable ASCII character already has a home**, checked one by one on 2026-09-05 across the three panels. So the question is only what is missing beyond ASCII.
-
-**The ten, agreed with you on 2026-09-05: “ ” ‘ ’ • ← → ½ ¢ ≈.** The four curly quotes because a keyboard that produces only straight quotes is one people work around every day, and they are the largest single gap; the bullet because there is no way to start a list; two arrows because the layout has none anywhere; and ½, ¢ and ≈ as the remaining most-wanted singles.
-
-**No two empty slots are adjacent**, on any row — the gaps alternate with filled positions throughout. So the four quotes cannot sit side by side, and "grouped" here can only mean placed in the same region of the panel. They take the four earliest empty positions, (0,1) (0,3) (1,2) (1,4), which puts them in the top-left near `[` and `@` where the other typographic marks already are. The bullet follows at (1,6), ≈ at (2,5) among the operators, ¢ at (3,0), and the two arrows at (3,2) and (3,4) so the left arrow sits left of the right one, with `}` between them because nothing else is possible.
-
-**Deliberately not included: ¿ and ¡.** They are the obvious missing punctuation, and they belong on the Spanish layout's own config rather than the English one — SPEC's manifest rules bind each layout individually, and [first-batch-layouts] adds Spanish.
-
-**Deliberately not included: the Russian layout.** Its symbols panel has the identical ten gaps, found on 2026-09-05, but Russian uses « » as its primary quotation marks and „ " as its secondary, so four English curly quotes are probably the wrong fill for it. That is [russian-panel-gaps], which also carries three further empties on the Russian RARE panel.
-
-**What the build changes.**
-- `resources/key-layout.json` — ten keys added to the symbols panel at the positions above, each with its label and output, leaving every existing key exactly where it is.
-- `resources/key-manifest.md` — regenerated by `scripts/generate-key-manifest.py`, never hand-edited.
-
-Reads but does not change: `resources/key-layout-ru.json`, to confirm it is untouched by this item; `android/app/src/main/java/tech/flintcraft/hexboard/KeyboardPanel.kt`, to confirm no code change is needed — the panel draws whatever the config carries.
-
-**The observation that shows it landed:** the English symbols panel has a key at every one of its forty positions and none elsewhere has moved; `resources/key-manifest.md` lists all ten new characters; and the existing key-audit test still passes, so no key was lost while ten were added.
-
-**Options already refused, each with what defeated it.** Treating it as a rendering fault and adding page spacing — the pager was checked and is not the cause; the panel really is missing keys. Rearranging the panel so the gaps sit at the right-hand edge instead — SPEC's manifest rules say an empty slot is an opportunity rather than an acceptable gap, so moving the gap is not fixing it, and it would move every key a user had learned. Filling the slots with duplicates of `!` and `?` from QWERTY — SPEC bars unresolved duplicates, and neither is hard to reach. Including ¿ and ¡, or filling the Russian panel to match, both above.
-
-Rests on: the symbols panel's thirty keys and ten empty positions, and the whole English inventory being ASCII-complete with RARE and QWERTY full, all counted from `resources/key-layout.json` on 2026-09-05; the Russian symbols panel having the same ten gaps, counted from `resources/key-layout-ru.json` the same day; `HorizontalPager` setting no `pageSpacing`, read from `KeyboardPanel.kt` on 2026-09-03; SPEC's rule that a freed slot is filled with a character agreed first, which is what the agreement above satisfies.
-
-`resources/key-manifest.md` is the generated view of what is where, and is the place to read what the three panels carry.
-
-#### Guard the emoji file's parse so a format change fails loudly [emoji-parse-guard]
-A unit test over the bundled emoji list, so a future Unicode file that parses differently is caught by a failing test rather than by the panels quietly emptying.
-
-Filed on 2026-09-05, split out of [emoji-data-refresh] when that item's recurring half became the project's first cycle. This is the standing guard rather than the recurring work: it runs on every build, not once a year.
-
-**What it protects.** `EmojiCatalogue.parse` reads the codepoints before the first semicolon and keeps only entries whose status column says `fully-qualified`. Both are stable in the format as it stands. But a format change — a moved column, a renamed status, a different comment convention — would not fail: the parse would simply return few entries or none, and the symptom would be emoji panels arriving empty on a phone, long after the file was swapped.
-
-**Why the assertions are derived rather than invented.** A test asserting "at least 3,781 emoji" would be a bare number that goes wrong the next time Unicode adds any, and one asserting an exact count would fail on every legitimate refresh. The three assertions below are each a proportion or a requirement the app already has:
-
-- the parse yields **at least as many entries as the panels display** — five panels of fifty, a figure `EmojiCatalogue` already computes from its own `ROWS` and `COLS` — since fewer than that means the board cannot be filled;
-- the parse finds **more than one group heading**, since the groups are what the whole-list browser is organised by and a format change would collapse them;
-- the parsed count is **at least half the file's non-comment lines**, which is the assertion that actually catches a moved status column: a wrong column reads as an unrecognised status and drops nearly everything, taking the ratio to near zero, while the ordinary mix of fully-qualified and lesser-qualified entries stays well above half.
-
-**Where it runs.** A plain unit test on the JVM, reading `resources/emoji-test.txt` from the repository the way `KeyLayoutValidationTest` already reads the shipped key config. `EmojiCatalogue.parse` is `internal`, so it is reachable from the test source set without anything being opened up for it.
-
-**What the build changes.**
-- `android/app/src/test/java/tech/flintcraft/hexboard/EmojiCatalogueTest.kt` — new, carrying the three assertions above.
-
-Reads but does not change: `android/app/src/main/java/tech/flintcraft/hexboard/EmojiCatalogue.kt`, for `parse`, `ROWS` and `COLS`; `android/app/src/test/java/tech/flintcraft/hexboard/KeyLayoutValidationTest.kt`, for how a unit test reaches a file in `resources/`; `resources/emoji-test.txt`, which is the file under test.
-
-**The observation that shows it landed:** `EmojiCatalogueTest` passes against the bundled Unicode 16.0 file on all three assertions. It is a JVM test, so it runs without a device — but Gradle cannot run on this machine, so running it belongs to [verify-this-runs-build-on-device]'s sitting or the next one after it.
-
-**Options already refused, each with what defeated it.** Asserting an exact emoji count — fails on every legitimate refresh, which trains people to edit the test rather than read it. Asserting a fixed minimum like 3,000 — a bare number with no derivation. Checking the file's header version instead — a header can be right while the body's format has moved, which is the case this exists for. Leaving the check as a step inside the cycle's turn — it would then run once a year, where a standing test runs on every build and catches a bad file the day it lands.
-
-Rests on: `EmojiCatalogue.parse` filtering on `fully-qualified` and reading codepoints before the semicolon, and `ROWS` and `COLS` giving the panel capacity, all read from `EmojiCatalogue.kt` on 2026-09-05; `KeyLayoutValidationTest` existing as the precedent for a unit test reading a repository file, read from the test source set on 2026-09-05.
-
-Step 4 of the `emoji-data-refresh` cycle in `CYCLES.md` runs this test as part of every turn. That ordering is written in both places.
-
-#### Walkthrough steps quote on-screen text exactly, as a CLAUDE.md rule [walkthrough-steps-quote-screen-text]
-One sentence added to `CLAUDE.md`'s project rules: where a walkthrough step asks the user to read something on screen, it quotes the exact text the app displays, and where that text varies it quotes each form — read from the source rather than recalled.
-
-Filed by /rescan on 2026-09-04 at 15:30, from a step that misfired while driving [recogniser-gap-comparison] the same day. **Designed out on 2026-09-05.**
-
-**What happened.** A step asked the user to report what "the availability line" said. That phrase came from the queue item's own wording and named nothing on his screen, so he asked what an availability line was. Reading `MainActivity.kt` showed the screen carries one line reading either "On-device recognition: available" or "On-device recognition: not available on this phone". Quoting those two strings in the first place would have cost nothing and the step would have worked.
-
-**Why the source-reading half matters as much as the quoting half.** A quoted string composed from memory reads exactly like one read from the code, and is wrong in a way the reader cannot detect — the person following the step is the one person who cannot check the translation, because they cannot see the source. The failure here was cheap because he asked; a user who assumed the wording was approximate and reported the wrong line would have produced a wrong result nobody would have questioned.
-
-**Why a rule rather than a correction.** `CLAUDE.md` already carries the sentence, added 2026-09-02, that a GUI step names something visible to click or a menu path with any shortcut as an aside. This is the same instinct failing at a third site: not where to go, but what the screen will say once you are there. A step that paraphrases on-screen text hands the reader a translation problem on top of the task.
-
-**Not held against its sibling, and the reasoning is worth keeping.** [settings-steps-name-a-search] narrows the same paragraph of the same file, so building them separately means editing `CLAUDE.md` twice for one instinct — which was this item's own stated worry. But that item is held on an unverified fact, whether searching Android Settings reaches those screens on the Pixel 6, and that hold now sits behind [physical-keyboard-handover], which sits behind [verify-this-runs-build-on-device]. This rule rests on nothing unverified: quoting text read from the source is correct by construction. Holding a sound rule behind an unsound one to save a second small edit is the wrong trade, so the second edit is accepted. The sentence is worded generally enough that the Settings rule later reads as a narrowing of it rather than a third unrelated rule. That reasoning is written on both entries.
-
-**What the build changes.**
-- `CLAUDE.md` — one sentence in the project rules, beside the existing GUI-step sentence: where a walkthrough step asks the user to read something on screen, it quotes the exact text the app displays, quoting each form where the text varies, and that text is read from the source rather than recalled. The existing sentence stays as it is.
-
-**The observation that shows it landed:** `CLAUDE.md`'s project rules contain a sentence naming both the quoting and the reading-from-source halves, and a grep for the existing GUI-step sentence about naming something visible to click still returns it, so the new rule sits beside it rather than replacing it.
-
-**Options already refused, each with what defeated it.** Rewriting the existing GUI-step sentence to absorb this — that sentence governs where to go and this governs what the screen says; folding them makes one long rule that is harder to apply than two short ones. Correcting the one step that misfired and writing no rule — the instinct that produced it survives, and two walkthroughs had already inherited the same instinct before anyone noticed. Waiting to make one edit together with [settings-steps-name-a-search] — above. Requiring only the quoting and not the source-reading — a remembered quotation is the failure mode, not an unquoted paraphrase.
-
-Rests on: `CLAUDE.md` carrying the 2026-09-02 GUI-step sentence in its project rules, read on 2026-09-05; the two exact strings in `MainActivity.kt`, read on 2026-09-04 when the user asked; [settings-steps-name-a-search]'s hold and the chain behind it, read from the queue on 2026-09-05.
-
-This is arguably a gap in the method itself, whose own walkthrough rule says a step names the thing to click and the thing to look for without saying to quote the screen's words. This project reported a rule of the same shape to the method's own project on 2026-09-02. Nothing was sent about this one; the project rule is what makes it bind here, and sending a report remains open.
-
-#### Dead border colour left on every key after the soft edge removed the border [dead-key-border-colour]
-The `border` colour in `KeyColors` and the five values `colorsFor` supplies for it are removed, since nothing has read any of them since the key border went.
-
-Filed by /rescan on 2026-09-04 at 15:30, from the run that built [soft-key-edge]. **Confirmed against the source and designed out on 2026-09-05.**
-
-[soft-key-edge] removed the 1.5dp border from every key, because a border in a lighter colour than the fill was the hardest edge on the key and would have reinstated exactly the boundary the fade exists to dissolve. What it did not remove is the colour that fed it: `KeyColors` still declares the field and `colorsFor` still supplies a value for each of the five key kinds — `0xFF2C3358` for special, `0xFF0A6D44` for space, `0xFF404055` for punctuation, `0xFF2C2F44` for symbol and rare, and `0xFF484858` for the default — and nothing reads any of them. Checked by grep across the Kotlin on 2026-09-05.
-
-**What the build must not also remove, found in that same grep.** There is one live `.border(1.5.dp, Color(0xFF3A3D5C), RoundedCornerShape(12.dp))` in `KeyboardPanel.kt`, and it is on the **accent popup's container** — the rounded panel that floats above the board while a key is held — not on a key. It is correct and stays: it separates a floating panel from the board behind it, where the no-border rule is about keys. Written down because whoever does this tidy-up greps for `border`, finds two things and is one careless moment from removing both.
-
-**It is dead rather than reserved.** SPEC says a single dark theme is enough for v0 with theming later, so a spare colour field could plausibly be held for a future theme — except SPEC also now says a key is drawn as a soft-edged circle with no border, so no theme will want one.
-
-**Why it is worth doing at all**, given nothing depends on it either way: this repository is public, and a colour named `border` on a keyboard that draws no borders reads to a stranger as a leftover rather than a decision — which is exactly what it is.
-
-**The original reason for deferring has expired.** The item was filed rather than done because it was five lines in a file that run had already changed heavily and which cannot be compiled on this machine. That run is closed, and this now rides in the same run as the other work in `KeyboardPanel.kt`.
-
-**What the build changes.**
-- `android/app/src/main/java/tech/flintcraft/hexboard/KeyboardPanel.kt` — `KeyColors` loses its `border` property and its documentation comment loses the word; `colorsFor`'s five constructions each drop their middle argument. The accent popup's own `.border(...)` is untouched.
-
-**The observation that shows it landed:** a grep for `border` across the Kotlin returns the accent popup's modifier and its import and nothing else — no field, no constructor argument, and no mention in a comment describing a key. The project compiles, which is what proves no construction site was missed, so that half belongs to the next Android Studio sitting.
-
-**Options already refused, each with what defeated it.** Keeping the field for a future theme — SPEC says keys have no border, so no theme wants it. Removing the accent popup's border too — a different surface with a different reason, above. Leaving it as a harmless leftover — it is harmless and it is read by strangers, which is the whole of the reason to spend five lines on it.
-
-Rests on: `KeyColors` declaring `border` and `colorsFor` supplying five values none of which is read, and the accent popup's own border being the only live one, both from a grep across the Kotlin on 2026-09-05; SPEC's no-border sentence and its single-dark-theme line, read from `SPEC.md` on 2026-09-05.
-
-#### [user] Build and install this run's eleven items, and run the thirteen test files [verify-this-runs-build-on-device]
-Filed by /rescan on 2026-09-04 at 15:30. The /next run of 2026-09-04 built eleven items and could compile none of them, and three other `[user]` items are now waiting on this without anything in the queue saying so.
-
-**Why it exists.** Gradle cannot run on this machine and there is no `adb` here, both established by attempt and recorded in [run-key-config-validator]. So every item that run built ends in a check only Android Studio can perform on the Pixel 6, and until someone performs it the eleven are written rather than working. The eleven: [build-output-off-drive], [board-clear-of-navigation-bar], [suggestion-strip], [ship-all-layout-configs], [soft-key-edge], [row-tint], [panel-key-size-consistency], [rare-row2-unindent], [declare-savedstate-viewmodel-deps], [shift-behaviour] and [emoji-panels].
-
-**Why it is filed rather than left in the conversation.** [verify-a11y-ondevice], [verify-switch-access-ondevice] and [physical-keyboard-handover] were each presented during that run and each deferred by you until today's build is on the phone — a decision made in a chat, about a thing no queue item named. Without this item those three sit in the queue apparently waiting on nothing, and the next session re-presents them as ready.
-
-**What is new since the install of 2026-09-03, so the build is not assumed to be routine.** Two Gradle changes want a sync rather than a compile: `hexboard.buildDir` moves the whole build output to `C:\builds\hexboard`, and two AndroidX artifacts are newly declared. Six test files are new and did not exist at the last install.
-
-Why it cannot be Claude's: it needs Gradle and a handset, neither reachable from here.
-
-The walkthrough:
-1. Open the Hexboard project in Android Studio and let it finish its Gradle sync. Look for: the sync completing without an error banner. Two things could fail here specifically — the `savedstate` version, and the build-output relocation — so if it fails, the message text is the thing to report rather than the fact of failing.
-2. Check where the output went. Look for: `android/app/build/` empty or absent, and a new `C:\builds\hexboard` folder holding the build output. That is [build-output-off-drive]'s own observation and this is the only chance to make it.
-3. Run the app on the Pixel 6 with the Run button. Look for: it installing and opening, and the keyboard drawing when you tap into a text field.
-4. With the board up, check three of the six visible changes:
-   - keys with no border, fading softly outward instead of ending at a hard edge;
-   - the rows shaded in two alternating tones, close enough that neither looks pressed;
-   - an empty band above the top row of keys.
-5. Check the other three:
-   - letters resting in lowercase and turning to capitals when you tap shift;
-   - emoji panels arriving on a downward swipe;
-   - RARE's bottom row starting at the left edge rather than indented by one key.
-6. Judge the size of the keys and their labels, which is what [soft-edge-fraction-values] changed in this same build. Look for: whether a key now reads as big enough, and whether its letter is comfortable to read at a glance. This is the judgment that item was shipped blind to make, so an opinion either way is the result — "still too small" is as useful as "right now".
-7. Run the unit tests: right-click `android/app/src/test/java/tech/flintcraft/hexboard` and choose Run. Look for: three new files among them — `KeyEdgeTest`, `RowTintTest`, `SharedRadiusTest` — and which of them pass.
-8. Run the instrumented tests with the phone connected: right-click `android/app/src/androidTest/java/tech/flintcraft/hexboard` and choose Run. Look for: the new `NavigationBarInsetTest`, `StripLayoutTest`, `ShippedConfigsTest`, `ShiftStateUiTest` and `EmojiPanelsUiTest`, and which pass. `EmojiPanelsUiTest`'s last test is the one worth watching — it checks a key still types after a second pager was wrapped around the board.
-9. Report: whether the sync succeeded, where the build output landed, which of the six visible changes you found, what you thought of the key and label size, which tests failed and with what message, and anything on screen that looked wrong whether or not a test caught it.
-
-The observable that shows this is done is the report itself, so this item waits until you mention it rather than being checked against anything in the world.
-
-[verify-a11y-ondevice], [verify-switch-access-ondevice] and [physical-keyboard-handover] are each held until this has run. Those orderings are written on all four entries.
-
-**The label-size question is no longer a separate item.** [label-size-after-soft-edge] wanted the same look at the board and was merged into [soft-edge-fraction-values] on 2026-09-04, which changes the two fill fractions and ships in this same build. So this walkthrough asks whether the keys and their labels look right at the new values, rather than whether the labels look too small at the old ones. That ordering is written on both entries.
-
 --- Cleared to run above this line ---
 
 #### A bespoke predictive text engine built around the six-neighbour confusion set [uniform-neighbours-predictive]
@@ -940,6 +477,18 @@ Filed on 2026-09-03 at 16:31, split out of the capture that reported the wrong S
 
 > Captured ideas and tasks not yet fully processed. The next /plan session goes through these with you and decides each one's fate — keep it (move it up to Processed) or drop it. Each is filed as its own `#### ` heading, so the list shows up in an editor's outline.
 
+#### Last session advises processing [instrumented-tests-no-composition] next [forward-advisory]
+Advice from the close of 2026-09-09, not work. Read it, act on it or don't, and clear it.
+
+The instrumented suite compiles for the first time and 13 of its 25 tests pass. Every failure is a test that renders the board and every pass is one that does not, so the twelve are almost certainly one cause rather than twelve. Until it is found, the suite proves nothing at all — which matters more than the count suggests, because the instrumented tests are the only automated check that reaches the real board on a real handset. The 50 unit tests cover geometry, configs and pure functions and none of them draws anything.
+
+**The overlap scan found one thing worth knowing before it is opened.** [key-drawing-second-pass] and [row-banding-too-weak] both change how the board draws, and [landscape-reveal-neighbours] and [panel-seam-gap] both change how panels are laid out beside each other. Any of the four alters what a rendering test would see. Sorting the test failures first means the tests are trustworthy while those four are worked on; sorting them last means each of the four ships with the same blind spot this session has been paying for all day.
+
+Against that: the four are what the user actually looked at and disliked, and [panel-seam-gap] is his complaint of 2026-09-03 returning with a second cause. A planning session may reasonably decide the look matters more than the harness.
+
+Nothing else in Unprocessed contradicts or is invalidated by it.
+Filed 2026-09-09 13:17, stamped by the queue tool.
+
 #### Speech recognition that adapts to its own user's voice, trained on the phone [personal-voice-model]
 Red flag · State: cleared
 Blocked by: [in-keyboard-voice-input]
@@ -1111,4 +660,200 @@ Filed by the close of 2026-09-05 at the cycles due-ness check, the cycle having 
 The definition is in `CYCLES.md`. Its observable is the most recent record under this slug whose opening line says it records a completed turn, and no such record exists — the only record under this slug is the one about authoring the cycle, which the definition deliberately excludes. So the cycle is due by construction on its first check.
 
 **The turn will probably find nothing to do, and that is a completed turn.** The directory listing at `unicode.org/Public/emoji/` was read on 2026-09-04 and its highest published version was 16.0, which is what `resources/emoji-test.txt` already carries. If that is still true when the turn runs, step 2 of the definition applies: nothing changes, and the turn is recorded as complete. Doing that once is what gives the observable something to read, so the next check computes due-ness from a real turn rather than from an absence.
+
+#### Everyday words the shipped list does not carry, "ok" among them [word-list-size-level]
+The generated English word list is SCOWL size level 60 and below, and lowercase "ok" is not in it. A word the list does not carry is a word the correction engine will feel free to change, so a common one missing is a correction nobody wants.
+
+Found on 2026-09-05 while building [predictive-dictionary-bundle], by reading the generated list rather than by anything failing. "OK" is present at level 35; the lowercase form is not present at any level at or below 60. Nobody has looked for what else is missing.
+
+The level is one argument to `scripts/generate-word-list.py`, so regenerating at a higher level is one command — but a higher level also adds obscure words the engine could then correct *toward*, which is the trade the choice of 60 was making. The research file already names this as unsettled: whether SCOWL's size levels are a good enough proxy needs the engine to exist and be tried against real typing.
+
+So this is not "raise the level" — it is the question of how the level gets chosen, and it wants the correction engine working first. [uniform-neighbours-predictive] is that engine.
+
+#### SPEC's out-of-scope line still defers work that has now been built [spec-out-of-scope-stale]
+SPEC's last line lists "IME service polish (settings screen, language switching)" among things deferred for early iterations. The layout picker built on 2026-09-05 is both of those, so the line now defers something that exists.
+
+Carried forward from [layout-switching], which noticed it while being designed and said plainly that the line was not read as holding the picker back — the reason to build the picker was that the Russian layout was otherwise unreachable and that a report route had replaced the native-reader check, not a judgment about which iteration this is. The item has now shipped and left the queue, so the observation would have gone with it.
+
+A build never writes product truth, which is why this is a capture rather than an edit. The sentence SPEC probably owes is that the settings screen exists and carries the layout picker, with whatever is genuinely still deferred named on its own — but what that remainder is takes a read of SPEC end to end rather than one line.
+
+#### Russian layout has no cursor-right key, and nothing checks for one [russian-missing-cursor-right]
+`resources/key-layout-ru.json` carries `⇤` cursor-left at row 2 col 0 and no `⇥` cursor-right anywhere. Every other shipped layout has both. So a Russian typist can step the caret left and not right.
+
+Found on 2026-09-05 while building [first-batch-layouts], by running the five new configs through a check for the structural keys and then running the same check over the two configs already shipped.
+
+**How it happened, as far as the file shows.** The Russian rows are eleven wide, so row 2 is `⇤` then nine letters then `⌫`, and the enter key moved down to row 3 col 10. Cursor-right had no slot left and appears simply to have been dropped rather than rehoused. The layout has never been typed on — [russian-layout-check] has sat dated a month out since 2026-09-02 — so nobody has missed it.
+
+**The second half is the one that matters more.** `KeyLayoutValidationTest` checks slots, bounds, duplicates and accent lists, and checks nothing about a layout carrying the keys a keyboard needs. A layout missing backspace, enter or shift would pass every rule the project has. That is the check that would have caught this on the day the file landed, and it is worth more than the one-key fix.
+
+So this is two pieces of work in one item: give Russian a cursor-right key, and assert in the validation test that every shipped layout carries each of the five structural actions. Where the key goes on an eleven-wide Russian board is the part that needs a decision.
+
+#### Five new Latin layouts carry the same ten empty symbol slots [latin-panel-gaps]
+The French, German, Spanish, Portuguese and Italian configs built on 2026-09-05 copy the English SYMBOLS panel unchanged, so each has the same ten empty positions the English one has.
+
+[symbols-panel-empty-slots] fills the English ten with “ ” ‘ ’ • ← → ½ ¢ ≈, and deliberately leaves the Russian panel out because Russian uses « » as its primary quotation marks, so four English curly quotes are probably the wrong fill for it. That reasoning was written before these five layouts existed, and it applies to each of them: French sets off speech with « », German with „ and “, and Spanish, Portuguese and Italian all use « » alongside the curly forms.
+
+So the four quote slots want a per-language answer and the other six — • ← → ½ ¢ ≈ — plausibly do not, being punctuation rather than orthography. That split is the thing to decide, once, and then apply to all five.
+
+Sits alongside [russian-panel-gaps], which is the same question for Russian and also carries three further empties on the Russian RARE panel. Whatever settles the quotation marks probably settles both.
+
+#### Layout picker lists languages in an order that looks arbitrary to a reader [picker-language-order]
+The picker groups layouts by language and sorts those groups by BCP 47 tag, so with the seven shipped layouts it reads German, English, Spanish, French, Italian, Portuguese, Russian — de, en, es, fr, it, pt, ru. That is alphabetical by a code the reader never sees.
+
+Found on 2026-09-09 while driving [verify-this-runs-build-on-device], by reading `LayoutCatalogue.group`, which ends in `toSortedMap()` over the tag.
+
+**SPEC settled the order *within* a language and says nothing about the order *between* them.** It requires layouts grouped by language and ordered within a language by a set position, which is exactly what the code does. The gap is real rather than a departure from a decision.
+
+Three candidates, and choosing between them is the work. Sorting by the language's display name puts them in the reader's own alphabet, which is what most software does and which changes order as the device language changes. Putting the current layout's language first is the shortest path to the thing being looked for. A declared order per language, like the one each layout already carries within its language, keeps it stable and makes it one more thing to maintain per language.
+
+Small either way at seven layouts, and it grows with every language added.
+Filed 2026-09-09 09:21, stamped by the queue tool.
+
+#### The app screen has two keyboards on it and they type into different places [app-screen-two-keyboards]
+The app screen draws Hexboard's preview board at the bottom, and since 2026-09-05 it also carries a real text field — the "What is wrong" box the problem report is written in. Tapping the preview board appends to a scratch line under the report; tapping the text field opens whichever keyboard the phone has selected. So the screen shows a keyboard that does not type into the field right above it.
+
+Found on 2026-09-09 by the user while driving [verify-this-runs-build-on-device]: he typed on the preview board expecting the report box to fill, and the characters appeared below the button instead.
+
+**Why it happened.** The preview board predates the report entry. It is development scaffolding — `MainActivity`'s own comment says so — and it exists to prove the config reaches the screen and that a tap lands on the key it was aimed at. It has no input connection and appends to a state variable. Nothing was wrong with that until a screen with a real field grew underneath it.
+
+**Three ways out, and they differ in what they give up.** Wire the preview board to whatever field has focus, which makes the scaffolding behave like the real thing and is the most work. Move the report entry to a screen of its own, which separates them and adds a navigation step to an app that has none. Or drop the preview board now that Hexboard runs as a real input method, which is the cheapest and loses the one surface where the board can be looked at without switching keyboards.
+
+Worth settling alongside whatever else the app screen is going to become, rather than on its own.
+Filed 2026-09-09 09:30, stamped by the queue tool.
+
+#### Hexboard cannot be used until the phone has been unlocked once after a reboot [direct-boot-unavailable]
+Android says so when the keyboard is switched on: "Note: After a reboot, this app can't start until you unlock your phone". So after a restart the user types their unlock method on whatever keyboard the system falls back to, not on Hexboard.
+
+Seen on the Pixel 6 on 2026-09-09 while driving [verify-this-runs-build-on-device]. Android shows that dialog for any input method that does not declare itself able to run before the user's storage is unlocked, and Hexboard does not declare it.
+
+**Why it is not simply a flag to set.** Running before first unlock means running without access to the app's ordinary storage, so anything the keyboard reads at startup has to move to device-protected storage to be readable then. Today that is the chosen-layout preference; the clipboard history SPEC describes is the opposite case, being encrypted at rest and deliberately not readable early. So the work is deciding what Hexboard needs before unlock and moving only that, rather than flipping a manifest attribute.
+
+**And it may be the right answer to do nothing.** Most third-party keyboards behave exactly this way and their users type the first unlock on the system keyboard without noticing. The cost of leaving it is one unfamiliar keyboard once per reboot; the cost of fixing it is a storage split that touches everything the keyboard reads at startup.
+
+Filed because it is a permanent property of the app that no document mentions, not because it is known to need fixing.
+Filed 2026-09-09 09:43, stamped by the queue tool.
+
+#### Hexboard is hard to find in the keyboard switcher, because its own name is the small line [switcher-subtype-label]
+Android's "Change Keyboard" card shows each entry's subtype label in large text with the app's name small beneath it. Hexboard's subtype label is "English (QWERTY)", so its row reads "English (QWERTY)" large and "Hexboard" small — and someone looking for the word Hexboard scans past it.
+
+Found on the Pixel 6 on 2026-09-09 while driving [verify-this-runs-build-on-device]. The user was told to switch to Hexboard, opened the card, and reported that Hexboard was not on it. It was, in third place. This is the first time anyone has used that card to reach Hexboard.
+
+**Why it reads that way.** `ime_subtype_label` in `android/app/src/main/res/values/strings.xml` is "English (QWERTY)". Gboard's two rows on the same card read "English (Australia)" with "QWERTY" and "Handwriting" beneath, so the convention Android expects is a language in the large line and a variant in the small one — and "Hexboard" is neither.
+
+**The obvious fix is one string, and it is worth thinking about for longer than that.** Making the subtype label "English" would give a row reading "English / Hexboard", which matches Gboard's shape. But the layout picker built on 2026-09-05 now means one install can type seven languages, and Android's own switcher is a second place a language could be chosen — so what the subtype label should say is bound up with whether Hexboard declares a subtype per layout at all. That question has never been asked.
+
+Small as a fix, and the reason to plan it rather than patch it is the second half.
+Filed 2026-09-09 09:46, stamped by the queue tool.
+
+#### Gradient too short and labels too small, seen on the phone at the shipped values [key-drawing-second-pass]
+Captured by you on 2026-09-09, looking at the soft key edge on the Pixel 6 for the first time. [soft-edge-fraction-values] picked its two numbers by arithmetic and shipped them unseen, and its own walkthrough step said an opinion either way was the result. This is that opinion.
+
+**The outer size is right and the fade is too thin.** Your account: the area of the circles is correct, so the gradient should extend further *inwards*, not outwards. That reads directly onto the two constants — `FADE_FRACTION = 1.045` is where a key stops being drawn and is where you want it, while `SOLID_FRACTION = 0.75` is where the fade begins and is too far out, leaving the gradient as a thin ring rather than a soft edge.
+
+**The labels are too small, and your reason is a different one from the size complaint.** Your words: it "should be sized independently of the gradient or any other content in the key. Like if I placed the key over a shape in inkscape instead of inside a cell in excel." The label should be sized against the key as an object, not against a box drawn inside it.
+
+**That reverses a decision, which is why this is a capture rather than a fix.** `labelSize` multiplies the *solid* radius, deliberately: [soft-key-edge] wanted a glyph to sit inside the definite middle of the circle rather than out on the fading part, and [soft-edge-fraction-values] refused sizing labels against the fade radius on exactly that ground. The refusal was sound on its own terms and it has now been looked at, which the decision never was.
+
+**The two halves are coupled, which is the reason to settle them together.** Lowering the solid fraction to lengthen the fade shrinks every label, because labels are sized off it — so doing the first without the second makes the second complaint worse. Decoupling the label from the solid radius is what lets the fade be tuned freely afterwards.
+
+Three ways the label could be sized, and choosing between them is the work: against the touch radius, which is the key as an object and matches your Inkscape framing; against the fade radius, which is what is actually drawn; or against the solid radius still, with `LABEL_FRACTION` raised — which cannot exceed 1.0 without putting glyphs on the fade, so it cannot go far.
+
+Wants a look on the phone after each change rather than another blind pick, so it belongs in a sitting where the device is to hand.
+Filed 2026-09-09 09:50, stamped by the queue tool.
+
+#### Row banding does not read as banding — the board looks randomly coloured [row-banding-too-weak]
+Captured by you on 2026-09-09, seeing the alternating row tint on the Pixel 6 for the first time. Your account: the alternating shades are barely showing, and it reads as kind of randomly coloured rather than as bands.
+
+**The second half of that is the more useful half.** "Too faint" would point at one constant — `ROW_TINT = 0.2` in `KeyGeometry.kt`, a fifth of the way from a key's resting fill toward its pressed colour. "Randomly coloured" points somewhere else: a key's base colour comes from its *kind*, and letter, punctuation, special, space, symbol and rare each have their own fill. Those vary within a row and across it, so a fifth-of-a-step tint laid over five different base colours produces five different results and no visible band.
+
+So raising the figure may make the board louder without making it read as rows at all. The banding competes with the kind colouring, and nobody has looked at the two together.
+
+**Why the banding exists**, from [row-tint]: the rows are still the QWERTY rows and only zigzag, and people read left to right, so the row is the unit that carries recognition — QWERTYUIOP is a string almost everyone knows on sight. Banding is what says *this is the keyboard you already use*, which is what SPEC's familiarity principle is defended by. That reason is untouched by this; what is in question is whether the current drawing delivers it.
+
+**The constraint the figure was chosen against still holds:** a press travels the whole way to the lit colour, so a resting tint must stay far enough from that to never be mistaken for a pressed key. Whatever replaces 0.2 has to keep that distance.
+
+Options worth weighing rather than one obvious fix: raise the tint and accept a louder board; tint only the letter keys, so the band runs across the part of the row that carries the recognition; or bring the kind colours closer together so the banding has less to compete with. The third is the largest and might be the right one.
+
+Wants the phone to hand, like [key-drawing-second-pass], and probably the same sitting.
+Filed 2026-09-09 09:50, stamped by the queue tool.
+
+#### Panels do not run continuously into each other, and the cause is geometric [panel-seam-gap]
+Swiping between panels shows a gap at the seam: the columns of the outgoing panel and the incoming one sit further apart than the columns within either. Reported by you on 2026-09-09, on the real keyboard, with a screenshot of RARE and QWERTY mid-swipe.
+
+**This is your original complaint of 2026-09-03, and the earlier diagnosis was half right.** [symbols-panel-empty-slots] took "the next panel does not run continuously from the last one" to be the symbols panel's ten empty slots, checked that `HorizontalPager` sets no `pageSpacing`, and concluded the pager was not the cause. The empty slots were real and are now filled. The seam is a second cause, and it survives them.
+
+**The arithmetic, which is what makes it a design question rather than a bug.** Within a panel, neighbouring columns sit `horizontalStep` apart — `verticalStep * √3/2`, about 1.81 radii, and less than two radii precisely because the packing is hexagonal. Across a seam, the distance is different: the last column's centre sits `radius + EDGE` from its page's right edge, the first column of the next page sits `EDGE + radius` from its left edge, so the two centres are `2 * radius + 2 * EDGE` apart — about 2.55 radii at the Pixel 6's solved size. That is roughly 40% wider than a within-panel step, which is well past what an eye misses.
+
+The zag itself carries across correctly: column 9 is odd and column 0 is even, so the parity alternates as it should. Only the spacing is wrong.
+
+**Three ways out, and they differ in what they cost.** A negative `pageSpacing` of `2 * EDGE + 2 * radius - horizontalStep` closes the seam exactly and makes the pager's page width disagree with the board's own width, which may upset the paging. Dropping `EDGE` to zero narrows the seam without closing it, since `2 * radius` still exceeds `horizontalStep`, and it takes the board's breathing room at the screen edges with it. Or the panels stop being pager pages and become one wide board that scrolls by panel, which is the largest change and the only one that makes the seam impossible rather than merely closed.
+
+**Worth being clear about what is at stake**, since it is a mid-swipe appearance rather than a typing fault: nothing mis-routes and no key is unreachable. What it costs is the impression that the three panels are one board — which is the impression the horizontal swipe exists to give.
+Filed 2026-09-09 09:58, stamped by the queue tool.
+
+#### SPEC says emoji are reached by swiping down, and the finger goes up [spec-emoji-swipe-wording]
+SPEC states the emoji panels are "reached by vertical swipe down", twice. On the phone the panels are reached by dragging the finger *up*, and you confirmed on 2026-09-09 that up is the correct behaviour and down would be wrong.
+
+Both statements are true of different things, which is why the wording slipped through. The emoji panels sit below the letters in the vertical stack, so you move *down* the stack to reach them — and moving down a stack means dragging the content up. SPEC describes where they sit; a reader building from it, or a walkthrough step written from it, reads it as what the hand does. This walkthrough did exactly that on 2026-09-09 and asked for the wrong gesture.
+
+**The behaviour is not in question and no code changes.** `VerticalPager` holds the letters at page 0 and the emoji at page 1, which is the arrangement the prototype has and the one you have now confirmed by hand. What wants changing is one phrase in SPEC, in both places it appears, so that it says what the finger does.
+
+A build does not write product truth, which is why this is a capture rather than an edit.
+
+Worth checking the same phrase against the horizontal swipe while in there: "three letter panels reached by horizontal swipe" has the same shape of ambiguity, and nobody has looked at whether it reads correctly.
+Filed 2026-09-09 09:58, stamped by the queue tool.
+
+#### Spare width sideways should reveal the neighbouring panels, not sit empty [landscape-reveal-neighbours]
+Raised by you on 2026-09-09, turning the keyboard sideways for the first time. The board occupies roughly the left third of the screen and the rest is empty; your account is that however much of the RARE and SYMBOLS panels fits in that spare width should be showing.
+
+**Why the space appeared, which is new as of the same day.** The radius used to be solved from the width alone, so the board was always exactly as wide as the screen and there was never any spare. [landscape-board-height] made the radius the smaller of the width's answer and the height's, and sideways the height wins — about 13dp against the 34dp the width would allow. So the board is now narrower than the screen for the first time, and every key position is measured from the board's left edge, so what is left over collects on the right.
+
+**Your answer is better than the two obvious ones, and it is worth saying why.** Centring the board would make the emptiness symmetrical rather than remove it. Spreading the columns to fill the width is barred outright — it breaks the hexagonal packing SPEC calls inviolable, and `centringIndent` already carries that refusal for the narrow-panel case. Showing the neighbouring panels uses the space for the thing the space is next to, and it costs no gesture: the panels are already laid out side by side in a pager, and the swipe that reaches them is unchanged.
+
+**It makes [panel-seam-gap] matter more, which is the thing to notice before building it.** That seam is currently visible only during a swipe. If the neighbours are permanently on screen, the gap between the last column of one panel and the first of the next is permanently on screen too — so the seam probably has to be closed first, or the reveal will look like three boards rather than one.
+
+**And it leaves a question nobody has asked: what does a partly-visible panel do to a tap?** Nearest-centre routing is defined within one panel. A visible key belonging to the panel next door either has to be tappable, which means the routing spans panels and the correction engine's neighbour table has to as well, or has to be inert, which means visible keys that do nothing.
+
+Sits alongside [split-layout-wide-screens], which answers the same screen a different way — two halves under the thumbs rather than a wider continuous board. They may not both be wanted.
+Filed 2026-09-09 10:03, stamped by the queue tool.
+
+#### Twelve instrumented tests fail: every one that renders the board finds no composition [instrumented-tests-no-composition]
+The instrumented suite compiles and runs for the first time. 25 tests, 13 passed, 12 failed on the Pixel 6 on 2026-09-09 at 13:00.
+
+**The pattern is the finding.** In `EmojiPanelsUiTest`, two tests passed and four failed; the two that passed — `theBundledListGivesFiveFullPanels` and `nothingUnqualifiedOrDuplicatedReachesAPanel` — are the ones that touch no UI at all. Every test that calls `setContent` and then looks for a node failed, with `java.lang.IllegalStateException: No compose hierarchies found in the app`, thrown out of `fetchSemanticsNodes`. The first assertion of `swipingDownReachesTheEmojiPanelsAndUpReturns` fails before any swipe happens, so it is not a gesture problem.
+
+**What this is not.** The board is not broken. The keyboard was typed on by hand on the same handset the same morning, and the app's own preview board renders. So the composition works and the test harness is not getting one — which makes this a fault in how the tests stand the board up rather than in what they are testing.
+
+**Where to start looking**, in the order the evidence supports rather than in the order things come to mind. Whether `createComposeRule()` is the right rule here, given the board is stood up on its own rather than inside an activity. Whether something composed by `HexboardBoard` throws under the harness and takes the whole composition with it — the most recently changed thing on that path is the screen height read through `LocalConfiguration` and the height-bounded radius solver, both added on 2026-09-05 and neither ever run. And whether the helpers that measure the root are called before `setContent` in any of them, which produces this exact message.
+
+**Why it wants a run of its own.** Each hypothesis needs a build, an install and a device run to test, and there are five test files involved. That is a working session, not a fix. It also cannot be checked from Claude's shell at all: Gradle, Java and adb are all absent, recorded in `TOOLS.md`.
+
+**What is already known good, so this does not reopen it.** The unit tests pass, 50 of 50. The app builds, installs, types, switches layouts and composes a problem report, all confirmed by hand the same morning. So this is the instrumented harness alone.
+Filed 2026-09-09 13:07, stamped by the queue tool.
+
+#### Curly quotes are now reachable twice, as SYMBOLS keys and as long-press accents [curly-quote-double-route]
+`“ ” ‘ ’` became keys on the English SYMBOLS panel on 2026-09-05, filling four of the layout's last ten free slots. They were already long-press accents on QWERTY row 3: `'` carries `‘ ’ \`` and `"` carries `“ ” « »`. So each of the four is now reachable two ways.
+
+Noticed at the close of 2026-09-09, writing the record for [symbols-panel-empty-slots].
+
+**Nothing objects, which is why it needs a decision rather than a fix.** SPEC's manifest rules bar a character living on more than one panel without a justification, and they speak of keys; a long-press accent is not a key on a panel, so the validator is silent and correctly so. The board that was agreed is the board that shipped.
+
+**What is actually at stake is accent slots, not correctness.** Removing the four from the two long-press lists would free four accent positions on `'` and `"` — and accent lists have their own crowding problem, since the popup row is capped at what fits above a key. Against that: a long-press on the quote key is where a hand already is mid-sentence, and SYMBOLS is a swipe away, so the duplicate may be exactly the convenience worth keeping. The two space bars are the precedent for a deliberate convenience duplicate carrying a written justification.
+
+Three ways: drop the four accents and let SYMBOLS own them; keep both and write the justification into the config so the duplication reads as a decision rather than an oversight; or keep both and say nothing, which is the state today.
+
+The same question will arise on every layout whose config gains typographic quotes, so settling it once is worth more than settling it for English.
+Filed 2026-09-09 13:21, stamped by the queue tool.
+
+#### Stale build output still sits in the synced folder the relocation moved it out of [stale-android-build-dir]
+`android/app/build/` holds `generated`, `intermediates`, `kotlin` and `outputs`, all dated 3 September 2026. Nothing has written there since: [build-output-off-drive] moved the build output to the path named in `android/local.properties`, and the build of 2026-09-09 wrote entirely to that path, confirmed by checking both folders after it ran.
+
+Noticed at the close of 2026-09-09, checking that the relocation had actually taken effect.
+
+**It is the exact problem the relocation was for.** That folder sits inside the Google Drive folder this project lives in, so it is being synced — Gradle output being synced while Gradle writes it is one of the two reasons the relocation exists, and the Windows path-length ceiling is the other. Leftover output is not being written any more, so it cannot corrupt a build, but it is still bulk in a synced folder for no purpose.
+
+**Deleting it is safe and nobody has confirmed it.** Build output is regenerable by definition and the folder is gitignored, so nothing is lost. The one thing worth a look first is whether the folder holds anything that is *not* build output — a stray file put there by hand would be invisible to git and gone with the directory.
+
+Small, and it needs a person to say go rather than a rule: the method's own file-safety line is that a folder Claude did not create this session is never presumed rubbish.
+Filed 2026-09-09 13:21, stamped by the queue tool.
 

@@ -1,4 +1,4 @@
-# [HASH] — [layout-switching] cleared after both its open questions turned out to be desk answers, and after the reason to hold it was removed the same day
+# 5f9d97e — [layout-switching] cleared after both its open questions turned out to be desk answers, and after the reason to hold it was removed the same day
 
 The picker's home and contents were settled on 2026-09-01 and 2026-09-02 — the app's own settings, layouts grouped by language and ordered by a set position, usage telemetry rejected outright as the first thing that would report user behaviour to a server. What stayed open was how the app enumerates layouts at runtime.
 

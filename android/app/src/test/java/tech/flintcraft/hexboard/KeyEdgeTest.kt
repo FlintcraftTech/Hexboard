@@ -90,8 +90,56 @@ class KeyEdgeTest {
         )
     }
 
+    @Test
+    fun theFadeMeetsItsNeighboursAndNeverOverlapsThem() {
+        SOLVABLE_RADII.forEach { radius ->
+            val halfTheDistanceBetweenCentres = KeyGeometry.verticalStep(radius) / 2f
+            assertTrue(
+                "At radius ${radius}dp the key is drawn out to " +
+                    "${KeyGeometry.fadeRadius(radius)}dp, but neighbouring centres are only " +
+                    "${KeyGeometry.verticalStep(radius)}dp apart — so its fade runs into the " +
+                    "fade of every key around it.",
+                KeyGeometry.fadeRadius(radius) <= halfTheDistanceBetweenCentres + 0.001f
+            )
+        }
+    }
+
+    @Test
+    fun theSolidPartIsThreeQuartersOfTheTouchRadius() {
+        assertEquals(
+            "The definite part of a key should be three quarters of the area it accepts. " +
+                "Below that it reads as a smaller key than it is, which is what a fade to " +
+                "0.55 did; much above it and the edge is late enough to read as hard again.",
+            0.75,
+            KeyGeometry.SOLID_FRACTION.toDouble(),
+            0.0001
+        )
+        RADII.forEach { radius ->
+            assertEquals(
+                "At radius ${radius}dp the solid part should reach ${radius * 0.75f}dp.",
+                (radius * 0.75f).toDouble(),
+                KeyGeometry.solidRadius(radius).toDouble(),
+                0.001
+            )
+        }
+    }
+
     private companion object {
         /** The narrowest and widest keys the solver will produce, and one in between. */
         val RADII = listOf(KeyGeometry.MIN_RADIUS, 22f, KeyGeometry.MAX_RADIUS)
+
+        /**
+         * Every half-dp across the solvable range.
+         *
+         * The fade-meets-neighbours check needs the whole range rather than three samples,
+         * because the gap rule changes shape partway along it: above about 16.7dp the gap is
+         * a proportion of the radius and the centres sit exactly 2.09 radii apart, and below
+         * it the 1.5dp floor takes over and they sit proportionally further apart. Three
+         * samples could miss the crossover entirely.
+         */
+        val SOLVABLE_RADII: List<Float> =
+            generateSequence(KeyGeometry.MIN_RADIUS) { it + 0.5f }
+                .takeWhile { it <= KeyGeometry.MAX_RADIUS }
+                .toList()
     }
 }

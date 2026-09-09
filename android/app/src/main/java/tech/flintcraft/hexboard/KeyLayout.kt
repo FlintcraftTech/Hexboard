@@ -21,6 +21,16 @@ import java.io.InputStreamReader
  */
 data class KeyLayout(
     val schemaVersion: Int = 0,
+    /** This layout's own id, e.g. `qwerty-en`. What a problem report names. */
+    val id: String = "",
+    /** The layout's display name, e.g. `QWERTY (English)`. */
+    val name: String = "",
+    /** BCP 47 tag of the language this layout is for. What the picker groups by. */
+    val language: String = "",
+    /** Position within its language, lower first. A layout without one sorts last. */
+    val order: Int? = null,
+    /** True on the one layout the app ships as its default and falls back to. */
+    val isDefault: Boolean = false,
     private val panels: List<Panel>? = null
 ) {
     val allPanels: List<Panel> get() = panels.orEmpty()

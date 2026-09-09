@@ -1,4 +1,4 @@
-# [HASH] — [competing-layout-standards] split out as the one part of the language plan left open
+# 5f9d97e — [competing-layout-standards] split out as the one part of the language plan left open
 
 Split out of [language-list-choice] on 2026-09-05, where it had been sitting since 2026-09-02 raised by Russian; that item's record carries the plan around it.
 

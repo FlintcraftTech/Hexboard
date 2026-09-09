@@ -54,8 +54,16 @@ class HexboardImeService : InputMethodService(),
     override val viewModelStore: ViewModelStore get() = store
     override val savedStateRegistry: SavedStateRegistry get() = savedStateController.savedStateRegistry
 
-    /** The key config, read once per service instance. */
-    private lateinit var keyLayout: KeyLayout
+    /**
+     * The key config for the layout the user chose.
+     *
+     * Observable rather than a plain field, because the choice is re-read each time the
+     * keyboard is shown and the board has to redraw when it has changed. That re-read is
+     * what makes a change in the app's settings take effect without restarting anything:
+     * the settings screen and this service are one application, so both read the same
+     * preference store.
+     */
+    private var keyLayout by mutableStateOf(KeyLayout())
 
     /** Unicode's emoji list, laid out across the five panels, read once per service instance. */
     private var emojiPanels: List<List<EmojiCatalogue.EmojiKey>> = emptyList()
@@ -73,11 +81,17 @@ class HexboardImeService : InputMethodService(),
         super.onCreate()
         savedStateController.performRestore(null)
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
-        keyLayout = KeyLayoutLoader.fromAssets(this)
+        loadChosenLayout()
         emojiPanels = EmojiCatalogue.fromAssets(this)
     }
 
+    /** Reads whichever layout the user picked in the app, falling back to the default. */
+    private fun loadChosenLayout() {
+        keyLayout = KeyLayoutLoader.fromAssets(this, LayoutPreference.assetNameFor(this))
+    }
+
     override fun onCreateInputView(): View {
+        loadChosenLayout()
         val view = ComposeView(this)
         installOwners(view)
         window?.window?.decorView?.let(::installOwners)
@@ -116,6 +130,10 @@ class HexboardImeService : InputMethodService(),
 
     override fun onStartInputView(info: android.view.inputmethod.EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
+        // The system reuses one input view across appearances, so onCreateInputView may not
+        // run again after a change in the app's settings. Re-reading here is what makes the
+        // choice take effect the next time the keyboard is shown.
+        loadChosenLayout()
         shiftState = ShiftState.OFF
         lastShiftTap = 0L
         lifecycleRegistry.currentState = Lifecycle.State.RESUMED

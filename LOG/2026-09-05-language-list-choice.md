@@ -1,4 +1,4 @@
-# [HASH] — [language-list-choice] deleted after the plan it was waiting to make was settled, the user's question about dictionary size having reshaped it
+# 5f9d97e — [language-list-choice] deleted after the plan it was waiting to make was settled, the user's question about dictionary size having reshaped it
 
 The item asked which languages get a layout and in what order. Half was already in SPEC — added as they are asked for — and the user asked whether that policy was "yet another thing that wasn't changed in SPEC when we made the change to accepting keyboard libraries instead of crowdsourcing". Checked against the 2026-09-02 record: it was written *as part of* that change, not inherited from before it. His instinct was pointing one change later than he thought, at the cost model this session had itself removed.
 

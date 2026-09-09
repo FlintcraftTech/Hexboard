@@ -1,4 +1,4 @@
-# [HASH] — [feedback-funnel-before-store] filed as the wider version of the report route, deliberately not designed yet
+# 5f9d97e — [feedback-funnel-before-store] filed as the wider version of the report route, deliberately not designed yet
 
 Captured from the user on 2026-09-05 while settling how layout errors get found; [layout-error-report]'s record for the same date carries the reasoning and the policy line.
 

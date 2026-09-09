@@ -1,4 +1,4 @@
-# [HASH] — [predictive-neighbour-table] created as the first buildable foundation of the predictive engine
+# 5f9d97e — [predictive-neighbour-table] created as the first buildable foundation of the predictive engine
 
 Computing each key's neighbour set at runtime from `key-layout.json` plus the zag rule, in `KeyGeometry.kt`. Split out of [uniform-neighbours-predictive] on 2026-09-05; the reasoning, including the three caveats this item answers, is in that item's record for the same date.
 

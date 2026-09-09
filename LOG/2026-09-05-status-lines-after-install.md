@@ -1,4 +1,4 @@
-# [HASH] — [status-lines-after-install] cleared, covering a third stale sentence the item had not named
+# 5f9d97e — [status-lines-after-install] cleared, covering a third stale sentence the item had not named
 
 Two sentences went false when the install succeeded on 2026-09-03: `CLAUDE.md`'s phase paragraph saying there is no input method service, and `README.md`'s Status section saying there is no working keyboard and nothing to install. A third was found while processing it — README's "Try the prototype" section still calls the browser prototype the only part of Hexboard you can type on. Fixing two while a third contradicted them would have left the document arguing with itself.
 

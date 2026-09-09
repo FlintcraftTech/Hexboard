@@ -8,7 +8,8 @@ import org.junit.Test
 import java.io.File
 
 /**
- * Validates resources/key-layout.json against the manifest's inviolable rules.
+ * Validates every shipped `resources/key-layout*.json` against the manifest's inviolable
+ * rules.
  *
  * The config is the single source of truth for the key inventory, so the app's key set
  * cannot drift from it. What that guarantee does not cover is whether the config itself
@@ -48,28 +49,43 @@ class KeyLayoutValidationTest {
         val emptySlots: List<EmptySlot>
     )
 
-    private val panels: List<Panel> by lazy { loadPanels() }
+    /** One shipped config and the panels it declares. */
+    private data class LayoutConfig(val file: String, val panels: List<Panel>)
+
+    private val configs: List<LayoutConfig> by lazy { loadConfigs() }
+
+    /**
+     * Every panel of every shipped config.
+     *
+     * Safe for the rules that judge a panel on its own. The cross-panel duplicate rule is
+     * the exception and scopes itself to one config at a time: the same character on the
+     * English and the French home panels is two layouts offering the same letter, not a
+     * duplicate.
+     */
+    private val panels: List<Panel> get() = configs.flatMap { it.panels }
 
     // ── Rule 2 — no unresolved duplicates ──────────────────────────────────
 
     @Test
     fun `no output character appears on more than one panel without a justification`() {
-        val byOutput = panels
-            .flatMap { it.keys }
-            .filter { it.output != null }
-            .groupBy { it.output!! }
-
         val problems = mutableListOf<String>()
-        for ((output, keys) in byOutput) {
-            val panelNames = keys.map { it.panel }.distinct()
-            if (panelNames.size <= 1) continue
-            val unjustified = keys.filter { it.justification.isNullOrBlank() }
-            if (unjustified.isNotEmpty()) {
-                problems += "Character ${describe(output)} appears on panels " +
-                    "${panelNames.joinToString(", ")} — " +
-                    "${unjustified.joinToString(", ") { it.where }} " +
-                    "carries no \"justification\" field. Manifest rule 2: resolve the duplicate, " +
-                    "or justify why both are needed."
+        for (config in configs) {
+            val byOutput = config.panels
+                .flatMap { it.keys }
+                .filter { it.output != null }
+                .groupBy { it.output!! }
+
+            for ((output, keys) in byOutput) {
+                val panelNames = keys.map { it.panel }.distinct()
+                if (panelNames.size <= 1) continue
+                val unjustified = keys.filter { it.justification.isNullOrBlank() }
+                if (unjustified.isNotEmpty()) {
+                    problems += "Character ${describe(output)} appears on panels " +
+                        "${panelNames.joinToString(", ")} — " +
+                        "${unjustified.joinToString(", ") { it.where }} " +
+                        "carries no \"justification\" field. Manifest rule 2: resolve the " +
+                        "duplicate, or justify why both are needed."
+                }
             }
         }
         assertNoProblems(problems)
@@ -212,24 +228,87 @@ class KeyLayoutValidationTest {
     // ── Sanity: the config is actually there and populated ────────────────
 
     @Test
-    fun `the config loads and holds all three panels`() {
+    fun `every shipped config loads and holds all three panels`() {
         assertTrue(
-            "Expected 3 panels in key-layout.json, found ${panels.size}",
-            panels.size == 3
+            "No key-layout*.json was found in resources/ at all.",
+            configs.isNotEmpty()
         )
-        panels.forEach { panel ->
-            assertTrue("Panel ${panel.name} declares no keys", panel.keys.isNotEmpty())
+        val problems = mutableListOf<String>()
+        configs.forEach { config ->
+            if (config.panels.size != 3) {
+                problems += "${config.file} declares ${config.panels.size} panels, expected 3."
+            }
+            config.panels.forEach { panel ->
+                if (panel.keys.isEmpty()) problems += "Panel ${panel.name} declares no keys."
+            }
         }
+        assertNoProblems(problems)
+    }
+
+    @Test
+    fun `every shipped config names a language and a position within it`() {
+        val problems = mutableListOf<String>()
+        for ((file, root) in loadRoots()) {
+            val language = root.get("language")?.takeIf { !it.isJsonNull }?.asString
+            if (language.isNullOrBlank()) {
+                problems += "$file carries no \"language\", so the picker cannot group it."
+            }
+            val order = root.get("order")?.takeIf { !it.isJsonNull }
+            if (order == null || runCatching { order.asInt }.isFailure) {
+                problems += "$file carries no integer \"order\", so its position within its " +
+                    "language is undefined."
+            }
+            if (root.get("generates")?.takeIf { !it.isJsonNull }?.asString.isNullOrBlank()) {
+                problems += "$file names no manifest in \"generates\"."
+            }
+        }
+        assertNoProblems(problems)
+    }
+
+    @Test
+    fun `exactly one shipped config is marked as the default`() {
+        val defaults = loadRoots().filter { (_, root) ->
+            root.get("isDefault")?.takeIf { !it.isJsonNull }?.asBoolean == true
+        }.map { it.first }
+        assertTrue(
+            "Exactly one config should carry isDefault — it is what the app falls back to " +
+                "when nothing has been chosen. Found: $defaults",
+            defaults.size == 1
+        )
+    }
+
+    @Test
+    fun `every shipped config has its generated manifest beside it`() {
+        val problems = mutableListOf<String>()
+        for ((file, root) in loadRoots()) {
+            val generates = root.get("generates")?.takeIf { !it.isJsonNull }?.asString
+                ?: continue
+            val manifest = File(repoRoot(), generates)
+            if (!manifest.isFile) {
+                problems += "$file says it generates $generates, and that file is not there. " +
+                    "Run scripts/generate-key-manifest.py --config resources/$file."
+            }
+        }
+        assertNoProblems(problems)
     }
 
     // ── Loading ───────────────────────────────────────────────────────────
 
-    private fun loadPanels(): List<Panel> {
-        val file = configFile()
-        val root = Gson().fromJson(file.readText(), JsonObject::class.java)
+    private fun loadConfigs(): List<LayoutConfig> =
+        loadRoots().map { (file, root) -> LayoutConfig(file, panelsIn(file, root)) }
+
+    /** Every `resources/key-layout*.json`, parsed, in a stable order. */
+    private fun loadRoots(): List<Pair<String, JsonObject>> =
+        configFiles().map { file ->
+            file.name to Gson().fromJson(file.readText(), JsonObject::class.java)
+        }
+
+    private fun panelsIn(file: String, root: JsonObject): List<Panel> {
         return root.getAsJsonArray("panels").map { element ->
             val panel = element.asJsonObject
-            val name = panel.get("name").asString
+            // The panel's name carries its config's filename, so a failure message says which
+            // layout is wrong. Seven layouts have a panel called QWERTY between them.
+            val name = "$file ${panel.get("name").asString}"
             Panel(
                 name = name,
                 rows = panel.getAsJsonArray("rows").map {
@@ -270,19 +349,35 @@ class KeyLayoutValidationTest {
     }
 
     /**
-     * Finds resources/key-layout.json. The Gradle build passes the repo root in as a
-     * system property; the walk-up fallback keeps the test runnable from an IDE that
-     * launches it with a different working directory.
+     * Every shipped layout config, found by pattern rather than by a list.
+     *
+     * The same discipline the Gradle copy task and the layout catalogue already follow: a
+     * further language is one new file in `resources/` and nothing else, so a list of
+     * filenames here would be a second place to remember to change.
      */
-    private fun configFile(): File {
-        val fromProperty = System.getProperty("hexboard.repoRoot")
-            ?.let { File(it, CONFIG_PATH) }
-        if (fromProperty != null && fromProperty.isFile) return fromProperty
+    private fun configFiles(): List<File> {
+        val dir = File(repoRoot(), "resources")
+        val configs = dir.listFiles { file ->
+            file.isFile && file.name.startsWith("key-layout") && file.name.endsWith(".json")
+        }.orEmpty().sortedBy { it.name }
+        if (configs.isEmpty()) {
+            fail("No key-layout*.json found in ${dir.absolutePath}.")
+        }
+        return configs
+    }
+
+    /**
+     * The repository root. The Gradle build passes it in as a system property; the walk-up
+     * fallback keeps the test runnable from an IDE that launches it with a different
+     * working directory.
+     */
+    private fun repoRoot(): File {
+        val fromProperty = System.getProperty("hexboard.repoRoot")?.let { File(it) }
+        if (fromProperty != null && File(fromProperty, CONFIG_PATH).isFile) return fromProperty
 
         var dir: File? = File(System.getProperty("user.dir"))
         while (dir != null) {
-            val candidate = File(dir, CONFIG_PATH)
-            if (candidate.isFile) return candidate
+            if (File(dir, CONFIG_PATH).isFile) return dir
             dir = dir.parentFile
         }
         fail(
@@ -303,7 +398,7 @@ class KeyLayoutValidationTest {
     private fun assertNoProblems(problems: List<String>) {
         if (problems.isNotEmpty()) {
             fail(
-                "key-layout.json failed validation:\n" +
+                "A shipped key config failed validation:\n" +
                     problems.sorted().joinToString("\n") { "  - $it" }
             )
         }

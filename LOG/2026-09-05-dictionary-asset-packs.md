@@ -1,4 +1,4 @@
-# [HASH] — [dictionary-asset-packs] filed for the delivery half of the two-speed language plan
+# 5f9d97e — [dictionary-asset-packs] filed for the delivery half of the two-speed language plan
 
 Filed 2026-09-05 from the user's question about download size; [language-list-choice]'s record for the same date carries the plan.
 

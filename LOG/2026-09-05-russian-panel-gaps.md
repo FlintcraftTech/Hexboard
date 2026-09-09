@@ -1,4 +1,4 @@
-# [HASH] — [russian-panel-gaps] filed after counting both configs rather than assuming they matched
+# 5f9d97e — [russian-panel-gaps] filed after counting both configs rather than assuming they matched
 
 Found on 2026-09-05 while filling the English symbols panel; [symbols-panel-empty-slots]'s record for the same date carries that decision.
 
