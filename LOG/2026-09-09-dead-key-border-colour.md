@@ -1,4 +1,4 @@
-# [HASH] — [dead-key-border-colour] five dead colour values removed, with the one live border left exactly where it is
+# f83f5d9 — [dead-key-border-colour] five dead colour values removed, with the one live border left exactly where it is
 
 This session ran across 2026-09-05 and 2026-09-09.
 

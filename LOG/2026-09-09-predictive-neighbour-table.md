@@ -1,4 +1,4 @@
-# [HASH] — [predictive-neighbour-table] which keys touch which, computed from the zag packing rather than stored anywhere
+# f83f5d9 — [predictive-neighbour-table] which keys touch which, computed from the zag packing rather than stored anywhere
 
 This session ran across 2026-09-05 and 2026-09-09.
 

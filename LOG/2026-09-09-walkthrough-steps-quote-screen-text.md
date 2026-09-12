@@ -1,4 +1,4 @@
-# [HASH] — [walkthrough-steps-quote-screen-text] a project rule that a step quotes what the screen says, read from the source rather than recalled
+# f83f5d9 — [walkthrough-steps-quote-screen-text] a project rule that a step quotes what the screen says, read from the source rather than recalled
 
 This session ran across 2026-09-05 and 2026-09-09.
 

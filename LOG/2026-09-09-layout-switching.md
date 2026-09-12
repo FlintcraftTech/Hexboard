@@ -1,4 +1,4 @@
-# [HASH] — [layout-switching] the picker that made the Russian layout reachable at all, discovered from the assets rather than listed in code
+# f83f5d9 — [layout-switching] the picker that made the Russian layout reachable at all, discovered from the assets rather than listed in code
 
 This session ran across 2026-09-05 and 2026-09-09.
 

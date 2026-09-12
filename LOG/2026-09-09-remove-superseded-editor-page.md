@@ -1,4 +1,4 @@
-# [HASH] — [remove-superseded-editor-page] a page kept for a future that was later cancelled, and nobody went back to the keeping decision
+# f83f5d9 — [remove-superseded-editor-page] a page kept for a future that was later cancelled, and nobody went back to the keeping decision
 
 This session ran across 2026-09-05 and 2026-09-09.
 

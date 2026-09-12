@@ -1,4 +1,4 @@
-# [HASH] — [verify-this-runs-build-on-device] the Android Studio sitting, driven live: seven defects found in code three runs had written and none had compiled
+# f83f5d9 — [verify-this-runs-build-on-device] the Android Studio sitting, driven live: seven defects found in code three runs had written and none had compiled
 
 This session ran across 2026-09-05 and 2026-09-09.
 

@@ -1,4 +1,4 @@
-# [HASH] — [soft-edge-fraction-values] the two fill fractions shipped at 0.75 and 1.045, then judged too thin on the phone the same session
+# f83f5d9 — [soft-edge-fraction-values] the two fill fractions shipped at 0.75 and 1.045, then judged too thin on the phone the same session
 
 This session ran across 2026-09-05 and 2026-09-09.
 

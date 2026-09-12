@@ -46,6 +46,20 @@ cited come from elderly and pathological speech datasets. The motivating case
 here is second-language English speakers in a multicultural country, and no
 figure in this file speaks to it.
 
+**Amended 2026-09-12: the two halves of "implementation" have to be told apart,
+and only one of them is still missing.** *Running* an adapted model on Android
+now has a named route — sherpa-onnx, a packaged on-device runtime with official
+Android support, which streams, runs fine-tuned Whisper models converted to
+ONNX, and needs no network. That answers the streaming-versus-accuracy tension
+below in part: a streaming runtime and a fine-tuned Whisper are not mutually
+exclusive the way this file's original wording implied. *Training or adapting*
+on the phone still has no packaged route — sherpa-onnx runs a model somebody
+else fine-tuned elsewhere, and nothing found performs the adaptation on the
+handset, which is the half `[personal-voice-model]` actually turns on. Read from
+the sherpa-onnx project's own description and from a Hugging Face forum thread
+describing a fine-tuned Whisper wrapped with it in an Android app, on
+2026-09-12; nothing was run and no model was measured.
+
 **No packaged Android implementation of any rung was found.** The distance
 between a paper reporting cheap adaptation and a keyboard performing it on a
 handset is engineering, not a library call, and this file should not be read as

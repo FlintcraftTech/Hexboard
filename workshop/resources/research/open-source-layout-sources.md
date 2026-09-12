@@ -86,6 +86,31 @@ decided by whether Hexboard's config model can express its script at all.
    SPEC — note that FlorisBoard nonetheless ships `korean` and `jis` files, so
    their presence in the list above is not an invitation.
 
+## Symbol panels are not covered by this source, and CLDR is where the quotes come from
+
+**Added 2026-09-12, for `[russian-panel-gaps]` and `[latin-panel-gaps]`.** This finding
+settles where a language's *letters* come from and says nothing about its symbol panel.
+Read on 2026-09-12, FlorisBoard organises symbol layouts by script and region rather than
+by language: the directory holds `western.json`, `western_additional_symbols.json`,
+`western_samsung.json`, `eastern.json`, `cjk.json`, `persian.json`, `armenian.json` and
+`ipa.json`, plus `neo2.json` for that layout. There is no Russian symbol layout, and
+French, German, Spanish, Portuguese and Italian would all share `western.json`. So the
+source that settles the letters cannot settle which quotation marks a language uses, and
+transcription is not available for this question.
+
+**Unicode's CLDR carries it instead.** CLDR's `delimiters` element gives every locale a
+`quotationStart`, `quotationEnd`, `alternateQuotationStart` and `alternateQuotationEnd` —
+four characters, which is exactly the four quote slots a symbols panel has to fill, across
+574 locales. French returns « and » with a curly alternate pair; German uses the low-high
+„ pairing. Read from CLDR's own LDML specification and from library documentation quoting
+the data on 2026-09-12; the specific per-locale values were not each read, so a build
+takes them from the data rather than from this file.
+
+That puts the quote slots on the same footing as the emoji list: published Unicode data
+rather than a judgment made here, under a licence already read in
+`unicode-data-file-licence.md`. The other six symbol slots — `• ← → ½ ¢ ≈` — are
+punctuation rather than orthography and carry across unchanged.
+
 ## What copying means here
 
 The transcription copies which letters sit where, into Hexboard's own config format. That is the factual content of a layout rather than FlorisBoard's expression of it; even so, Apache 2.0 permits copying the files outright with attribution, so the safe course is to name FlorisBoard and the file path in the config's `about` field and carry the licence notice in the repository. Not a legal opinion — a reason to attribute rather than to worry.

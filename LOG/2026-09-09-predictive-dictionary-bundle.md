@@ -1,4 +1,4 @@
-# [HASH] — [predictive-dictionary-bundle] 104,494 words from SCOWL, and the item's own reason for refusing a name filter turned out to be half wrong
+# f83f5d9 — [predictive-dictionary-bundle] 104,494 words from SCOWL, and the item's own reason for refusing a name filter turned out to be half wrong
 
 This session ran across 2026-09-05 and 2026-09-09.
 

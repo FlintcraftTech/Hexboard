@@ -1,4 +1,4 @@
-# [HASH] — [status-lines-after-install] three sentences that stopped being true when the keyboard switched on, and a fourth found in the same file
+# f83f5d9 — [status-lines-after-install] three sentences that stopped being true when the keyboard switched on, and a fourth found in the same file
 
 This session ran across 2026-09-05 and 2026-09-09.
 

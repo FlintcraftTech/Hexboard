@@ -1,4 +1,4 @@
-# [HASH] — [layout-error-report] a report route built so it structurally cannot carry what you typed, and proved on the handset
+# f83f5d9 — [layout-error-report] a report route built so it structurally cannot carry what you typed, and proved on the handset
 
 This session ran across 2026-09-05 and 2026-09-09.
 

@@ -1,4 +1,4 @@
-# [HASH] — [rsvp-dictation-prompter] a throwaway page to kill an idea in an evening rather than after months of building on it
+# f83f5d9 — [rsvp-dictation-prompter] a throwaway page to kill an idea in an evening rather than after months of building on it
 
 This session ran across 2026-09-05 and 2026-09-09.
 

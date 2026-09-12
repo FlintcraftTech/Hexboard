@@ -1,4 +1,4 @@
-# [HASH] — [emoji-parse-guard] three assertions that are proportions rather than counts, so a legitimate refresh cannot break them
+# f83f5d9 — [emoji-parse-guard] three assertions that are proportions rather than counts, so a legitimate refresh cannot break them
 
 This session ran across 2026-09-05 and 2026-09-09.
 

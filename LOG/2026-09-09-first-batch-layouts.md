@@ -1,4 +1,4 @@
-# [HASH] — [first-batch-layouts] five layouts transcribed by a machine reading FlorisBoard's own files, because the failure mode is mistyping
+# f83f5d9 — [first-batch-layouts] five layouts transcribed by a machine reading FlorisBoard's own files, because the failure mode is mistyping
 
 This session ran across 2026-09-05 and 2026-09-09.
 
