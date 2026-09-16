@@ -1,4 +1,4 @@
-# [HASH] — [spec-emoji-swipe-wording] SPEC now says what the finger does, and the same phrase in CLAUDE.md is filed as its own item
+# 770b778 — [spec-emoji-swipe-wording] SPEC now says what the finger does, and the same phrase in CLAUDE.md is filed as its own item
 
 Session of 2026-09-12, 12:54.
 

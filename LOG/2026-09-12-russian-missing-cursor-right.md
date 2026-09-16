@@ -1,4 +1,4 @@
-# [HASH] — [russian-missing-cursor-right] cursor-right takes the apostrophe's slot, and the validator learns to check for the five structural keys
+# 770b778 — [russian-missing-cursor-right] cursor-right takes the apostrophe's slot, and the validator learns to check for the five structural keys
 
 Session of 2026-09-12, 12:54.
 

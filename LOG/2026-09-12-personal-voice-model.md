@@ -1,4 +1,4 @@
-# [HASH] — [personal-voice-model] the research re-checked, one unknown split in two, and the item dated out to 2027-03-12
+# 770b778 — [personal-voice-model] the research re-checked, one unknown split in two, and the item dated out to 2027-03-12
 
 Session of 2026-09-12, 12:54.
 

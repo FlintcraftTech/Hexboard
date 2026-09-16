@@ -1,4 +1,4 @@
-# [HASH] — [spec-out-of-scope-stale] SPEC's out-of-scope line deleted rather than rewritten, everything true in it already being stated elsewhere
+# 770b778 — [spec-out-of-scope-stale] SPEC's out-of-scope line deleted rather than rewritten, everything true in it already being stated elsewhere
 
 Session of 2026-09-12, 12:54.
 

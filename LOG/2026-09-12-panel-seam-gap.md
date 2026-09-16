@@ -1,4 +1,4 @@
-# [HASH] — [panel-seam-gap] the seam closed by making a pager page a whole number of column pitches, replacing the negative-spacing answer taken hours earlier
+# 770b778 — [panel-seam-gap] the seam closed by making a pager page a whole number of column pitches, replacing the negative-spacing answer taken hours earlier
 
 Session of 2026-09-12, 12:54.
 

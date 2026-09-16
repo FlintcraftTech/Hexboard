@@ -1,4 +1,4 @@
-# [HASH] — [predictive-saved-words] a word is saved by tapping the offer that appears when autocorrect is undone, which is the affordance the design never had
+# 770b778 — [predictive-saved-words] a word is saved by tapping the offer that appears when autocorrect is undone, which is the affordance the design never had
 
 Session of 2026-09-12, 12:54.
 

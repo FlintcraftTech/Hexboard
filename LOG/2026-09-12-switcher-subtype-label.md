@@ -1,4 +1,4 @@
-# [HASH] — [switcher-subtype-label] one subtype labelled "Hexboard", and the never-asked question of whether to declare one per layout answered no
+# 770b778 — [switcher-subtype-label] one subtype labelled "Hexboard", and the never-asked question of whether to declare one per layout answered no
 
 Session of 2026-09-12, 12:54.
 

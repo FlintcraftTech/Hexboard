@@ -4,24 +4,6 @@
 
 > Vetted work, ready to build — worked top to bottom. Each piece of work is one item: a `#### ` heading naming it, a `[slug]` at the end of that heading line, and a short rationale beneath. A leading flavor tag names how it runs — none for a build (Claude edits files), `[audit]` for a review pass, `[user]` for a step only you can do. A security or privacy risk Claude surfaces lives here too, as a work item carrying a `Red flag · State: cleared/uncleared` marker. The line below marks how far down is cleared to build; anything below it is decided but not ready yet.
 
-#### [freeform] Twelve instrumented tests fail: every one that renders the board finds no composition [instrumented-tests-no-composition]
-The instrumented suite compiles and runs for the first time. 25 tests, 13 passed, 12 failed on the Pixel 6 on 2026-09-09 at 13:00.
-
-**The pattern is the finding.** In `EmojiPanelsUiTest`, two tests passed and four failed; the two that passed — `theBundledListGivesFiveFullPanels` and `nothingUnqualifiedOrDuplicatedReachesAPanel` — are the ones that touch no UI at all. Every test that calls `setContent` and then looks for a node failed, with `java.lang.IllegalStateException: No compose hierarchies found in the app`, thrown out of `fetchSemanticsNodes`. The first assertion of `swipingDownReachesTheEmojiPanelsAndUpReturns` fails before any swipe happens, so it is not a gesture problem.
-
-**What this is not.** The board is not broken. The keyboard was typed on by hand on the same handset the same morning, and the app's own preview board renders. So the composition works and the test harness is not getting one — which makes this a fault in how the tests stand the board up rather than in what they are testing.
-
-**Where to start looking**, in the order the evidence supports rather than in the order things come to mind. Whether `createComposeRule()` is the right rule here, given the board is stood up on its own rather than inside an activity. Whether something composed by `HexboardBoard` throws under the harness and takes the whole composition with it — the most recently changed thing on that path is the screen height read through `LocalConfiguration` and the height-bounded radius solver, both added on 2026-09-05 and neither ever run. And whether the helpers that measure the root are called before `setContent` in any of them, which produces this exact message.
-
-**One of the three hypotheses was eliminated at the desk on 2026-09-12, by reading the test files.** The suggestion that a helper measuring the root is called before `setContent` — which produces this exact message — does not hold. In `EmojiPanelsUiTest` and `StripLayoutTest` every failing test calls `showBoard()` first, and `showBoard` sets the content and waits for idle before anything measures; `sharedRadius()` is only ever called afterwards. `KeyConfigUiTest` has the same shape. So the two survivors are the ones needing a device: whether `createComposeRule()` suits a board stood up outside an activity, and whether something inside `HexboardBoard` throws under the harness after the first frame, tearing the hierarchy down — `LocalConfiguration.current.screenHeightDp` at `KeyboardPanel.kt:105` and the height-bounded radius solver are the most recently changed things on that path, added 2026-09-05 and never run until 2026-09-09.
-
-**Tagged `[freeform]` and placed first in the cleared region, settled with you on 2026-09-12.** The tag is for work that characteristically cannot run inside an unattended build run, which is this: each remaining hypothesis needs the user to press Run in Android Studio and report what came back, and Gradle, Java and adb are all absent from this machine per `TOOLS.md`. `Runs alone` was re-read and rejected — that marks work the method does build in an isolated run, and nothing here can be built by a run at all. First rather than last because [panel-seam-gap], [key-drawing-second-pass], [row-banding-too-weak] and the strip work all change what a rendering test would see: sorting the harness first means those are built against tests that can be trusted, and sorting it last ships each of them with this blind spot.
-
-**Why it wants a run of its own.** Each hypothesis needs a build, an install and a device run to test, and there are five test files involved. That is a working session, not a fix. It also cannot be checked from Claude's shell at all: Gradle, Java and adb are all absent, recorded in `TOOLS.md`.
-
-**What is already known good, so this does not reopen it.** The unit tests pass, 50 of 50. The app builds, installs, types, switches layouts and composes a problem report, all confirmed by hand the same morning. So this is the instrumented harness alone.
-Filed 2026-09-09 13:07, stamped by the queue tool.
-
 #### A bespoke predictive text engine built around the six-neighbour confusion set [uniform-neighbours-predictive]
 **Lifted on 2026-09-09.** Both blockers shipped in the build run of 2026-09-05 to 2026-09-09: `KeyGeometry.neighbourTable` derives the six-neighbour sets, and the SCOWL word list is generated and bundled. Both are covered by unit tests, and all 50 unit tests passed on the Pixel 6 on 2026-09-09, so the foundations are built *and* verified rather than merely written.
 Autocorrect for Hexboard: when the user presses space, the word just finished is compared against the shipped dictionary and, if it is not already a word, replaced by the closest match.
@@ -1031,4 +1013,66 @@ Filed on 2026-09-12 at a planning session, because several entries wait on this 
 
 Rests on: [layout-error-report]'s address living in gitignored `local.properties`, which means a released build needs that value supplied some other way — a real consequence of a decision already taken, noticed on 2026-09-12 and not yet thought through.
 Filed 2026-09-12 12:30, stamped by the queue tool.
+
+#### Key labels announce uppercase to a screen reader while the key draws lowercase [key-label-case-vs-glyph]
+Noticed while working [instrumented-tests-no-composition] on 2026-09-12. Every key publishes `key.label` as its accessibility description — `accessibilityLabel` in `KeyboardPanel.kt`. For a letter the config's label is uppercase ('Q') and its output is lowercase ('q'). SPEC says that with neither shift nor caps on, letters draw in lowercase, and `KeyCircle` honours that through `key.glyph(shiftState)`. So the key on screen reads 'q' while a screen reader announces 'Q', and the two disagree in exactly the state the board spends most of its time in.
+
+Whether that is wrong is a product question rather than a bug: the announcement may reasonably be case-neutral, or it may reasonably track the glyph and so change with shift state. What is certain is that the description ignores `shiftState` entirely, while everything else the key draws does not.
+
+It surfaced as a test failure rather than as a report from a person: `EmojiPanelsUiTest` asked whether the key's *output* was on screen, found nothing, and fell before its first gesture. That test now asks for the accessibility label instead, which is what the other UI tests already did — so the test is no longer wrong about the code, and this item is the remaining question about whether the code is right.
+
+Filed 2026-09-12 21:03, stamped by the queue tool.
+
+#### [user] Stop the Pixel 6 sleeping mid-run, which fails every instrumented test that renders [phone-sleeps-during-test-run]
+A Compose UI test needs a resumed activity to have a composition to look at. When the handset's screen goes dark the activity is no longer resumed, `fetchSemanticsNodes` finds nothing, and every test that renders fails at once with `No compose hierarchies found in the app` — while every test touching no UI passes. That split is what twelve failures looked like on 2026-09-09, and eight of the twelve were nothing but this.
+
+It is not a one-off. It recurred on 2026-09-12 during this item's own verification run: the suite takes around fifty seconds, the screen's timeout is shorter than that, and a run started on an awake phone still ends on a dark one. So the instrumented suite cannot be trusted on this handset until the screen is made to stay on, and each recurrence costs a full run to diagnose again.
+
+The fix is a phone setting rather than anything in the repository, which is why this is user work: Android's developer options carry a switch that keeps the screen on while the device is charging, and the phone is charging over the same cable that carries the test run.
+
+**The walkthrough.**
+1. On the Pixel 6, open the Settings app and tap the search box at the top. Type `Stay awake`. Look for a result whose title is `Stay awake` — it sits under Developer options.
+2. Tap that result. The phone opens Developer options scrolled to the switch, with `Stay awake` highlighted and a description below it about the screen never sleeping while charging. Turn the switch on.
+3. With the phone plugged into the computer, leave it untouched for longer than its normal screen timeout and check the screen is still lit. That is the observable: a screen still on after the timeout would have darkened it.
+
+**Settled on 2026-09-17 by a different route, and the walkthrough above was not what did it.** Searching the Settings app for `Stay awake` returned no such result on this handset, so step 1 found nothing to tap and steps 2 and 3 never ran. The screen timeout was raised to thirty minutes instead, which outlasts the suite's fifty seconds by a wide margin and so removes the failure without any developer option at all.
+
+Two things that follow, written down because the difference matters later. The timeout is a plain display setting, so it survives nothing in particular — a factory reset, a settings restore or somebody shortening it again brings the failures straight back, where the developer-options switch would have been tied to charging and so harder to undo by accident. And a suite that grows past thirty minutes would sleep again; the margin is wide as of 2026-09-17 and is not permanent.
+
+The original walkthrough is left above rather than rewritten, because it records what was tried and did not work, and because whoever reaches for the developer-options route on another handset should know it was not available on this one.
+
+**Why this is not solved in the tests instead.** A test could hold a wake lock, but every test file would have to, and a file added later would silently lack it. The setting covers the whole suite once, including tests nobody has written yet.
+
+Filed while working [instrumented-tests-no-composition].
+Filed 2026-09-12 21:07, stamped by the queue tool.
+
+#### [user] Find out whether the D-U-N-S application of 2026-05-17 produced a number [duns-outcome-unknown]
+Reported by the Drive cleanup project on 2026-09-14, in a message this project's INBOX carried; it hands nothing over and asks for no reply.
+
+A D-U-N-S number is the business identifier the app stores require before anything is published under a company name rather than under a person's. One was applied for on 2026-05-17, through CSC Australia's request form, from a separate Google account set up on 2026-05-05 as a business identity. A reply carrying a case reference arrived. Nobody has opened it, so whether a number was actually issued is unknown rather than confirmed — Drive cleanup observed only that the thread exists, and is not tracking the outcome.
+
+It is worth an item here because [play-store-release] runs into this question sooner or later, and the two answers lead to very different work. If a number was issued, most of that job is already done. If the application died, that is better known early than discovered halfway through a store listing — and either answer costs less than starting a second application that duplicates the first.
+
+It is user work because it needs a sign-in to an account Claude has no access to, and a judgment about what the reply actually says.
+
+**The walkthrough.**
+1. Sign in to the separate business Google account — the one set up on 2026-05-05, not the everyday personal account — and open its mail.
+2. Search that mailbox for `D-U-N-S` and open the thread from CSC Australia dated 2026-05-17. Look for the reply that follows the original request.
+3. Read the reply and say which of three it is: a number was issued, more information is being asked for, or the application was refused or abandoned. That answer is the observable, and it decides what [play-store-release] has to do about business identity.
+
+Whether Hexboard publishes under a company name at all is a separate question this item does not settle; it only establishes what is available if the answer turns out to be yes.
+
+Filed 2026-09-17 09:20, stamped by the queue tool.
+
+#### Three cleared items still say the instrumented suite cannot be trusted, which stopped being true [stale-instrumented-caveat]
+[accent-row-top-row], [panel-seam-gap] and [landscape-reveal-neighbours] each carry a sentence written while the instrumented suite was failing — that the suite is not available as a check, or that its half of an observation cannot be trusted, while [instrumented-tests-no-composition] stands. That item was closed by hand on 2026-09-17 and the suite now returns 28 of 28 passing on the Pixel 6, so the condition those sentences name has lifted and the item they name is no longer in the queue.
+
+The reason this is worth an item rather than a tidy-up is what the sentences do to a build that reads them. Each of the three names an instrumented test as its own observation — the thing that shows the work landed. A build reading the caveat is being told not to trust the very check the same entry asks it to run, and the likely outcome is an item shipped with its observation skipped and nobody noticing, because the entry gave permission.
+
+All three sit above the cleared-to-run line, so a build run reaches them before a planning session does. That ordering is why this was filed rather than left to be found.
+
+What each sentence should become is a judgment per item rather than one substitution: [panel-seam-gap]'s caveat sits inside a sentence about a judgment on the phone that is genuinely still outstanding, while [accent-row-top-row]'s travels with a lift note recording why the item was released. Removing the clause wholesale would take some of that with it.
+
+Filed at this close, which noticed it while removing [instrumented-tests-no-composition] from Processed.
+Filed 2026-09-17 09:23, stamped by the queue tool.
 

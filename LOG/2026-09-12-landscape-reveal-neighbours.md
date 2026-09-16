@@ -1,4 +1,4 @@
-# [HASH] — [landscape-reveal-neighbours] the sideways screen answered by revealing the neighbouring panels, which cost the split layout and rewrote the seam fix
+# 770b778 — [landscape-reveal-neighbours] the sideways screen answered by revealing the neighbouring panels, which cost the split layout and rewrote the seam fix
 
 Session of 2026-09-12, 12:54.
 

@@ -1,4 +1,4 @@
-# [HASH] — [claude-md-swipe-wording] the swipe phrase in CLAUDE.md filed as its own item, a planning session being unable to write that file
+# 770b778 — [claude-md-swipe-wording] the swipe phrase in CLAUDE.md filed as its own item, a planning session being unable to write that file
 
 Session of 2026-09-12, 12:54.
 

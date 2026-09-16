@@ -1,4 +1,4 @@
-# [HASH] — [word-list-size-level] split: "ok" fixed by name now, and how the size level gets chosen held until the engine can be typed on
+# 770b778 — [word-list-size-level] split: "ok" fixed by name now, and how the size level gets chosen held until the engine can be typed on
 
 Session of 2026-09-12, 12:54.
 

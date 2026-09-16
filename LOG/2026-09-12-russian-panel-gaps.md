@@ -1,4 +1,4 @@
-# [HASH] — [russian-panel-gaps] one rule fills every non-English layout's empty symbol slots, quotes taken from Unicode's per-locale data
+# 770b778 — [russian-panel-gaps] one rule fills every non-English layout's empty symbol slots, quotes taken from Unicode's per-locale data
 
 Session of 2026-09-12, 12:54.
 

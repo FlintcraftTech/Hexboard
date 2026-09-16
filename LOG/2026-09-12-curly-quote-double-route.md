@@ -1,4 +1,4 @@
-# [HASH] — [curly-quote-double-route] both routes kept, and SPEC now says a long-press alternative is not a duplicate
+# 770b778 — [curly-quote-double-route] both routes kept, and SPEC now says a long-press alternative is not a duplicate
 
 Session of 2026-09-12, 12:54.
 

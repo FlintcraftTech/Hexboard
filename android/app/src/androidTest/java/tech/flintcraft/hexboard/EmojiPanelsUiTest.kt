@@ -3,11 +3,9 @@ package tech.flintcraft.hexboard
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.unit.width
 // click, like the swipes below, is an extension on TouchInjectionScope rather than a member,
 // so it has to be imported. Its absence is what failed the instrumented compile of 2026-09-09.
 import androidx.compose.ui.test.click
-import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onRoot
@@ -24,7 +22,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * The five emoji panels SPEC has promised throughout, reached by swiping down from the keys.
+ * The five emoji panels SPEC has promised throughout, reached by dragging the board up from the keys.
  *
  * The content is Unicode's own published list in its own display order; the panels, the
  * geometry and the gestures are Hexboard's. What this checks is the wiring between them —
@@ -86,32 +84,41 @@ class EmojiPanelsUiTest {
     // ── The gestures ──────────────────────────────────────────────────────────────────
 
     @Test
-    fun swipingDownReachesTheEmojiPanelsAndUpReturns() {
+    fun draggingUpReachesTheEmojiPanelsAndDownReturns() {
         showBoard()
 
         val aLetter = layout.allPanels.first { it.id == "qwerty" }
             .allKeys.first { it.action == Key.ACTION_INSERT }
+        // What a key publishes is its accessibility label, which for a letter is the config's
+        // `label` — 'Q' — rather than its `output` — 'q'. Asking for the output found nothing
+        // and failed this test at its first line, before any gesture ran.
+        val letterOnScreen = accessibilityLabel(aLetter)
 
-        assertTrue("The letters are not showing to begin with.", isShowing(aLetter.output!!))
-
-        compose.onRoot().performTouchInput { swipeDown() }
-        compose.waitForIdle()
-        val firstEmoji = panels[EmojiCatalogue.HOME].first().characters
-        assertTrue(
-            "A downward swipe did not reach the emoji panels — '$firstEmoji' from the home " +
-                "emoji panel is not on screen.",
-            isShowing(firstEmoji)
-        )
+        assertTrue("The letters are not showing to begin with.", isShowing(letterOnScreen))
 
         compose.onRoot().performTouchInput { swipeUp() }
         compose.waitForIdle()
-        assertTrue("An upward swipe did not return to the letters.", isShowing(aLetter.output!!))
+        val firstEmoji = panels[EmojiCatalogue.HOME].first().characters
+        assertTrue(
+            "Dragging the board up did not reach the emoji panels — '$firstEmoji' from the " +
+                "home emoji panel is not on screen.",
+            isShowing(firstEmoji)
+        )
+
+        // Started from the middle rather than from the top, which is what `swipeDown()` does
+        // on its own. The board's control strip occupies the top of the root and is not part
+        // of the vertical pager, so a drag beginning there is never handed to the pager and
+        // the board stays on the emoji page. The upward drag has no such trouble — it begins
+        // at the bottom, which is inside the pager already.
+        compose.onRoot().performTouchInput { swipeDown(startY = centerY, endY = bottom) }
+        compose.waitForIdle()
+        assertTrue("Dragging back down did not return to the letters.", isShowing(letterOnScreen))
     }
 
     @Test
     fun swipingSidewaysMovesBetweenEmojiPanels() {
         showBoard()
-        compose.onRoot().performTouchInput { swipeDown() }
+        compose.onRoot().performTouchInput { swipeUp() }
         compose.waitForIdle()
 
         compose.onRoot().performTouchInput { swipeLeft() }
@@ -129,20 +136,12 @@ class EmojiPanelsUiTest {
     fun tappingAnEmojiCommitsItsCharacters() {
         val committed = mutableListOf<String>()
         showBoard(onEmoji = { committed += it })
-        compose.onRoot().performTouchInput { swipeDown() }
+        compose.onRoot().performTouchInput { swipeUp() }
         compose.waitForIdle()
 
         val target = panels[EmojiCatalogue.HOME].first()
-        compose.onAllNodesWithContentDescription(target.characters)
-            .fetchSemanticsNodes()
-            .firstOrNull()
-            ?: error("The home emoji panel does not show '${target.characters}' to tap.")
-
-        val density = compose.density.density
-        val radius = sharedRadius()
-        val centre = KeyGeometry.centre(target.row, target.col, radius)
         compose.onRoot().performTouchInput {
-            click(Offset(centre.x * density, centre.y * density))
+            click(centreInRoot(target.characters))
         }
         compose.waitForIdle()
 
@@ -160,11 +159,9 @@ class EmojiPanelsUiTest {
 
         val qwerty = layout.allPanels.first { it.id == "qwerty" }
         val key = qwerty.allKeys.first { it.action == Key.ACTION_INSERT }
-        val density = compose.density.density
-        val centre = KeyGeometry.centre(key.row, key.col, sharedRadius())
 
         compose.onRoot().performTouchInput {
-            click(Offset(centre.x * density, centre.y * density))
+            click(centreInRoot(accessibilityLabel(key)))
         }
         compose.waitForIdle()
 
@@ -197,9 +194,25 @@ class EmojiPanelsUiTest {
     private fun isShowing(description: String): Boolean =
         compose.onAllNodesWithContentDescription(description).fetchSemanticsNodes().isNotEmpty()
 
-    /** The one radius the board solves for the whole layout, from its widest panel. */
-    private fun sharedRadius(): Float = KeyGeometry.solveRadius(
-        compose.onRoot().getBoundsInRoot().width.value,
-        layout.allPanels.maxOf { it.maxCol + 1 }
-    )
+    /**
+     * Where the key carrying this description actually sits, in the root's own pixels.
+     *
+     * The taps here were computed from `KeyGeometry.centre` instead, which gives a point
+     * inside a *panel*. Under `HexboardBoard` the panel is not the root: the control strip
+     * sits above it in the same column, so every computed point was short by the strip's
+     * height and the taps landed on the wrong thing entirely. Reading the node's own bounds
+     * asks the board where it put the key rather than predicting it, and so cannot drift
+     * again when something new is added above the keys.
+     *
+     * The tap stays a raw touch at that point rather than `performClick()`, because what
+     * these tests exist to catch is a pager consuming the pointer before the key sees it —
+     * and the semantics click path would bypass exactly the routing under test.
+     */
+    private fun centreInRoot(description: String): Offset {
+        val node = compose.onAllNodesWithContentDescription(description)
+            .fetchSemanticsNodes()
+            .firstOrNull()
+            ?: error("Nothing on screen carries the description '$description' to tap.")
+        return node.boundsInRoot.center
+    }
 }

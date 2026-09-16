@@ -1,4 +1,4 @@
-# [HASH] — [word-list-ok-by-name] lowercase "ok" added by name, the way the pronoun "I" already is
+# 770b778 — [word-list-ok-by-name] lowercase "ok" added by name, the way the pronoun "I" already is
 
 Session of 2026-09-12, 12:54.
 

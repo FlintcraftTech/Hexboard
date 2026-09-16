@@ -1,4 +1,4 @@
-# [HASH] — [feedback-funnel-before-store] repointed onto the Play release, its old blocker having shipped without changing why it waits
+# 770b778 — [feedback-funnel-before-store] repointed onto the Play release, its old blocker having shipped without changing why it waits
 
 Session of 2026-09-12, 12:54.
 

@@ -1,4 +1,4 @@
-# [HASH] — [dictation-biasing-saved-words] designable at last, because the saved-word list it hands the recogniser now has a design
+# 770b778 — [dictation-biasing-saved-words] designable at last, because the saved-word list it hands the recogniser now has a design
 
 Session of 2026-09-12, 12:54.
 

@@ -1,4 +1,4 @@
-# [HASH] — [spanish-letter-panel-gaps] three holes down Spanish's right edge, filled with the two inverted marks and an ordinal key
+# 770b778 — [spanish-letter-panel-gaps] three holes down Spanish's right edge, filled with the two inverted marks and an ordinal key
 
 Session of 2026-09-12, 12:54.
 

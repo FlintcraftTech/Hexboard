@@ -1,4 +1,4 @@
-# [HASH] — [competing-layout-standards] one layout per language, both where the scripts differ, more on request — written into SPEC and the item deleted
+# 770b778 — [competing-layout-standards] one layout per language, both where the scripts differ, more on request — written into SPEC and the item deleted
 
 Session of 2026-09-12, 12:54.
 

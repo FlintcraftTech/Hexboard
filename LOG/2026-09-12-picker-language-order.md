@@ -1,4 +1,4 @@
-# [HASH] — [picker-language-order] the layout picker sorts languages by their own names rather than by a code the reader never sees
+# 770b778 — [picker-language-order] the layout picker sorts languages by their own names rather than by a code the reader never sees
 
 Session of 2026-09-12, 12:54.
 

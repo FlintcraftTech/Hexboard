@@ -1,4 +1,4 @@
-# [HASH] — [app-screen-two-keyboards] the app screen's board becomes a picture, because deleting it would have taken the layout preview with it
+# 770b778 — [app-screen-two-keyboards] the app screen's board becomes a picture, because deleting it would have taken the layout preview with it
 
 Session of 2026-09-12, 12:54.
 

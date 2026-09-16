@@ -1,4 +1,4 @@
-# [HASH] — [dictionary-asset-packs] repointed onto the Play release, the blocker that shipped never having been the binding one
+# 770b778 — [dictionary-asset-packs] repointed onto the Play release, the blocker that shipped never having been the binding one
 
 Session of 2026-09-12, 12:54.
 

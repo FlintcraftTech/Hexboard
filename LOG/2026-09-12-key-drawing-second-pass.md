@@ -1,4 +1,4 @@
-# [HASH] — [key-drawing-second-pass] labels sized against the key rather than its solid core, which decouples them from the fade and reverses a decision made blind
+# 770b778 — [key-drawing-second-pass] labels sized against the key rather than its solid core, which decouples them from the fade and reverses a decision made blind
 
 Session of 2026-09-12, 12:54.
 

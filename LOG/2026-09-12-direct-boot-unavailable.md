@@ -1,4 +1,4 @@
-# [HASH] — [direct-boot-unavailable] documented in SPEC and left as a capture, with the accessibility argument recorded against the do-nothing case
+# 770b778 — [direct-boot-unavailable] documented in SPEC and left as a capture, with the accessibility argument recorded against the do-nothing case
 
 Session of 2026-09-12, 12:54.
 
