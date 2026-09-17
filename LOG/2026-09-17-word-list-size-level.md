@@ -1,4 +1,4 @@
-# [HASH] — Word-list size level settled at 60 by reading SCOWL's own README, and the entry deleted as a finding rather than work
+# 88b95f2 — Word-list size level settled at 60 by reading SCOWL's own README, and the entry deleted as a finding rather than work
 
 Recorded 2026-09-17 13:59. Sits inside the commonness work recorded under [uniform-neighbours-predictive].
 

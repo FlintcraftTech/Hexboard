@@ -1,4 +1,4 @@
-# [HASH] — Three completion slots designed for the row above the keys, after a long-word slot was designed and then removed
+# 88b95f2 — Three completion slots designed for the row above the keys, after a long-word slot was designed and then removed
 
 Recorded 2026-09-17 13:59. The reasoning behind the commonness work this sits inside is in the record under [uniform-neighbours-predictive]; this entry carries what is particular to the display half.
 

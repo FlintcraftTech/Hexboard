@@ -1,4 +1,4 @@
-# [HASH] — A setup top-up run in this chat, taking the project from 1.21.1-test3 to 1.23.0 and asking the goals question for the first time
+# 88b95f2 — A setup top-up run in this chat, taking the project from 1.21.1-test3 to 1.23.0 and asking the goals question for the first time
 
 Recorded 2026-09-17 13:59. This records a completed piece of work, not a plan for one.
 

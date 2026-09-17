@@ -43,6 +43,37 @@ This folder becomes a private outer repository holding the method's documents, a
 Rests on: this checkout having exactly one remote, read from `git remote -v` on 2026-09-17; the longest live path being about 160 characters against Windows' 260 ceiling, measured on 2026-09-17, so the extra folder level is affordable — the 239-character path found in the same measurement is stale Gradle output that [stale-android-build-dir] removes; the wrap's own steps, read from the installed setup procedure the same day.
 Filed 2026-09-17 13:05, stamped by the queue tool.
 
+#### Move the README's licence section and third-party notices into a file of their own [licence-out-of-readme]
+`README.md`'s licence section moves out into a new `LICENSING.md` at the repository root, and the README keeps two sentences and a link.
+
+Captured by you on 2026-09-17 and processed the same session.
+
+**What the section currently holds, and why it is two things rather than one.** Lines 78 to 148 of a 148-line README are licensing: first a plain-terms summary of the PolyForm Noncommercial licence — read it, fork it for another language or key set, do not sell it — with the point that source-available is not open source; then a `### Notices` subsection carrying three third-party attributions, FlorisBoard for the Russian layout, SCOWL for the word list and Unicode for the emoji list, two of them quoting a copyright block verbatim. That is very nearly half the file, in front of nobody who came to read about a keyboard.
+
+**The notices are load-bearing rather than courtesy, which is why the section cannot simply be cut.** SCOWL's licence permits redistribution on the condition that its copyright and permission notice travels with derived works, and the Unicode License v3 permits redistribution on the condition that its notice appears either with the data files or in the associated documentation — the limb this project chose, recorded in `workshop/resources/research/unicode-data-file-licence.md`. A separate document in the same repository is still the associated documentation, so the condition is met after the move exactly as it is met now. What would break the condition is losing the blocks or paraphrasing them, so they move verbatim.
+
+**The name is `LICENSING.md`, and the alternative it beat matters.** `LICENCE.md` sits one letter from the existing `LICENSE` file, which is the authoritative licence text and is untouched by this; two files whose names differ by one letter is a thing a reader opens the wrong one of. `LICENSING.md` also covers the third-party notices, which "licence" alone does not.
+
+**What stays in the README, and why it is not nothing.** Two sentences: that Hexboard is source-available under the PolyForm Noncommercial License 1.0.0, linking `LICENSE` for the terms; and that this is not open source under the OSI definition, deliberately. The second is the fact a reader is most likely to be surprised by later, so it stays where it is read rather than behind a link. Everything else goes.
+
+**The ripple, which is most of the work.** Three documents send a reader or a build to "`README.md`'s Notices section", and after this they would be pointing at a section that no longer exists. Two of them are queue entries — [tap-word-alternatives], which adds CMUdict's acknowledgment, and [russian-panel-gaps], which adds CLDR's — and amending a queue entry's wording is planning work rather than a build's, so both were repointed at the decision step on 2026-09-17 rather than left for this item. The third is the `emoji-data-refresh` cycle in `CYCLES.md`, whose step 6 sends a future turn to re-read Unicode's copyright year there and whose `Writes:` field names `README.md`; that one is in this item's Files line below, so it changes in the same move as the file it points at. The Unicode research file's own sentence about where the notices live is there for the same reason.
+
+**Placed second in the cleared region, straight after [nested-wrap].** [tap-word-alternatives] and [russian-panel-gaps] both now name `LICENSING.md` in their own Files lines, so this has to land before either of them is built or they write to a file that does not exist. [nested-wrap] stays first: it is done by hand and moves every path in the queue, so this item's own paths are rewritten by it like everything else, and nothing here needs adding to its file-by-file split because `LICENSING.md` does not exist until afterwards.
+
+**What the build changes.**
+- `LICENSING.md` — new, at the repository root. Carries the plain-terms licence summary and the whole `Notices` section, lifted from `README.md` with the three notices' quoted copyright blocks reproduced character for character.
+- `README.md` — the licence section reduced to two sentences and a link, as above; the `### Notices` subsection removed entirely, with a line pointing at `LICENSING.md` for the third-party notices.
+- `CYCLES.md` — the `emoji-data-refresh` definition's step 6 names `LICENSING.md`'s Notices section rather than `README.md`'s, and its `Writes:` field names `LICENSING.md` in place of `README.md`.
+- `workshop/resources/research/unicode-data-file-licence.md` — the sentence naming README's Notices section as the documentation limb names `LICENSING.md` instead; its line in `workshop/resources/research/index.md` the same.
+
+**The observation that shows it landed:** `LICENSING.md` exists and a grep of it finds both verbatim blocks — `Copyright 2000-2018 by Kevin Atkinson` and `Copyright © 1991-2024 Unicode, Inc.` — while the same grep over `README.md` finds neither; `README.md` still states that Hexboard is not open source and still links `LICENSE`; and a grep across the repository for "README.md" finds no document sending a reader to a Notices section there.
+
+**Options already refused, each with what defeated it.** Moving only the plain-terms summary and leaving the notices — the notices are the bulkier half, so the README keeps most of its length and gains an orphan section whose parent has gone. Deleting the summary rather than moving it, on the ground that `LICENSE` is authoritative — the summary exists because the licence text does not tell a reader in one line whether they may fork it, and that is the question people actually have. Naming the file `LICENCE.md` — one letter from `LICENSE`. Folding the notices into `LICENSE` itself — that file is a reproduced licence text and editing it invites doubt about whether the text is the real one.
+
+Rests on: SCOWL's redistribution condition and the Unicode License v3's documentation limb, read from `README.md`'s own quoted blocks on 2026-09-17 and, for Unicode, from `workshop/resources/research/unicode-data-file-licence.md` researched 2026-09-04; the section's extent, lines 78 to 148 of a 148-line file, counted on 2026-09-17; the three documents citing the Notices section, found by a grep across the repository the same day.
+Filed 2026-09-17 15:48, stamped by hand at the decision step.
+Filed 2026-09-17 15:48, stamped by the queue tool.
+
 #### A bespoke predictive text engine built around the six-neighbour confusion set [uniform-neighbours-predictive]
 **Lifted on 2026-09-09.** Both blockers shipped in the build run of 2026-09-05 to 2026-09-09: `KeyGeometry.neighbourTable` derives the six-neighbour sets, and the SCOWL word list is generated and bundled. Both are covered by unit tests, and all 50 unit tests passed on the Pixel 6 on 2026-09-09, so the foundations are built *and* verified rather than merely written.
 Autocorrect for Hexboard: when the user presses space, the word just finished is compared against the shipped dictionary and, if it is not already a word, replaced by the closest match.
@@ -142,7 +173,7 @@ Captured by you on 2026-09-02, from your own phone: you tapped a mistyped word a
 - `android/app/src/main/java/tech/flintcraft/hexboard/Homophones.kt` — new. Loads the table and answers one question: what are the alternatives for this word, if any.
 - `android/app/src/main/java/tech/flintcraft/hexboard/HexboardImeService.kt` — on a selection change, reads the word the cursor landed in, asks for its alternatives and publishes them; replaces the word when one is chosen.
 - `android/app/src/main/java/tech/flintcraft/hexboard/KeyboardPanel.kt` — the row above the keys draws the alternatives and reports which was tapped. The row's height is unchanged: this fills the space [suggestion-strip] shipped empty.
-- `README.md` — the Notices section gains CMUdict's acknowledgment.
+- `LICENSING.md` — the Notices section gains CMUdict's acknowledgment. That section lived in `README.md` until [licence-out-of-readme] moved it out on 2026-09-17; this line was repointed at that item's decision step, and that item sits second in the cleared region so it lands first. That ordering is written on both entries.
 - `android/app/src/test/java/tech/flintcraft/hexboard/HomophonesTest.kt` — new, carrying the first half of the observation.
 - `android/app/src/androidTest/java/tech/flintcraft/hexboard/TapWordAlternativesUiTest.kt` — new, carrying the second half.
 
@@ -390,7 +421,7 @@ The hold against [symbols-panel-empty-slots] came off on 2026-09-12: that item s
 - `resources/key-layout-ru.json`, `-fr`, `-de`, `-es`, `-pt`, `-it` — the empty SYMBOLS positions filled with what the rule yields, and the Russian RARE positions at (0,10), (1,10) and (2,0) filled from part 3.
 - `resources/key-manifest*.md` — regenerated from the configs, never hand-edited, per SPEC.
 - `android/app/src/test/java/tech/flintcraft/hexboard/KeyLayoutValidationTest.kt` — gains the assertion carrying the observation below.
-- `README.md` — the Notices section names CLDR alongside the existing Unicode notice, the data being Unicode's under the licence already read.
+- `LICENSING.md` — the Notices section names CLDR alongside the existing Unicode notice, the data being Unicode's under the licence already read. That section lived in `README.md` until [licence-out-of-readme] moved it out on 2026-09-17; this line was repointed at that item's decision step, and that item sits second in the cleared region so it lands first. That ordering is written on both entries.
 
 **The observation that shows it landed:** `KeyLayoutValidationTest` passes over all seven configs, asserting that no layout's SYMBOLS panel has an empty position except where the rule ran out, that no character appears on two panels of the same layout, and that each layout's quote characters match CLDR's delimiters for its language tag — which makes the rule checkable rather than asserted. Any slot the rule leaves empty is named in a capture by the build rather than filled.
 
@@ -989,14 +1020,15 @@ Filed 2026-09-12 12:50, stamped by the queue tool.
 > Captured ideas and tasks not yet fully processed. The next /plan session goes through these with you and decides each one's fate — keep it (move it up to Processed) or drop it. Each is filed as its own `#### ` heading, so the list shows up in an editor's outline.
 
 #### Last session advises processing [nested-wrap] next [forward-advisory]
-It sits first in the cleared region, marked `[freeform]` and `Runs alone`, so a build run halts on it and builds nothing past it — every other cleared item names paths it moves.
+It sits first in the cleared region, marked `[freeform]` and `Runs alone`, so a build run halts on it and builds nothing past it. It is not built from the queue: it is done by hand in a chat of its own, and it needs a clean working tree, which the commit closing the session of 2026-09-17 provides.
 
-It is not built from the queue: it is done by hand in a chat of its own, and it needs a clean working tree, which the commit closing the session of 2026-09-17 provides.
+This replaces the advisory of the previous session, which named the same item and was cleared at this session's opening having oriented it.
 
-Two things to settle inside that session rather than before it: the setup interview's parts question, which could not be asked while there was one repository, and the queue-path rewrite across about twenty items, which has to land in the same move as the files.
+Two things to settle inside that session rather than before it: the setup interview's parts question, which could not be asked while there was one repository, and the queue-path rewrite across the items naming paths the wrap moves — which is now one item more than before, [licence-out-of-readme] having been cleared second in the region.
 
-Nothing unprocessed overlaps it. The seven captures waiting are all passed over — five behind other entries and two behind dates — so none of them bears on it.
-Filed 2026-09-17 14:01, stamped by the queue tool.
+The overlap scan found nothing waiting that bears on it: the seven captures in Unprocessed are all passed over, five behind other entries and two behind dates, and none of them names the wrap or the paths it moves.
+Filed 2026-09-17 15:50, stamped by hand at the close.
+Filed 2026-09-17 15:51, stamped by the queue tool.
 
 #### Catch a complaint inside the app before it becomes a Play Store review [feedback-funnel-before-store]
 Blocked by: [play-store-release]

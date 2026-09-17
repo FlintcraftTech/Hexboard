@@ -1,4 +1,4 @@
-# [HASH] — Autocorrect bounded to the commonest half of the word list, separating what the engine recognises from what it may produce
+# 88b95f2 — Autocorrect bounded to the commonest half of the word list, separating what the engine recognises from what it may produce
 
 Recorded 2026-09-17 13:59. This entry carries the reasoning for four items settled together; [completion-slots], [word-list-size-level] and [predictive-frequency-table] cite it rather than restating it.
 

@@ -1,4 +1,4 @@
-# [HASH] — `temp/` brought under the ignore rules, filed as a build in the morning and done by the setup run in the afternoon
+# 88b95f2 — `temp/` brought under the ignore rules, filed as a build in the morning and done by the setup run in the afternoon
 
 Recorded 2026-09-17 13:59.
 

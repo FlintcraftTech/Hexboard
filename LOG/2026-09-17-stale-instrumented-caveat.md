@@ -1,4 +1,4 @@
-# [HASH] — Three stale suite caveats rewritten one at a time at the decision step, and the item deleted rather than cleared
+# 88b95f2 — Three stale suite caveats rewritten one at a time at the decision step, and the item deleted rather than cleared
 
 Recorded 2026-09-17 13:59.
 

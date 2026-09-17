@@ -1,4 +1,4 @@
-# [HASH] — Key announcements settled to track the drawn glyph, after the code turned out to contradict its own doc comment
+# 88b95f2 — Key announcements settled to track the drawn glyph, after the code turned out to contradict its own doc comment
 
 Recorded 2026-09-17 13:59.
 

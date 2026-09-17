@@ -1,4 +1,4 @@
-# [HASH] — A frequency table filed with its licence question closed at source, then held until the engine ships
+# 88b95f2 — A frequency table filed with its licence question closed at source, then held until the engine ships
 
 Recorded 2026-09-17 13:59. Sits inside the commonness work recorded under [uniform-neighbours-predictive], which is what gave this a concrete job.
 

@@ -1,4 +1,4 @@
-# [HASH] — Direct-boot held behind two builds using the `until built` suffix, which is what the entry had wanted and could not express
+# 88b95f2 — Direct-boot held behind two builds using the `until built` suffix, which is what the entry had wanted and could not express
 
 Recorded 2026-09-17 13:59.
 
