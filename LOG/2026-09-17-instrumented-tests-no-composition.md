@@ -1,4 +1,4 @@
-# [HASH] — [instrumented-tests-no-composition] twelve failing instrumented tests resolved, none of them a fault in the keyboard: eight were the handset's screen going dark and four were the test file being wrong about the app
+# 3bb1145 — [instrumented-tests-no-composition] twelve failing instrumented tests resolved, none of them a fault in the keyboard: eight were the handset's screen going dark and four were the test file being wrong about the app
 
 Recorded 2026-09-17 09:22, read from the clock. This session ran across 2026-09-12 and 2026-09-17.
 
@@ -34,3 +34,29 @@ Advisory: not needed — the queue's top cleared item is a build with nothing wa
 - Three captures filed this session carried a hand-written "Filed" time alongside the queue tool's own stamp, and the two disagreed by hours in two cases — the tool reads the clock and the hand-written line did not. The hand-written lines were removed at this close.
 - The close could not write its own marker file: the scope-lock refused every scratchpad path that could be named, which reads as the session identifier changing when the app restarted mid-conversation while the scope-lock's own log still records the original one. The marker only widens the lock to cover `README.md` and setup-scaffolded files, neither of which this close touches, so the close proceeded and the commit message was written to `temp/` instead.
 - The `[user]` item [phone-sleeps-during-test-run] was walked while the user was present, because it was blocking this session's own verification. Its walkthrough did not work: the Settings app returned no `Stay awake` result on this handset, so the developer-options route was unavailable and the screen timeout was raised to thirty minutes instead. That is a weaker guarantee than the switch would have been — a plain display setting rather than one tied to charging — and both the outcome and that caveat are written onto the item. It sits in Unprocessed awaiting a planning session's disposition.
+
+---
+
+## Appended after the commit — 2026-09-17 09:52, read from the clock
+
+Work done after this session's commit, `3bb1145`. Nothing here is committed; it rides into the next close.
+
+**The commit and the push.** Committed as `3bb1145` and pushed to this project's GitHub remote on the user's yes. The hash was then written into this entry's heading and into its line in `LOG/index.md`, which is the pair of edits the next session will meet as tail-shaped dirt.
+
+**`temp/` is not gitignored here, although the method's rules describe it as gitignored and scaffolded by setup.** It was used as the writable fallback when the session scratchpad could not be written to, so two working files sat in a folder that would have been committed had the close staged it. They were deleted rather than staged or ignored, and the discrepancy was reported rather than repaired — whether the gap is in setup's scaffolding or in this project's own history was not established.
+
+**A method report was drafted, and drafting it found a second defect.** The first was the one this close hit: `/done`'s opening step could not write its close marker, the scope-lock refusing every nameable scratchpad path while its own decision log went on recording the session under its original identifier. The second was found trying to send the first — `inbox_send.py` refused the plugin's own project as "not a correspondent", when it is one.
+
+**The cause of the second, which the user's question is what turned up.** Asked whether the plugin having been updated might explain it, and the answer was yes: `inbox_send.py` does not exist in 1.22.0-test4 and first appears in 1.22.0-test7, so before it the documentation had sessions send by hand, describing the address book only as "correspondent name to absolute folder path" with no format stated — wording still unchanged in 1.23.0 beside the script that now requires a pipe-delimited table row. This project's address book, written by hand under those docs, uses markdown bullet lines, so the script parses it to zero rows. The worst part is the wording: the refusal names a missing correspondent, which invites adding a second entry in the same unreadable shape, when what happened is that a non-empty file parsed to nothing.
+
+Claude's first reading of this was that the project's own file was simply wrong, and that was mistaken — the file predates the script and matches everything the documentation asked of it. The user's question is what corrected it, and the report is substantially better for the correction than the version drafted before it.
+
+**The address book's two entries were converted to table rows** so the send could go. That is a workaround on one machine and is named as such in the report rather than offered as a fix.
+
+**The send, and a filename error of Claude's own.** The report was delivered, then found to have been named without the date or the sending project, against this method's own outbound filename convention — the half a receiving mailbox is triaged by without opening anything. On the user's say-so the delivered copy was removed from the recipient's mailbox unread and replaced with one named correctly. The register line in `INBOX/sent.md` carries the claim, the final filename and the replacement; it is not restated here.
+
+**A correction was sent after the report, and the correction is the user's finding.** Told that another session had shown no concern about this one being several plugin versions old, Claude checked and found that the framing in the report was too weak. The session's own opening lines record it starting on 1.22.0-test6 and resuming on 1.23.0; -test7 and -test8 sit in the plugin cache and were never loaded by it; and the 1.22.0-test6 folder has since been removed, so the rules file read at this session's opening cannot be re-read. The cause is therefore a plugin replaced underneath a live session rather than an app restart — which accounts for the split the first report carried but did not explain, the scope-lock's decision log retaining the original session identifier and the freeform scope file still admitting edits while every nameable scratchpad path was refused. A restart alone would not produce that. The correction went as its own message rather than as an edit to one already delivered, and its register line in `INBOX/sent.md` carries the claim.
+
+Twice in this stretch Claude's first reading was wrong and the user's question corrected it — first on whose fault the address-book format was, then on the cause of the close-marker failure. Both corrections came from the user asking what had changed rather than from any check Claude ran unprompted, and in both cases the check that settled it was cheap and available the whole time.
+
+**Nothing else was left unrouted.** The capture [stale-instrumented-caveat] was filed before the commit and is already named in this entry's Routed to Captures line.

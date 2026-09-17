@@ -14,6 +14,11 @@ android/.idea/
 # project's raw text is never published here.
 INBOX/
 
+# What a session needs for a while and the project never keeps: a fetched
+# transcript, a file read once, a draft that never became a deliverable.
+# Disposable by definition, so nothing records when it should be deleted.
+temp/
+
 # Transient signal saying a file is being written right now, so an editor open
 # on the same document can hold off. Never committed.
 .throughliner/

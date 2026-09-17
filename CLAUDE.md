@@ -27,9 +27,31 @@ This project uses the Throughliner method.
 ## Visibility
 
 <!-- Set at setup: which repository holds this project's documents, and whether
-     they are published anywhere. Left blank until that is settled. -->
+     they are published anywhere. Left blank until that is settled. In a
+     nested project the line names both repositories and their roles, e.g.:
+     "Visibility: nested — the outer repository (this folder) holds the
+     method's documents and never gets a remote; the inner repository
+     (<product subfolder>/) holds only the product and is the one that goes
+     public when asked." -->
 
-Visibility: this folder's own git repository holds the project's documents. `SPEC.md`, `QUEUE.md`, `CLAUDE.md` and `LOG/` are tracked and go public with the repo; `FAQ/` and `INBOX/` stay out of it.
+Visibility: this folder's own git repository holds the project's documents. `SPEC.md`, `QUEUE.md`, `CLAUDE.md` and `LOG/` are tracked and go public with the repo; `FAQ/`, `INBOX/` and `temp/` stay out of it.
+
+## Parts
+
+<!-- Set at setup from the interview's parts question: the project's moving
+     parts, one line each naming the part, its folder and which repository
+     holds it (a product part sits in the inner repository, a process part
+     in the outer), and one last line for a file that belongs to no part.
+     A session creating a new file reads this block, chooses the folder, and
+     says where it put the file. Left blank where the question was not
+     asked; a project with no parts keeps the workshop rule as its default.
+     e.g.:
+     - the app — `<product subfolder>/` — inner repository (product)
+     - recipes and reference material — `research/` — outer repository (process)
+     - a file belonging to no part — `workshop/` in the outer repository,
+       or `temp/` where it is disposable -->
+
+Parts:
 
 ## Language
 
