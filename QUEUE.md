@@ -1020,15 +1020,12 @@ Filed 2026-09-12 12:50, stamped by the queue tool.
 > Captured ideas and tasks not yet fully processed. The next /plan session goes through these with you and decides each one's fate — keep it (move it up to Processed) or drop it. Each is filed as its own `#### ` heading, so the list shows up in an editor's outline.
 
 #### Last session advises processing [nested-wrap] next [forward-advisory]
-It sits first in the cleared region, marked `[freeform]` and `Runs alone`, so a build run halts on it and builds nothing past it. It is not built from the queue: it is done by hand in a chat of its own, and it needs a clean working tree, which the commit closing the session of 2026-09-17 provides.
+This replaces the advisory of the previous session, which named the same item. It is named again because the session of 2026-09-18 opened [nested-wrap] by hand and stopped before moving anything: Android Studio was found running, and the wrap's file move needs it closed. Nothing was moved and nothing was rewritten, so the item stands exactly as it was written.
 
-This replaces the advisory of the previous session, which named the same item and was cleared at this session's opening having oriented it.
+What that session did leave behind: the working tree is clean at its close, which is the state [nested-wrap] asks for, and the hash backfill that would otherwise have ridden into the wrap's own commit is committed separately.
 
-Two things to settle inside that session rather than before it: the setup interview's parts question, which could not be asked while there was one repository, and the queue-path rewrite across the items naming paths the wrap moves — which is now one item more than before, [licence-out-of-readme] having been cleared second in the region.
-
-The overlap scan found nothing waiting that bears on it: the seven captures in Unprocessed are all passed over, five behind other entries and two behind dates, and none of them names the wrap or the paths it moves.
-Filed 2026-09-17 15:50, stamped by hand at the close.
-Filed 2026-09-17 15:51, stamped by the queue tool.
+The overlap scan found one thing bearing on it, filed this session: [studio-closed-before-wrap], which says Android Studio must be shut before any file moves. It is not in [nested-wrap]'s own text — the amendment was offered at the close and the capture was chosen — so the session running the wrap is warned by this queue entry or not at all. The other eight captures in Unprocessed are passed over, behind other entries or behind dates, and none names the wrap or the paths it moves.
+Filed 2026-09-18 09:35, stamped by the capture tool.
 
 #### Catch a complaint inside the app before it becomes a Play Store review [feedback-funnel-before-store]
 Blocked by: [play-store-release]
@@ -1186,4 +1183,12 @@ Filed on 2026-09-17, when the commonness work gave this a concrete job it did no
 **Held until [uniform-neighbours-predictive] has shipped, settled with you on 2026-09-17.** The licence no longer blocks anything, so what holds this is evidence rather than permission. Nobody has typed on the engine, because it is not built: if ordering by band and then by the shorter word reads acceptably, this ships about a megabyte and a licence obligation for nothing, and if it reads badly, *how* it fails is what would say which corpus to pick. The line ends `until built` rather than resolving when the engine is merely processed, which it already is — the wait is for the engine to exist, not for it to be agreed. That ordering is written on both entries.
 
 Filed 2026-09-17 10:24, stamped by the queue tool.
+
+#### Close Android Studio before the nested wrap moves any file [studio-closed-before-wrap]
+[nested-wrap] already says Android Studio will need reopening at `hexboard/` once the wrap has landed, but it does not say Studio must be shut *before* the move. It has to be. On Windows a move of a file another program holds open fails part-way, and `android/` is exactly what Studio holds — so a wrap run with Studio open risks the half-moved tree that item is written to avoid.
+
+Found in the session of 2026-09-18, which opened [nested-wrap] by hand and checked the machine before moving anything: Android Studio was running. Nothing in the item's own text would have stopped that move.
+
+The ordering that matters: this belongs inside [nested-wrap]'s walkthrough rather than beside it, since the session that needs the sentence is the one running that item. Amending a cleared item is the user's call, and at the close of 2026-09-18 they chose the capture over the amendment — so [nested-wrap] still carries no such step, and a session running it before this capture is processed will not be warned by the item itself.
+Filed 2026-09-18 09:35, stamped by the capture tool.
 
