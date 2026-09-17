@@ -1,4 +1,4 @@
-# [HASH] — [licence-out-of-readme] created and cleared second in the region: the README's licence summary and its three third-party notices move out to a new LICENSING.md, with the two queue entries and the emoji cycle that cite the Notices section repointed in the same move
+# 5138ed0 — [licence-out-of-readme] created and cleared second in the region: the README's licence summary and its three third-party notices move out to a new LICENSING.md, with the two queue entries and the emoji cycle that cite the Notices section repointed in the same move
 
 Date: 2026-09-17 15:50
 
