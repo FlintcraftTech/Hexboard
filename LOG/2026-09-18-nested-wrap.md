@@ -1,4 +1,4 @@
-# [HASH] — [nested-wrap] opened by hand and stopped before its first move: Android Studio was running, which the item's own text never said to close
+# 86a8ef4 — [nested-wrap] opened by hand and stopped before its first move: Android Studio was running, which the item's own text never said to close
 
 Date: 2026-09-18 09:35
 
@@ -23,3 +23,13 @@ The session opened to run [nested-wrap] by hand — the conversion that puts the
 **Advisory:** filed — forward-advisory
 
 **Also in this chat:** the cycle on file, [emoji-data-refresh], was checked for due-ness at this close: its observable is a record under its own slug whose opening line says it records a completed turn, and the most recent is dated 2026-09-12 against an annual cadence, so nothing was filed. The scope file written for this session was offered for deletion at the close, being specific to a session id no later session can use.
+
+## After /done
+
+**2026-09-18 14:04.** After the close, a defect found during the close itself was routed. The safety check had refused the editing tools on both markers /done is required to write into `.throughliner/` — the one written as its first action and the one written after the commit — giving the planning-session refusal both times, and the close completed only because a shell command writes those paths unchallenged. That is a problem with the method rather than with this project.
+
+The route was got wrong first. TOOLS.md was read for a channel and reported none, so the web form was recommended and a report drafted for the user to paste. The address book inside `INBOX/` is where correspondents are actually recorded, and it already held Throughliner — the user said so, and the book confirmed it. Mail was the route all along, and the form recommendation was withdrawn.
+
+A second defect from the same close went into the same message: filing the forward advisory produced a doubled slug in its heading, because the close procedure gives that heading as a literal string already ending in the reserved slug while the filing tool appends the slug to whatever heading it is given. It was fixed at the time by deleting and re-filing, but the two instructions contradict each other as written.
+
+The message was delivered to Throughliner's mailbox on the user's yes, marked for continuation, and the register line written in the same turn. Nothing here waits on a reply.

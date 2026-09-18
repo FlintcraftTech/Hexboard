@@ -12,6 +12,8 @@ This folder becomes a private outer repository holding the method's documents, a
 
 **The arm is the wrap, not the split**, because this checkout already has a remote: the existing repository is already the product's and is kept whole, rather than a new inner repository being created around moved files.
 
+**Android Studio must be closed before the first file moves, and the session running this checks rather than assumes.** On Windows a move of a file another program holds open fails part-way, and `android/` is exactly what Studio holds — so a wrap run with Studio open risks the half-moved tree this item exists to avoid. The first step is therefore to run `tasklist` and look for `studio64.exe`; where it is there, stop and have it closed before anything moves. Checking beats instructing, because an instruction to close it is one a session can believe was followed. Found on 2026-09-18, when a session opened this item by hand, checked the machine before moving anything and found Studio running — nothing in the item's own text would have stopped that move. Written in here on 2026-09-18 from the capture [studio-closed-before-wrap], which carried it and was deleted in the same move; the reopening at `hexboard/` noted further down is the other end of the same fact. The check was run on 2026-09-18 at 14:19 and returned `studio64.exe`, so it both works and fires on this machine as things stand.
+
 **The split, settled with you on 2026-09-17, file by file.**
 
 - Staying in the inner repository, which keeps the remote and stays public: `android/`, `resources/`, `scripts/`, `README.md`, `LICENSE`, and the inner `.gitignore`.
@@ -34,6 +36,8 @@ This folder becomes a private outer repository holding the method's documents, a
 
 **Placed first in the cleared region.** Every other cleared item names paths this changes, so a run that built them first would be building against a layout about to move, and a run that built them after would be reading a queue this item had not yet rewritten.
 
+[files-line-format-drift] follows immediately, and deliberately: it rewrites the heading above the file lists in every entry, which are the same lines this item rewrites the paths inside. Doing it first would mean editing all of them twice. That ordering is written on both entries.
+
 **This session still owes the setup interview's parts question, and it belongs here rather than where it was skipped.** The top-up of 2026-09-17 refreshed `CLAUDE.md`'s managed block, which arrived carrying a new and empty `## Parts` section, and the question that fills it was not asked. The reason is structural: a part is a folder, and the block records which of the two repositories holds it — so with one flat repository there was nothing for an answer to name. Once the wrap has landed there are two, and the question can be answered properly. Ask it here, write the block, and create one folder per part as the answer names them.
 
 **The observation that shows it landed:** `hexboard/` exists and holds `android/`, `resources/`, `scripts/`, `README.md` and `LICENSE`; `git remote -v` inside it still names the existing remote and `git status` there is clean; the outer folder is a repository with no remote holding the documents listed above; and a grep of `QUEUE.md` for `` `android/app`` finds no path that does not begin `hexboard/`.
@@ -42,6 +46,36 @@ This folder becomes a private outer repository holding the method's documents, a
 
 Rests on: this checkout having exactly one remote, read from `git remote -v` on 2026-09-17; the longest live path being about 160 characters against Windows' 260 ceiling, measured on 2026-09-17, so the extra folder level is affordable — the 239-character path found in the same measurement is stale Gradle output that [stale-android-build-dir] removes; the wrap's own steps, read from the installed setup procedure the same day.
 Filed 2026-09-17 13:05, stamped by the queue tool.
+
+#### [freeform] Queue items name their changed files under a heading the digest cannot read [files-line-format-drift]
+Every entry in this queue lists the files its work changes under `**What the build changes.**`, followed by backticked bullets. The digest reads a line beginning `Files:` instead, so none of those lists is visible to it. This converts the heading on every entry that has one, and records the convention so it does not drift back.
+
+Found on 2026-09-18 at the rescan of that day's planning session, by noticing that the digest's merge-candidate block reported zero while `KeyboardPanel.kt` was named by five cleared items, and then reading the script rather than guessing at the cause.
+
+**What the digest actually matches, read from `scripts/queue_digest.py` on 2026-09-18.** `FILES_LINE_RE` is `^\**Files\b[^:]*:` — a line whose first word is Files, followed by a colon, optionally bolded. The reader then takes that line plus the bullet lines beneath it. Our `**What the build changes.**` matches nothing, so the reader never opens. The `Reads but does not change:` lines these entries also carry are unaffected: `READS_LINE_RE` matches them already.
+
+**Three checks read that line, and all three are silently dead here.**
+
+- The merge-candidate block, which exists so two entries touching one file can be settled together. It has reported nothing for this project since the queue began.
+- The placement flag for an entry in Processed whose Files line names nothing, or names its own design's output.
+- **A safety check**, and this is the one that matters: the flag for a cleared entry whose Files text names `QUEUE.md`, because queue content is planning work a build may not write. It fails open — it cannot refuse what it cannot read — so an entry that told a build to edit the queue would pass this check silently.
+
+**Why the drift is ours rather than the method's.** The procedure refers to the Files line throughout, and this project adopted a prose heading early and never carried it back. Nothing warned, because nothing looks for a queue in which no entry has the line at all — which is a fair observation about the method and is not this item's business.
+
+**Why freeform, and not a build.** Amending a queue entry's own wording is planning work by the method's own rule and can never clear as a build, so a run would leave it skipped forever with nothing reporting why. It is also too large for a planning conversation to carry item by item — thirty-four entries at the time of writing — which is the shape `[freeform]` is for.
+
+**Why it follows [nested-wrap] rather than preceding it.** That item rewrites the path in every one of these same bullets, about twenty entries' worth, when the product moves down into `hexboard/`. Doing this first means editing the same lines twice. It is placed immediately after the wrap rather than held by a field: both are done by hand, so a blocking line would buy nothing and would hide this entry from view. That ordering is written on both entries.
+
+**What the work changes.**
+- `QUEUE.md` — on every entry that has one, the heading `**What the build changes.**` becomes `**Files:**`, with the bullets beneath it untouched. The sentence is a heading rather than prose, so nothing else in the entry moves. Entries whose heading is worded differently — a handful say something closer to "What the work changes" — are converted the same way.
+- `CLAUDE.md` — one sentence in the project rules: a queue entry names the files its work changes on a `Files:` line, because that is what the digest reads. Without it the drift returns on the next entry written, and a planning session may not write `CLAUDE.md`, which is why it rides here rather than being filed separately.
+
+**The observation that shows it landed:** a grep of `QUEUE.md` for "What the build changes" returns nothing; the digest's "Files named by two or more items" block is no longer empty and names `KeyboardPanel.kt` among others; and `CLAUDE.md`'s project rules contain a sentence naming the `Files:` line.
+
+**Options already refused, each with what defeated it.** Teaching the digest to read our heading instead — the script is the method's and installed from a plugin cache, so an edit there is overwritten by the next update and helps no other project. Leaving it and accepting the dead checks — one of the three is a safety check that fails open, which is not a cosmetic loss. Converting the entries without the `CLAUDE.md` sentence — the next entry written reintroduces the drift, and this is the only kind of session that may write that file. Filing it as a build — it would sit skipped by every run, for the reason above.
+
+Rests on: `FILES_LINE_RE` and `READS_LINE_RE` and the three call sites that use them, all read from `scripts/queue_digest.py` in the installed plugin on 2026-09-18 — an installed copy, so a later plugin version could change the pattern and this item should be re-read against the script before it is run; the thirty-four entries and their headings, counted from `QUEUE.md` the same day.
+Filed 2026-09-18 15:13, stamped by the queue tool.
 
 #### Move the README's licence section and third-party notices into a file of their own [licence-out-of-readme]
 `README.md`'s licence section moves out into a new `LICENSING.md` at the repository root, and the README keeps two sentences and a link.
@@ -71,7 +105,6 @@ Captured by you on 2026-09-17 and processed the same session.
 **Options already refused, each with what defeated it.** Moving only the plain-terms summary and leaving the notices — the notices are the bulkier half, so the README keeps most of its length and gains an orphan section whose parent has gone. Deleting the summary rather than moving it, on the ground that `LICENSE` is authoritative — the summary exists because the licence text does not tell a reader in one line whether they may fork it, and that is the question people actually have. Naming the file `LICENCE.md` — one letter from `LICENSE`. Folding the notices into `LICENSE` itself — that file is a reproduced licence text and editing it invites doubt about whether the text is the real one.
 
 Rests on: SCOWL's redistribution condition and the Unicode License v3's documentation limb, read from `README.md`'s own quoted blocks on 2026-09-17 and, for Unicode, from `workshop/resources/research/unicode-data-file-licence.md` researched 2026-09-04; the section's extent, lines 78 to 148 of a 148-line file, counted on 2026-09-17; the three documents citing the Notices section, found by a grep across the repository the same day.
-Filed 2026-09-17 15:48, stamped by hand at the decision step.
 Filed 2026-09-17 15:48, stamped by the queue tool.
 
 #### A bespoke predictive text engine built around the six-neighbour confusion set [uniform-neighbours-predictive]
@@ -128,7 +161,7 @@ Designed with you on 2026-09-17, from a specification you brought from a session
 
 **When they are shown.** From the first character typed, refreshed on each key, and cleared when the space bar commits the word. A tap commits the word and a space, and no correction runs on it, the word having come from the list already.
 
-**The row's middle is contended by three features and this resolves it rather than adding to it.** [tap-word-alternatives] offers homophones there when a finished word is tapped; [predictive-saved-words] puts its save offer there when a correction is undone; this puts completions there while a word is in progress. All three are different moments and none can be live at once, so they share the space by construction. That is written on all three entries.
+**The row's middle is contended by three features and this resolves it rather than adding to it.** [tap-word-alternatives] offers homophones there when a finished word is tapped; [predictive-saved-words] puts its save offer there when a correction is undone; this puts completions there while a word is in progress. All three are different moments and none can be live at once, so they share the space by construction. [selection-formatting-spans] joined them on 2026-09-18 as a fourth, putting bold, italic and underline there while text is selected — told apart from these three by the selection not being empty. That is written on all four entries.
 
 **The privacy flag, cleared by design-out.** The specification this came from populated its top tier from the phone's contacts, calendar entries and nearby place names. That was refused outright: it would make a keyboard a reader of two of the most sensitive stores on the device, and it reverses the engine's standing promise that nothing enters its word store except by a deliberate save. The same shape was declined once before, on 2026-09-12, when [dictation-biasing-saved-words] left Android's device-context switch off for the same reason. Nothing here reads anything but the shipped word list and what the user has typed into the current word.
 
@@ -189,7 +222,86 @@ Cites research: `workshop/resources/research/word-alternative-sources.md`, which
 
 Rests on: CMUdict's licence and its phoneme-sequence content, read from the cmusphinx/cmudict repository on 2026-09-04; the ML Kit GenAI supported-device list starting at the Pixel 9, read from Google's own documentation on 2026-09-04, which that file flags as amended on a cycle; `onUpdateSelection()` firing on a cursor tap and `InputConnection` reading the surrounding text, read from Android's reference on 2026-09-04 and not run; that the row above the keys exists and works, which [suggestion-strip] built on 2026-09-04 and nothing has yet compiled — which is why [verify-this-runs-build-on-device] is the second blocker.
 
-[completion-slots] uses the same middle of the row for completions while a word is being typed, where this item uses it for homophones once a word is finished — different moments, so the two never compete for it. That is written on both entries. [speech-output-correction] records what is known about how Gboard does the equivalent, and found that Google describes its proofreading as origin-blind — checking typed, pasted and dictated text alike — which is why this feature needs no record of what arrived by voice. [uniform-neighbours-predictive] is a different mechanism and cannot reach these cases. Those orderings are written on all three entries.
+[completion-slots] uses the same middle of the row for completions while a word is being typed, where this item uses it for homophones once a word is finished — different moments, so the two never compete for it. [selection-formatting-spans] uses the same space again while text is *selected*, which is the discriminator between the two: this item fires on a cursor landing inside a word, that one on a selection that is not empty. Those are written on all three entries. [speech-output-correction] records what is known about how Gboard does the equivalent, and found that Google describes its proofreading as origin-blind — checking typed, pasted and dictated text alike — which is why this feature needs no record of what arrived by voice. [uniform-neighbours-predictive] is a different mechanism and cannot reach these cases. Those orderings are written on all three entries.
+
+#### Bold, italic and underline applied to selected text, from the row above the keys [selection-formatting-spans]
+Select some text and the middle of the row above the keys carries three controls — bold, italic and underline. Tapping one toggles that style on the selection and leaves the characters exactly as they are.
+
+Captured by you on 2026-09-18 and designed with you the same session. Your complaint, in your own framing: most places support bold, underline and italic, and yet no keyboard seems to have them anywhere — so formatting something means copying it out into somewhere that can style it, editing it there, and pasting it back.
+
+**Why no keyboard does this, which is worth knowing before building it.** The standing position — in Google's own support answers and in how the platform is documented — is that styling belongs to the app and the field rather than to the keyboard: a keyboard hands over characters and each app invents its own way of styling them. That is a reason nobody has done it rather than a reason it cannot be done. The plumbing exists and is documented.
+
+**The mechanism.** `InputConnection.getSelectedText()` with `GET_TEXT_WITH_STYLES` returns the selection as a `SpannableString`, carrying whatever styling it already has. The text an input method commits is an ordinary `CharSequence`, so a commit can carry `StyleSpan(BOLD)`, `StyleSpan(ITALIC)` and `UnderlineSpan` back with it. The whole round trip is therefore: read with styles, toggle the one asked for, commit, and re-select the same range so a second style can be applied without selecting again.
+
+**Toggling rather than applying**, because the row shows the same three controls whatever state the selection is in. Where the whole selection already carries the style the tap removes it; otherwise the tap adds it. A partly-styled selection counts as unstyled, so the first tap styles all of it — which is what a word processor does and what nobody has to be told.
+
+**It spends nothing, and the row's middle is shared by moment rather than divided.** Three entries already claim it: [completion-slots] while a word is in progress, [tap-word-alternatives] when a finished word is tapped, [predictive-saved-words] when a correction has just been undone. A non-empty selection is a fourth moment and none of the other three can be live during it. The discriminator is the selection simply not being empty, which the service already tracks for [tap-word-alternatives]. That is written on all four entries.
+
+**What happens where the field will not keep styling, stated rather than discovered: nothing.** The commit goes through, the receiving field drops the styling, and the characters are unchanged — so the failure is a control that appears to do nothing rather than one that damages text. Web-based editors are the expected case; a live ProseMirror issue records Gboard and rich web editors already disagreeing about spans inside a word. The half that reaches the messaging apps is [selection-formatting-markers], which follows straight after this item in the cleared region and is not built here.
+
+**SPEC's line, and which side this sits on.** SPEC says nothing correctly spelled is ever changed on the user's behalf, and that offering an alternative is permitted where applying one is not. That principle is about the keyboard acting unasked. Here the user selects text and presses a control, so the keyboard carries out an instruction rather than forming a judgment — and the characters are not altered at all, only their styling. SPEC gained the sentence on 2026-09-18.
+
+**What the build changes.**
+- `android/app/src/main/java/tech/flintcraft/hexboard/TextStyling.kt` — new. Pure functions over a `CharSequence`: whether the whole of it carries a given style, and the same text with that style toggled. No input connection is involved, so they can be checked without a running input method.
+- `android/app/src/main/java/tech/flintcraft/hexboard/HexboardImeService.kt` — tracks whether the selection is empty from `onUpdateSelection`, publishes the three controls while it is not, and on a tap reads the selection with its styles, toggles the style asked for, commits the result and restores the selection to the same range.
+- `android/app/src/main/java/tech/flintcraft/hexboard/KeyboardPanel.kt` — the row's middle draws the three controls while a selection exists, and reports which was tapped.
+- `android/app/src/test/java/tech/flintcraft/hexboard/TextStylingTest.kt` — new, carrying the first half of the observation.
+- `android/app/src/androidTest/java/tech/flintcraft/hexboard/SelectionFormattingUiTest.kt` — new, carrying the second half.
+
+**The observation that shows it landed:** `TextStylingTest` passes, asserting that toggling bold on unstyled text returns text carrying a bold span across its whole length, that toggling it again returns text carrying none, that toggling italic on already-bold text returns both, that a partly-styled selection is treated as unstyled so the first tap styles all of it, and that the characters are identical in every case — which is SPEC's guarantee made checkable rather than asserted. `SelectionFormattingUiTest` asserts that the three controls are absent with no selection and present with one, and that tapping bold leaves the same range still selected with its characters unchanged. Nothing on this machine can run either, so running them is Android Studio's, on the Pixel 6, where the instrumented suite has returned 28 of 28 since [instrumented-tests-no-composition] was closed on 2026-09-17.
+
+**Options already refused, each with what defeated it.** Wrapping the selection in markers — not refused but split out as [selection-formatting-markers] on 2026-09-18, and designed the same day: it needs a per-app table, because the conventions contradict each other, so it is a second piece of work rather than a variation on this one. This item is what the keyboard does where no such table entry applies, which is the harmless default. A bold toggle armed before typing rather than applied to a selection — you said on 2026-09-18 that the selection case is the one you hit, and an armed toggle would also have to survive the composing text the correction engine manipulates. A key on a panel — SPEC's manifest rules make evicting a key a real loss rather than a placement. A long-press on an existing key — the holds are taken by accent menus and by repeat. A panel of its own — horizontal swipe already means change letter panel and vertical already means emoji.
+
+Cites research: `workshop/resources/research/keyboard-applied-text-styling.md`.
+
+Rests on: `getSelectedText` returning styles under `GET_TEXT_WITH_STYLES`, and `commitText` taking a `CharSequence` so spans travel with it, both read from Android's input-method documentation on 2026-09-18 and not run; `onUpdateSelection` reporting the selection bounds, established for [tap-word-alternatives] on 2026-09-04; that the row above the keys exists and runs, built by [suggestion-strip] and confirmed on the Pixel 6 by the drive of [verify-this-runs-build-on-device] on 2026-09-09; that ordinary Android fields keep committed styling while web-based editors do not — **not verified here**, there being no `adb` on this machine and no way to reach the handset from it, and resting instead on your own account of 2026-09-18 that your workaround ends by pasting styled text back into the app it came from, which is the same path a commit takes.
+
+Placed after [tap-word-alternatives] in the cleared region, so the row's middle already carries its other states by the time this arrives and this adds a fourth rather than inventing the sharing. [selection-formatting-markers] follows immediately, sharing these controls and these files, so one run builds the two in order. Those orderings are written on all three entries.
+Filed 2026-09-18 14:40, stamped by the queue tool.
+
+#### Markers for the messaging apps that read them, with the user able to add an app [selection-formatting-markers]
+Red flag · State: cleared
+In an app that reads formatting markers rather than keeping styled text, the three controls wrap the selection in that app's own markers instead of styling it. Which apps those are comes from a shipped table, and the user can add the app they are in without leaving it.
+
+Split out of [selection-formatting-spans] on 2026-09-18 and designed with you the same session. That item styles the text itself, which works where the field keeps styling; this is the half for the messaging apps, which strip styling and read markers instead.
+
+**Why this half is not redundant, which its first framing missed.** The apps where styling fails are largely rich web editors — mail and document editors — and those carry their own formatting toolbars, so the keyboard is not the only route there. The apps where markers work are the messaging ones, and those offer nothing at all. So this reaches a real gap rather than duplicating what exists.
+
+**The markers disagree between apps, which is why a table is unavoidable.** A single asterisk means bold in WhatsApp, Telegram and Slack, and italic in Discord, which follows ordinary Markdown and needs two for bold. So one convention cannot be adopted and applied everywhere: the same tap would embolden a message in one app and italicise it in another. Read at source on 2026-09-18 and recorded in `workshop/resources/research/keyboard-applied-text-styling.md`.
+
+**Underline is mostly absent, and the controls say so rather than pretending.** WhatsApp, Telegram and Slack carry markers for bold, italic, strikethrough and monospace and none for underline; Discord reaches it only by stacking underscores. So in a marker app the underline control is absent where that app has no marker for it, rather than present and inert.
+
+**How the app is identified, checked rather than assumed.** An input method is handed an `EditorInfo` when it attaches to a field, and it carries the app's package name. From API 23 onward the system verifies that name against the application's real UID before the keyboard sees it, and refuses an input connection where the two disagree — so it cannot be spoofed. This project's minimum is API 26, so the check holds on every device it supports. Read from Android's own documentation on 2026-09-18.
+
+**What the keyboard cannot do, and why that is the right outcome.** It cannot observe which convention an app uses, because it never sees the text rendered — a sent message is drawn in a view no input method can read. Inferring the convention would mean an accessibility service reading other apps' screens, which is the exact shape of the malicious keyboard this project spends its design avoiding. That route is closed deliberately, not for want of an idea.
+
+**The user adds an app from inside it, settled with you on 2026-09-18 and your own requirement.** Holding any of the three controls opens a chooser for the app currently attached: use styling, the WhatsApp-style markers, the Markdown-style markers, or nothing. The choice is remembered for that app and overrides the shipped table. This needs no list of installed apps — reading one requires a permission Google restricts heavily and which would be indefensible on a keyboard — and it puts the affordance in the app where the problem was noticed rather than in a settings screen the user would have to think to visit.
+
+**The two halves are one behaviour rather than two features.** The controls are present whenever there is a selection, which [selection-formatting-spans] establishes. The table decides only what a tap *does*. So there is no state in which the controls vanish with nothing to explain it, and an app nobody has configured gets the harmless behaviour — styling, which either works or does nothing — rather than a guess that leaves a stray asterisk in a sent message.
+
+**The privacy risk, raised by Claude and accepted by you in the same exchange on 2026-09-18, which is what clears the flag above.** The list of apps you have configured is a record of apps you use, held on the phone, where none existed before. You were told that plainly and chose to proceed. Four constraints came with it and bind the build: the list grows only when you deliberately configure an app; nothing is recorded about an app you have not configured; it never leaves the device; and you can read it and delete from it on the settings screen. That is the same footing [predictive-saved-words] was put on, deliberately, so this is one pattern rather than a second one.
+
+**What the build changes.**
+- `resources/formatting-markers.json` — new. The shipped table: package name to convention, with WhatsApp, Telegram, Slack and Discord to begin with, each naming its bold, italic, strikethrough and monospace markers and saying where underline has none. Data rather than logic, so adding an app is a data edit — which is SPEC's existing rule for the key inventory applied to the same shape of thing.
+- `android/app/build.gradle.kts` — the assets copy task takes this file as well as the layout configs it already filters for.
+- `android/app/src/main/java/tech/flintcraft/hexboard/FormattingStyles.kt` — new. Loads the shipped table, holds the user's own entries, and answers one question: for this package, does a tap style the text, wrap it in markers, or do nothing. Nothing is written except by a deliberate configuration.
+- `android/app/src/main/java/tech/flintcraft/hexboard/TextStyling.kt` — gains marker wrapping and unwrapping alongside the span toggling [selection-formatting-spans] builds, as pure functions over a `CharSequence`.
+- `android/app/src/main/java/tech/flintcraft/hexboard/HexboardImeService.kt` — reads the package name from `EditorInfo` on attach, asks `FormattingStyles` what this app takes, and routes a tap accordingly.
+- `android/app/src/main/java/tech/flintcraft/hexboard/KeyboardPanel.kt` — a hold on any of the three controls opens the chooser for the attached app; the underline control is absent where the app's convention has no marker for it.
+- `android/app/src/main/java/tech/flintcraft/hexboard/MainActivity.kt` — the settings screen lists the apps you have configured, with removal, beside the saved-word list.
+- `android/app/src/test/java/tech/flintcraft/hexboard/FormattingStylesTest.kt` — new, carrying the first half of the observation.
+- `android/app/src/androidTest/java/tech/flintcraft/hexboard/FormattingMarkersUiTest.kt` — new, carrying the second half.
+
+**The observation that shows it landed:** `FormattingStylesTest` passes, asserting that WhatsApp's package resolves to single-asterisk bold and underscore italic while Discord's resolves to double-asterisk bold, that an unknown package resolves to styling rather than to any marker, that a user's own entry beats the shipped table for the same package, that toggling a marker style off removes the markers it added, and that nothing enters the user's list except by an explicit configuration. `FormattingMarkersUiTest` asserts that holding a control opens the chooser naming the attached app, that choosing a marker style and tapping bold puts that app's markers around the selection, and that in an unconfigured app the same tap inserts no characters at all. Nothing on this machine can run either, so running them is Android Studio's, on the Pixel 6.
+
+**Options already refused, each with what defeated it.** One universal marker convention — the conventions contradict each other, so it would be wrong in Discord or wrong in the other three. Sensing the convention from what the app displays — it needs an accessibility service reading other apps' screens, recorded above. Choosing the app from a list of what is installed — that needs a broad package-query permission, which Google restricts and which was not read at source on 2026-09-18, and which on a keyboard would be indefensible whatever the policy says. Asking the user to type the markers in themselves — a chooser of named conventions asks a question someone can answer, where a box wanting `*` and `_` asks one most people cannot. Leaving the table shipped-only with no way to extend it — your own requirement of 2026-09-18, and without it a new app is a dead end until someone edits the source.
+
+Cites research: `workshop/resources/research/keyboard-applied-text-styling.md`.
+
+Rests on: the four apps' marker conventions, read at source on 2026-09-18 — these are app behaviours rather than standards and can change, so a wrong entry is a data correction rather than a redesign; `EditorInfo` carrying a package name verified against the application's UID from API 23, read from Android's documentation on 2026-09-18 and not run, against this project's API 26 minimum; that an input method cannot read the rendered output of the app it types into, reasoned from how input methods work rather than run; the three controls and the row's selection state, both built by [selection-formatting-spans] and not yet compiled.
+
+Placed straight after [selection-formatting-spans] in the cleared region rather than held against it by a field: the two share the same controls and the same files, so one run can build them in order, and a blocking line would only hide this entry from the run that should build it next. That ordering is written on both entries.
+Filed 2026-09-18 14:53, stamped by the queue tool.
 
 #### Voice input inside the keyboard, held open by the thumb [in-keyboard-voice-input]
 Red flag · State: cleared
@@ -861,7 +973,7 @@ Three alternatives lost, each with what defeated it. A long-press on a word alre
 
 **The observation that shows it landed:** `SavedWordsTest` passes, asserting that a saved word is never corrected, that a word one neighbour-substitution from a saved word corrects to it, that delete and clear remove words, and that nothing enters the list by any route but an explicit save. `SavedWordsUiTest` asserts the offer appears after an undo and at no other moment, that tapping it adds the word, and that the settings screen lists, deletes and clears. Nothing here can run either, so running them is Android Studio's, on the Pixel 6.
 
-[completion-slots] puts completions in the same middle of the row while a word is in progress, where this item's save offer appears once a correction has landed and been undone — different moments, so neither displaces the other. Its left slot deliberately does *not* save what it commits, for the reason this item's own consent trail depends on: a slot tapped while typing fast would make the deliberate save doubtful. That is written on both entries.
+[completion-slots] puts completions in the same middle of the row while a word is in progress, where this item's save offer appears once a correction has landed and been undone — different moments, so neither displaces the other. Its left slot deliberately does *not* save what it commits, for the reason this item's own consent trail depends on: a slot tapped while typing fast would make the deliberate save doubtful. [selection-formatting-spans] takes the same space a third time, while text is selected, which is a moment neither of these two can be live in. Those are written on all three entries.
 
 [direct-boot-unavailable] waits on this item shipping, alongside [persistent-clipboard]: this list is the one that would have to *move* to storage readable before the first unlock, where the clipboard must not. That ordering is written on all three entries.
 
@@ -1020,12 +1132,15 @@ Filed 2026-09-12 12:50, stamped by the queue tool.
 > Captured ideas and tasks not yet fully processed. The next /plan session goes through these with you and decides each one's fate — keep it (move it up to Processed) or drop it. Each is filed as its own `#### ` heading, so the list shows up in an editor's outline.
 
 #### Last session advises processing [nested-wrap] next [forward-advisory]
-This replaces the advisory of the previous session, which named the same item. It is named again because the session of 2026-09-18 opened [nested-wrap] by hand and stopped before moving anything: Android Studio was found running, and the wrap's file move needs it closed. Nothing was moved and nothing was rewritten, so the item stands exactly as it was written.
+This replaces the advisory cleared at the opening of 2026-09-18, which named the same item. It is named again because nothing about its situation changed: the session of 2026-09-18 did no building, and the wrap still sits first in the cleared region with nothing ahead of it.
 
-What that session did leave behind: the working tree is clean at its close, which is the state [nested-wrap] asks for, and the hash backfill that would otherwise have ridden into the wrap's own commit is committed separately.
+Two things a session taking it up should know, both written into [nested-wrap] itself on 2026-09-18 rather than left here. Android Studio must be shut before the first file moves, and the item now says to run `tasklist` and look for `studio64.exe` rather than trusting that it was closed — the check returned that process at 14:19 on 2026-09-18, so it fires as things stand. And [files-line-format-drift] now follows the wrap immediately, rewriting the heading above the file lists in every entry; it is placed after the wrap deliberately, because the wrap rewrites the paths inside those same lines and doing it in the other order means editing all of them twice.
 
-The overlap scan found one thing bearing on it, filed this session: [studio-closed-before-wrap], which says Android Studio must be shut before any file moves. It is not in [nested-wrap]'s own text — the amendment was offered at the close and the capture was chosen — so the session running the wrap is warned by this queue entry or not at all. The other eight captures in Unprocessed are passed over, behind other entries or behind dates, and none names the wrap or the paths it moves.
-Filed 2026-09-18 09:35, stamped by the capture tool.
+The overlap scan found nothing waiting that bears on the wrap. Unprocessed holds seven entries and every one of them is passed over — five behind other entries, two behind dates — so a planning session taking them up would find nothing it could present, and none of the seven names the wrap or the paths it moves.
+
+A run of the next command will halt on [nested-wrap] rather than building it: it is `[freeform]` work, done by hand, and it is marked `Runs alone`.
+Filed 2026-09-18 15:42.
+Filed 2026-09-18 15:42, stamped by the queue tool.
 
 #### Catch a complaint inside the app before it becomes a Play Store review [feedback-funnel-before-store]
 Blocked by: [play-store-release]
@@ -1183,12 +1298,4 @@ Filed on 2026-09-17, when the commonness work gave this a concrete job it did no
 **Held until [uniform-neighbours-predictive] has shipped, settled with you on 2026-09-17.** The licence no longer blocks anything, so what holds this is evidence rather than permission. Nobody has typed on the engine, because it is not built: if ordering by band and then by the shorter word reads acceptably, this ships about a megabyte and a licence obligation for nothing, and if it reads badly, *how* it fails is what would say which corpus to pick. The line ends `until built` rather than resolving when the engine is merely processed, which it already is — the wait is for the engine to exist, not for it to be agreed. That ordering is written on both entries.
 
 Filed 2026-09-17 10:24, stamped by the queue tool.
-
-#### Close Android Studio before the nested wrap moves any file [studio-closed-before-wrap]
-[nested-wrap] already says Android Studio will need reopening at `hexboard/` once the wrap has landed, but it does not say Studio must be shut *before* the move. It has to be. On Windows a move of a file another program holds open fails part-way, and `android/` is exactly what Studio holds — so a wrap run with Studio open risks the half-moved tree that item is written to avoid.
-
-Found in the session of 2026-09-18, which opened [nested-wrap] by hand and checked the machine before moving anything: Android Studio was running. Nothing in the item's own text would have stopped that move.
-
-The ordering that matters: this belongs inside [nested-wrap]'s walkthrough rather than beside it, since the session that needs the sentence is the one running that item. Amending a cleared item is the user's call, and at the close of 2026-09-18 they chose the capture over the amendment — so [nested-wrap] still carries no such step, and a session running it before this capture is processed will not be warned by the item itself.
-Filed 2026-09-18 09:35, stamped by the capture tool.
 
